@@ -18,6 +18,8 @@
 - `index.html`, `become-member.html`, `become-partner.html` rebuilt with design system and original content.
 - `login.html` and `admin.html` updated with matching header/nav/logo.
 - `members/members.css` and `members/members.js` updated with design tokens and scroll animations.
+- Scroll animations now show content by default and only fade-in when JS is available, so crawlers/no-JS visitors still see the page.
+- Canvas particle network intensity increased (higher alpha, larger dots, stronger connecting lines) for better visibility.
 - Contact, membership, and partner forms submit successfully and show success messages.
 - Member/admin login forms show validation errors for bad credentials.
 - Stats on homepage load real data from `/ai-club/api/stats` (currently 2 members, 0 events/projects/workshops).
@@ -34,6 +36,7 @@
 4. Keep committing small changes and update this file after each session.
 
 ## Recent Commits
+- `6e02dd3` Polish scroll animations (visible by default) and strengthen particle canvas
 - `2c017a4` Rebuild shared CSS/JS with design tokens, animations, and canvas particles
 - `f021f1c` Rebuild index.html with design system, animations, and real stats
 - `d505058` Rebuild membership and partner pages with design system
