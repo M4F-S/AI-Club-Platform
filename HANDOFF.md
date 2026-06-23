@@ -22,15 +22,16 @@
 - Canvas particle network intensity increased (higher alpha, larger dots, stronger connecting lines) for better visibility.
 - Contact, membership, and partner forms submit successfully and show success messages.
 - Member/admin login forms show validation errors for bad credentials.
+- Admin login works end-to-end; admin panel loads applications and members.
+- Member login works end-to-end; member dashboard loads for `testuser`.
 - Stats on homepage load real data from `/ai-club/api/stats` (currently 2 members, 0 events/projects/workshops).
 
 ## What Needs Attention
-- **Successful end-to-end login test**: I tested the error path (invalid credentials show correct errors), but I do not have the member/admin passwords to verify a successful login. Please provide a test account or the current admin password so I can confirm the members area and admin panel load fully.
 - **Mobile nav**: Basic responsive markup and toggle are in place; a real-device sanity check would be ideal.
 - **Members pages** (events, resources, perks, profile, blog): Header/nav styling is consistent; dynamic content depends on backend data and admin-created posts/events/resources.
 
 ## Next Steps
-1. Provide credentials or create a temporary test member account for full login/admin E2E verification.
+1. Change the temporary admin password after you finish testing.
 2. Review public pages on mobile and approve any tweaks.
 3. Add real events/posts/resources via admin panel once login is confirmed.
 4. Keep committing small changes and update this file after each session.
