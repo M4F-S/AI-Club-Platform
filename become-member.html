@@ -5,61 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Become a Member — 42 Berlin AI Club</title>
   <meta name="description" content="Apply to join the 42 Berlin AI Club. Open to all 42 Berlin students.">
-  <meta name="theme-color" content="#ff6b8a">
+  <meta name="theme-color" content="#f43f5e">
   <link rel="canonical" href="https://mysophia.tech/ai-club/become-member.html">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/ai-club.css?v=9">
+  <link rel="stylesheet" href="assets/ai-club.css?v=10">
   <style>
-    .hero {
-      min-height: 45vh;
-      display: flex; align-items: center; justify-content: center;
-      padding: 150px 24px 60px;
-      text-align: center;
-    }
+    .hero { min-height: 45vh; padding: 150px 24px 60px; }
     .hero-content { max-width: 720px; }
-    .hero h1 {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: clamp(2rem, 5vw, 3.2rem);
-      font-weight: 700;
-      margin-bottom: 16px;
-      letter-spacing: -0.02em;
-    }
-    .hero h1 .highlight {
-      background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    .hero p { color: var(--text-muted); font-size: 1.05rem; }
-
-    .form-section { padding: 40px 24px 100px; }
-    .form-wrapper {
-      max-width: 640px;
-      margin: 0 auto;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 40px;
-      box-shadow: 0 12px 40px var(--shadow);
-    }
-    .form-intro {
-      background: linear-gradient(135deg, rgba(255,107,138,0.08), rgba(224,122,95,0.06));
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 18px 22px;
-      margin-bottom: 26px;
-      color: var(--text-muted);
-      font-size: 0.95rem;
-    }
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-
-    @media (max-width: 768px) {
-      .hero { padding: 130px 20px 50px; }
-      .form-wrapper { padding: 28px; }
-      .form-row { grid-template-columns: 1fr; }
-    }
+    .hero h1 { font-size: clamp(2rem, 5.5vw, 3.4rem); }
+    @media (max-width: 768px) { .hero { padding: 130px 20px 50px; } }
   </style>
 </head>
 <body>
@@ -71,12 +27,12 @@
   <header>
     <nav>
       <a href="/ai-club/" class="logo">
-        <div class="logo-icon">
+        <div class="logo-icon" aria-hidden="true">
           <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
             <defs>
               <linearGradient id="phoenixGrad" x1="0%" y1="100%" x2="0%" y2="0%">
-                <stop offset="0%" style="stop-color:#e07a5f"/>
-                <stop offset="50%" style="stop-color:#ff6b8a"/>
+                <stop offset="0%" style="stop-color:#c65d3b"/>
+                <stop offset="50%" style="stop-color:#f43f5e"/>
                 <stop offset="100%" style="stop-color:#f2cc8f"/>
               </linearGradient>
             </defs>
@@ -100,13 +56,13 @@
   <main>
     <section class="hero">
       <div class="hero-content">
-        <h1>Apply to become a <span class="highlight">member</span></h1>
-        <p>Open to all 42 Berlin students. We review every application manually.</p>
+        <h1 class="animate-on-scroll">Apply to become a <span class="text-gradient">member</span></h1>
+        <p class="animate-on-scroll stagger-1">Open to all 42 Berlin students. We review every application manually.</p>
       </div>
     </section>
 
     <section class="form-section">
-      <div class="form-wrapper">
+      <div class="form-wrapper animate-on-scroll">
         <div class="form-intro">
           What happens next: we review your application to confirm you are a 42 Berlin student. Once approved, you will receive an email with your login credentials.
         </div>
@@ -146,7 +102,7 @@
             <label for="message">Why do you want to join?</label>
             <textarea id="message" name="message" placeholder="Tell us about your interests or what you hope to learn."></textarea>
           </div>
-          <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center;">Submit application</button>
+          <button type="submit" class="btn btn-primary" style="width:100%;">Submit application</button>
           <div class="form-status" id="apply-form-status"></div>
         </form>
       </div>
@@ -176,35 +132,6 @@
     </div>
   </footer>
 
-  <script src="assets/ai-club.js?v=9"></script>
-  <script>
-    // Background particles
-    const canvas = document.getElementById('canvas-bg');
-    const ctx = canvas.getContext('2d');
-    let particles = [];
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-    resize();
-    window.addEventListener('resize', resize);
-    const count = prefersReducedMotion ? 0 : Math.min(50, Math.floor((canvas.width * canvas.height) / 25000));
-    for (let i = 0; i < count; i++) particles.push({x: Math.random()*canvas.width, y: Math.random()*canvas.height, vx: (Math.random()-0.5)*0.5, vy: (Math.random()-0.5)*0.5, r: Math.random()*2+1});
-    function draw() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = 'rgba(255, 107, 138, 0.45)';
-      ctx.strokeStyle = 'rgba(224, 122, 95, 0.14)';
-      for (let i = 0; i < particles.length; i++) {
-        const p = particles[i]; p.x += p.vx; p.y += p.vy;
-        if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
-        if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
-        ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2); ctx.fill();
-        for (let j = i+1; j < particles.length; j++) {
-          const q = particles[j], dx = p.x-q.x, dy = p.y-q.y, dist = Math.sqrt(dx*dx+dy*dy);
-          if (dist < 120) { ctx.lineWidth = 1-dist/120; ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(q.x,q.y); ctx.stroke(); }
-        }
-      }
-      requestAnimationFrame(draw);
-    }
-    if (!prefersReducedMotion) draw();
-  </script>
+  <script src="assets/ai-club.js?v=10"></script>
 </body>
 </html>

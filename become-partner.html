@@ -5,75 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Partner with 42 Berlin AI Club</title>
   <meta name="description" content="Partner with 42 Berlin AI Club to support student learning and connect with AI-curious engineers.">
-  <meta name="theme-color" content="#e07a5f">
+  <meta name="theme-color" content="#c65d3b">
   <link rel="canonical" href="https://mysophia.tech/ai-club/become-partner.html">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/ai-club.css?v=9">
+  <link rel="stylesheet" href="assets/ai-club.css?v=10">
   <style>
-    .hero {
-      min-height: 55vh;
-      display: flex; align-items: center; justify-content: center;
-      padding: 150px 24px 70px;
-      text-align: center;
-    }
+    .hero { min-height: 55vh; padding: 150px 24px 70px; }
     .hero-content { max-width: 780px; }
-    .hero h1 {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: clamp(2.2rem, 5.5vw, 3.6rem);
-      font-weight: 700;
-      margin-bottom: 18px;
-      letter-spacing: -0.02em;
-    }
-    .hero h1 .highlight {
-      background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    .hero p { color: var(--text-muted); font-size: 1.05rem; margin-bottom: 28px; }
-
-    section { padding: 80px 24px; }
-
-    .support-text {
-      max-width: 820px;
-      margin: 0 auto;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 40px;
-      box-shadow: 0 8px 30px var(--shadow);
-    }
-    .support-text h2 {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 1.5rem;
-      margin-bottom: 16px;
-    }
-    .support-text p {
-      color: var(--text-muted);
-      margin-bottom: 16px;
-      font-size: 0.98rem;
-    }
-
-    .form-section { background: var(--surface-2); padding-bottom: 100px; }
-    .form-wrapper {
-      max-width: 640px;
-      margin: 0 auto;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 40px;
-      box-shadow: 0 12px 40px var(--shadow);
-    }
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-
-    @media (max-width: 768px) {
-      .hero { padding: 130px 20px 60px; }
-      .support-text { padding: 28px; }
-      .form-wrapper { padding: 28px; }
-      .form-row { grid-template-columns: 1fr; }
-    }
+    .hero h1 { font-size: clamp(2.2rem, 6vw, 3.6rem); }
+    @media (max-width: 768px) { .hero { padding: 130px 20px 60px; } }
   </style>
 </head>
 <body>
@@ -85,12 +27,12 @@
   <header>
     <nav>
       <a href="/ai-club/" class="logo">
-        <div class="logo-icon">
+        <div class="logo-icon" aria-hidden="true">
           <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
             <defs>
               <linearGradient id="phoenixGrad" x1="0%" y1="100%" x2="0%" y2="0%">
-                <stop offset="0%" style="stop-color:#e07a5f"/>
-                <stop offset="50%" style="stop-color:#ff6b8a"/>
+                <stop offset="0%" style="stop-color:#c65d3b"/>
+                <stop offset="50%" style="stop-color:#f43f5e"/>
                 <stop offset="100%" style="stop-color:#f2cc8f"/>
               </linearGradient>
             </defs>
@@ -114,24 +56,28 @@
   <main>
     <section class="hero">
       <div class="hero-content">
-        <h1>Partner with <span class="highlight">42 Berlin AI Club</span></h1>
-        <p>Support a student-led, vendor-neutral AI learning community at 42 Berlin.</p>
-        <a href="#partner-form-section" class="btn btn-primary">Start a conversation</a>
+        <h1 class="animate-on-scroll">Partner with <span class="text-gradient">42 Berlin AI Club</span></h1>
+        <p class="animate-on-scroll stagger-1">Support a student-led, vendor-neutral AI learning community at 42 Berlin.</p>
+        <div class="animate-on-scroll stagger-2">
+          <a href="#partner-form-section" class="btn btn-primary">Start a conversation</a>
+        </div>
       </div>
     </section>
 
     <section id="support">
-      <div class="support-text">
-        <h2>External support</h2>
-        <p>We are open to educational partnerships, sponsorships, and student programs from AI companies and organizations that support learning communities. If supported, we plan to use those resources to improve workshops, build student projects, and expand access to AI tools for members.</p>
-        <p>Any external support will be used in a transparent way and always in service of the club’s educational mission. We welcome partnerships that remain transparent, student-focused, and respectful of 42 Berlin’s rules and data protection expectations.</p>
+      <div class="container-narrow">
+        <div class="card about-text animate-on-scroll">
+          <h2>External support</h2>
+          <p>We are open to educational partnerships, sponsorships, and student programs from AI companies and organizations that support learning communities. If supported, we plan to use those resources to improve workshops, build student projects, and expand access to AI tools for members.</p>
+          <p>Any external support will be used in a transparent way and always in service of the club’s educational mission. We welcome partnerships that remain transparent, student-focused, and respectful of 42 Berlin’s rules and data protection expectations.</p>
+        </div>
       </div>
     </section>
 
-    <section class="form-section" id="partner-form-section">
-      <h2 class="section-title">Get in touch</h2>
-      <p class="section-subtitle">Tell us about your organization and how you would like to collaborate.</p>
-      <div class="form-wrapper">
+    <section class="form-section section-alt" id="partner-form-section">
+      <h2 class="section-title animate-on-scroll">Get in touch</h2>
+      <p class="section-subtitle animate-on-scroll">Tell us about your organization and how you would like to collaborate.</p>
+      <div class="form-wrapper animate-on-scroll">
         <form id="partner-form">
           <div class="form-row">
             <div class="form-group">
@@ -164,7 +110,7 @@
             <label for="message">How would you like to collaborate?</label>
             <textarea id="message" name="message" placeholder="Tell us about your goals and timeline." required></textarea>
           </div>
-          <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center;">Submit inquiry</button>
+          <button type="submit" class="btn btn-primary" style="width:100%;">Submit inquiry</button>
           <div class="form-status" id="partner-form-status"></div>
         </form>
       </div>
@@ -194,35 +140,6 @@
     </div>
   </footer>
 
-  <script src="assets/ai-club.js?v=9"></script>
-  <script>
-    // Background particles
-    const canvas = document.getElementById('canvas-bg');
-    const ctx = canvas.getContext('2d');
-    let particles = [];
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-    resize();
-    window.addEventListener('resize', resize);
-    const count = prefersReducedMotion ? 0 : Math.min(50, Math.floor((canvas.width * canvas.height) / 25000));
-    for (let i = 0; i < count; i++) particles.push({x: Math.random()*canvas.width, y: Math.random()*canvas.height, vx: (Math.random()-0.5)*0.5, vy: (Math.random()-0.5)*0.5, r: Math.random()*2+1});
-    function draw() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = 'rgba(255, 107, 138, 0.45)';
-      ctx.strokeStyle = 'rgba(224, 122, 95, 0.14)';
-      for (let i = 0; i < particles.length; i++) {
-        const p = particles[i]; p.x += p.vx; p.y += p.vy;
-        if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
-        if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
-        ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2); ctx.fill();
-        for (let j = i+1; j < particles.length; j++) {
-          const q = particles[j], dx = p.x-q.x, dy = p.y-q.y, dist = Math.sqrt(dx*dx+dy*dy);
-          if (dist < 120) { ctx.lineWidth = 1-dist/120; ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(q.x,q.y); ctx.stroke(); }
-        }
-      }
-      requestAnimationFrame(draw);
-    }
-    if (!prefersReducedMotion) draw();
-  </script>
+  <script src="assets/ai-club.js?v=10"></script>
 </body>
 </html>
