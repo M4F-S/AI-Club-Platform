@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Become a Member — 42 Berlin AI Club</title>
+  <meta name="description" content="Apply to join the 42 Berlin AI Club. Open to all 42 Berlin students.">
+  <meta name="theme-color" content="#ff6b8a">
+  <link rel="canonical" href="https://mysophia.tech/ai-club/become-member.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/ai-club.css?v=9">
+  <style>
+    .hero {
+      min-height: 45vh;
+      display: flex; align-items: center; justify-content: center;
+      padding: 150px 24px 60px;
+      text-align: center;
+    }
+    .hero-content { max-width: 720px; }
+    .hero h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 700;
+      margin-bottom: 16px;
+      letter-spacing: -0.02em;
+    }
+    .hero h1 .highlight {
+      background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero p { color: var(--text-muted); font-size: 1.05rem; }
+
+    .form-section { padding: 40px 24px 100px; }
+    .form-wrapper {
+      max-width: 640px;
+      margin: 0 auto;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 40px;
+      box-shadow: 0 12px 40px var(--shadow);
+    }
+    .form-intro {
+      background: linear-gradient(135deg, rgba(255,107,138,0.08), rgba(224,122,95,0.06));
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px 22px;
+      margin-bottom: 26px;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+    @media (max-width: 768px) {
+      .hero { padding: 130px 20px 50px; }
+      .form-wrapper { padding: 28px; }
+      .form-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="gradient-orb orb-1" aria-hidden="true"></div>
+  <div class="gradient-orb orb-2" aria-hidden="true"></div>
+  <div class="gradient-orb orb-3" aria-hidden="true"></div>
+  <canvas id="canvas-bg" aria-hidden="true"></canvas>
+
+  <header>
+    <nav>
+      <a href="/ai-club/" class="logo">
+        <div class="logo-icon">
+          <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="phoenixGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+                <stop offset="0%" style="stop-color:#e07a5f"/>
+                <stop offset="50%" style="stop-color:#ff6b8a"/>
+                <stop offset="100%" style="stop-color:#f2cc8f"/>
+              </linearGradient>
+            </defs>
+            <path d="M16 2 C13 6, 12 11, 14 15 C11 13, 7 14, 5 17 C4 19, 5 22, 8 23 C7 25, 8 27, 10 28 C12 29, 14 28, 15 26 C15 28, 16 30, 17 30 C18 30, 18 28, 18 26 C19 28, 21 29, 23 28 C25 27, 26 25, 25 23 C28 22, 29 19, 27 17 C25 14, 21 13, 18 15 C20 11, 19 6, 16 2 Z" fill="url(#phoenixGrad)"/>
+            <path d="M16 6 C14 9, 13 13, 14 16 C12 15, 10 15, 9 17 C8 18, 9 20, 11 21 C10 22, 11 23, 12 24 C13 24, 14 23, 15 22 C15 24, 16 25, 17 25 C18 25, 18 24, 18 22 C19 23, 20 24, 21 24 C22 23, 23 22, 22 21 C24 20, 25 18, 24 17 C23 15, 21 15, 19 16 C20 13, 19 9, 16 6 Z" fill="#faf3f0" opacity="0.4"/>
+          </svg>
+        </div>
+        <span>42 Berlin AI Club</span>
+      </a>
+      <button class="mobile-menu-toggle" aria-label="Toggle menu" aria-expanded="false">&#9776;</button>
+      <ul class="nav-links">
+        <li><a href="/ai-club/">Home</a></li>
+        <li><a href="/ai-club/become-member.html">Membership</a></li>
+        <li><a href="/ai-club/become-partner.html">Partners</a></li>
+        <li><a href="/ai-club/login.html">Member Login</a></li>
+        <li><a href="/ai-club/become-partner.html" class="nav-cta">Partner with us</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-content">
+        <h1>Apply to become a <span class="highlight">member</span></h1>
+        <p>Open to all 42 Berlin students. We review every application manually.</p>
+      </div>
+    </section>
+
+    <section class="form-section">
+      <div class="form-wrapper">
+        <div class="form-intro">
+          What happens next: we review your application to confirm you are a 42 Berlin student. Once approved, you will receive an email with your login credentials.
+        </div>
+        <form id="apply-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="name">Full name</label>
+              <input type="text" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+              <label for="intra_username">42 intra username</label>
+              <input type="text" id="intra_username" name="intra_username" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+              <label for="level">Your level at 42</label>
+              <select id="level" name="level" required>
+                <option value="">Select your level</option>
+                <option value="Common Core Rank 0">Common Core Rank 0</option>
+                <option value="Common Core Rank 1">Common Core Rank 1</option>
+                <option value="Common Core Rank 2">Common Core Rank 2</option>
+                <option value="Common Core Rank 3">Common Core Rank 3</option>
+                <option value="Common Core Rank 4">Common Core Rank 4</option>
+                <option value="Common Core Rank 5">Common Core Rank 5</option>
+                <option value="Common Core Rank 6">Common Core Rank 6</option>
+                <option value="Post-Common Core">Post-Common Core</option>
+                <option value="Alumni / Staff">Alumni / Staff</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="message">Why do you want to join?</label>
+            <textarea id="message" name="message" placeholder="Tell us about your interests or what you hope to learn."></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center;">Submit application</button>
+          <div class="form-status" id="apply-form-status"></div>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-content">
+      <div>
+        <h4>42 Berlin AI Club</h4>
+        <p style="color:#a89894; font-size:0.95rem;">A student-led, vendor-neutral AI community at 42 Berlin.</p>
+      </div>
+      <div>
+        <h4>Explore</h4>
+        <a href="/ai-club/">Home</a>
+        <a href="/ai-club/become-member.html">Membership</a>
+        <a href="/ai-club/become-partner.html">Partners</a>
+        <a href="/ai-club/privacy-policy.html">Privacy Policy</a>
+      </div>
+      <div>
+        <h4>Connect</h4>
+        <a href="https://42berlin.de" target="_blank" rel="noopener">42 Berlin</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      &copy; 2026 42 Berlin AI Club. Built by students, for students.
+    </div>
+  </footer>
+
+  <script src="assets/ai-club.js?v=9"></script>
+  <script>
+    // Background particles
+    const canvas = document.getElementById('canvas-bg');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    resize();
+    window.addEventListener('resize', resize);
+    const count = prefersReducedMotion ? 0 : Math.min(50, Math.floor((canvas.width * canvas.height) / 25000));
+    for (let i = 0; i < count; i++) particles.push({x: Math.random()*canvas.width, y: Math.random()*canvas.height, vx: (Math.random()-0.5)*0.5, vy: (Math.random()-0.5)*0.5, r: Math.random()*2+1});
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = 'rgba(255, 107, 138, 0.45)';
+      ctx.strokeStyle = 'rgba(224, 122, 95, 0.14)';
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i]; p.x += p.vx; p.y += p.vy;
+        if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+        if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2); ctx.fill();
+        for (let j = i+1; j < particles.length; j++) {
+          const q = particles[j], dx = p.x-q.x, dy = p.y-q.y, dist = Math.sqrt(dx*dx+dy*dy);
+          if (dist < 120) { ctx.lineWidth = 1-dist/120; ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(q.x,q.y); ctx.stroke(); }
+        }
+      }
+      requestAnimationFrame(draw);
+    }
+    if (!prefersReducedMotion) draw();
+  </script>
+</body>
+</html>

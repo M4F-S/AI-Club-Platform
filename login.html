@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Member Login — 42 Berlin AI Club</title>
+  <meta name="description" content="Login to access member resources at 42 Berlin AI Club.">
+    <script src="https://unpkg.com/lucide@0.263.1/dist/umd/lucide.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23120a0d'/%3E%3Cpath d='M16 2 C13 6, 12 11, 14 15 C11 13, 7 14, 5 17 C4 19, 5 22, 8 23 C7 25, 8 27, 10 28 C12 29, 14 28, 15 26 C15 28, 16 30, 17 30 C18 30, 18 28, 18 26 C19 28, 21 29, 23 28 C25 27, 26 25, 25 23 C28 22, 29 19, 27 17 C25 14, 21 13, 18 15 C20 11, 19 6, 16 2 Z' fill='%23ff6b8a'/%3E%3Cpath d='M16 6 C14 9, 13 13, 14 16 C12 15, 10 15, 9 17 C8 18, 9 20, 11 21 C10 22, 11 23, 12 24 C13 24, 14 23, 15 22 C15 24, 16 25, 17 25 C18 25, 18 24, 18 22 C19 23, 20 24, 21 24 C22 23, 23 22, 22 21 C24 20, 25 18, 24 17 C23 15, 21 15, 19 16 C20 13, 19 9, 16 6 Z' fill='%23f2cc8f'/%3E%3C/svg%3E">
+  <style>
+    :root {
+      --bg: #faf8f7;
+      --surface: #ffffff;
+      --text: #1a1212;
+      --text-muted: #7a6a6a;
+      --accent-1: #ff6b8a;
+      --accent-2: #e07a5f;
+      --accent-3: #f2cc8f;
+      --border: rgba(0, 0, 0, 0.08);
+      --shadow: rgba(0, 0, 0, 0.08);
+      --radius: 20px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      padding: 20px 0;
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    .logo-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 11px;
+      background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 6px 24px rgba(255, 107, 138, 0.35);
+      animation: logoFloat 3s ease-in-out infinite, logoGlow 2.5s ease-in-out infinite alternate;
+    }
+
+    @keyframes logoFloat {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-4px) rotate(2deg); }
+    }
+
+    @keyframes logoGlow {
+      0% { box-shadow: 0 6px 24px rgba(255, 107, 138, 0.35); }
+      100% { box-shadow: 0 8px 32px rgba(242, 204, 143, 0.45), 0 0 24px rgba(255, 107, 138, 0.25); }
+    }
+
+    .logo-icon svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    main {
+      padding: 140px 0 80px;
+    }
+
+    .form-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .form-header h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(2rem, 5vw, 3rem);
+      margin-bottom: 12px;
+    }
+
+    .form-header h1 span {
+      background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .form-header p {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+    }
+
+    .login-card {
+      max-width: 460px;
+      margin: 0 auto;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 40px;
+      box-shadow: 0 4px 30px var(--shadow);
+    }
+
+    .form-group {
+      margin-bottom: 22px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
+
+    .required { color: var(--accent-1); }
+
+    input {
+      width: 100%;
+      padding: 14px 16px;
+      background: #faf8f7;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      transition: all 0.3s;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: var(--accent-1);
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba(255, 107, 138, 0.1);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 28px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 1rem;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      border: none;
+      width: 100%;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .btn:hover::before {
+      left: 100%;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+      color: #ffffff;
+      box-shadow: 0 8px 28px rgba(224, 122, 95, 0.35);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 14px 40px rgba(224, 122, 95, 0.45);
+    }
+
+    .btn:active {
+      transform: translateY(-1px) scale(0.98);
+    }
+
+    .form-footer {
+      text-align: center;
+      margin-top: 24px;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .form-footer a {
+      color: var(--accent-1);
+      text-decoration: none;
+    }
+
+    .alert {
+      padding: 14px 16px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      display: none;
+    }
+
+    .alert.error {
+      display: block;
+      background: rgba(255, 107, 138, 0.08);
+      border: 1px solid rgba(255, 107, 138, 0.2);
+      color: #c92a2a;
+    }
+
+    .alert.success {
+      display: block;
+      background: rgba(42, 167, 110, 0.08);
+      border: 1px solid rgba(42, 167, 110, 0.2);
+      color: #2a7a4a;
+    }
+
+    @media (max-width: 768px) {
+      .container { padding: 0 20px; }
+      main { padding: 100px 0 48px; }
+      .form-header h1 { font-size: 1.9rem; }
+      .login-card { padding: 24px; border-radius: 16px; }
+      .form-group { margin-bottom: 18px; }
+    }
+  </style>
+  <link rel="stylesheet" href="assets/ai-club.css?v=9">
+  <script src="assets/ai-club.js?v=9" defer></script>
+</head>
+<body>
+  <nav>
+    <div class="container nav-inner">
+      <a href="/ai-club/" class="logo">
+        <div class="logo-icon">
+          <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="phoenixGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+                <stop offset="0%" style="stop-color:#e07a5f"/>
+                <stop offset="50%" style="stop-color:#ff6b8a"/>
+                <stop offset="100%" style="stop-color:#f2cc8f"/>
+              </linearGradient>
+            </defs>
+            <path class="logo-phoenix" d="M16 2 C13 6, 12 11, 14 15 C11 13, 7 14, 5 17 C4 19, 5 22, 8 23 C7 25, 8 27, 10 28 C12 29, 14 28, 15 26 C15 28, 16 30, 17 30 C18 30, 18 28, 18 26 C19 28, 21 29, 23 28 C25 27, 26 25, 25 23 C28 22, 29 19, 27 17 C25 14, 21 13, 18 15 C20 11, 19 6, 16 2 Z" fill="url(#phoenixGrad)"/>
+            <path d="M16 6 C14 9, 13 13, 14 16 C12 15, 10 15, 9 17 C8 18, 9 20, 11 21 C10 22, 11 23, 12 24 C13 24, 14 23, 15 22 C15 24, 16 25, 17 25 C18 25, 18 24, 18 22 C19 23, 20 24, 21 24 C22 23, 23 22, 22 21 C24 20, 25 18, 24 17 C23 15, 21 15, 19 16 C20 13, 19 9, 16 6 Z" fill="#faf3f0" opacity="0.4"/>
+          </svg>
+        </div>
+        42 Berlin AI Club
+      </a>
+      <ul class="nav-links">
+        <li><a href="/ai-club/">Home</a></li>
+        <li><a href="/ai-club/become-member.html">Membership</a></li>
+        <li><a href="/ai-club/become-partner.html">Partners</a></li>
+        <li><a href="/ai-club/become-member.html" class="nav-cta">Join us</a></li>
+      </ul>
+      <button class="mobile-menu-toggle" aria-label="Toggle menu" aria-expanded="false"><span class="hamburger-icon">&#9776;</span></button>
+    </div>
+  </nav>
+
+  <main>
+    <div class="container">
+      <div class="form-header">
+        <h1>Member <span>login</span></h1>
+        <p>Access member resources and the community area.</p>
+      </div>
+
+      <div class="login-card">
+        <div class="alert" id="alert"></div>
+
+        <form id="login-form">
+          <div class="form-group">
+            <label for="intra">42 Intra username <span class="required">*</span></label>
+            <input type="text" id="intra" name="intra_username" placeholder="e.g. mfathy" required>
+          </div>
+
+          <div class="form-group">
+            <label for="password">Password <span class="required">*</span></label>
+            <input type="password" id="password" name="password" placeholder="Your password" required>
+          </div>
+
+          <button type="submit" class="btn btn-primary">
+            <i data-lucide="log-in" style="width: 18px; height: 18px;"></i>
+            Log in
+          </button>
+        </form>
+
+        <p class="form-footer">
+          Not a member yet? <a href="become-member.html">Apply for membership</a>
+        </p>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    lucide.createIcons();
+
+    const API_URL = '/ai-club/api';
+    const form = document.getElementById('login-form');
+    const alert = document.getElementById('alert');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      alert.className = 'alert';
+      alert.textContent = '';
+
+      const data = {
+        intra_username: form.intra_username.value.trim(),
+        password: form.password.value
+      };
+
+      try {
+        const res = await fetch(`${API_URL}/member/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify(data)
+        });
+
+        const result = await res.json();
+
+        if (res.ok) {
+          window.location.href = 'members/index.html';
+        } else {
+          alert.className = 'alert error';
+          alert.textContent = result.error || 'Login failed';
+        }
+      } catch (err) {
+        alert.className = 'alert error';
+        alert.textContent = 'Network error. Please try again.';
+      }
+    });
+  </script>
+</body>
+</html>
