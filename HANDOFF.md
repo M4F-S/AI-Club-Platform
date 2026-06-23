@@ -40,3 +40,16 @@
 - Use original club content from DESIGN.md.
 - Run `git status` before editing.
 - Update this HANDOFF.md after every session.
+
+## 2026-06-23 Infrastructure Update (Mimi)
+- Toys Obsidian vault at /opt/data/vault is configured.
+
+## 2026-06-23 Infrastructure Update (Mimi)
+- Toy's Obsidian vault at /opt/data/vault is configured.
+- Graphify skill installed for Toy; daily graph rebuild at 04:00 via host cron.
+- Hourly vault backup to /root/vault-hourly-sync/.
+- Mimi's terminal backend switched to SSH to VPS.
+- tmux session `ai-club` created on VPS at /opt/sophia-shopper/landing/ai-club.
+- Kanban board created with 10 rebuild tasks.
+- Git is source of truth.
+- Safe bloat removed; do NOT touch /root/backups-1782045345 (unified-memory) or /root/backups-1782151243 (original ai-club backup).
