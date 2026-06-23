@@ -299,7 +299,7 @@
 
   <script src="assets/ai-club.js?v=10"></script>
   <script>
-    lucide.createIcons();
+    if (window.lucide) lucide.createIcons();
 
     const API_URL = '/ai-club/api';
     let currentStatus = 'pending';
