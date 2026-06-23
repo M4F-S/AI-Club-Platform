@@ -28,7 +28,7 @@
 
 ## What Needs Attention
 - **Mobile nav**: Basic responsive markup and toggle are in place; a real-device sanity check would be ideal.
-- **Members pages** (events, resources, perks, profile, blog): Header/nav styling is consistent; dynamic content depends on backend data and admin-created posts/events/resources.
+- Scroll animations are now applied to all member subpages; dynamic content still depends on backend data and admin-created posts/events/resources.
 
 ## Next Steps
 1. Change the temporary admin password after you finish testing.
@@ -37,6 +37,10 @@
 4. Keep committing small changes and update this file after each session.
 
 ## Recent Commits
+- `593946f` Add scroll animations to all member subpages and enable js-animations in members.js
+- `6a298aa` Ignore DB backup files
+- `2c62ae8` Update HANDOFF.md: login tests pass, temp admin password set
+- `7e661d1` Update HANDOFF.md with polish status and backup note
 - `6e02dd3` Polish scroll animations (visible by default) and strengthen particle canvas
 - `2c017a4` Rebuild shared CSS/JS with design tokens, animations, and canvas particles
 - `f021f1c` Rebuild index.html with design system, animations, and real stats
