@@ -42,9 +42,9 @@
     <nav class="member-nav"></nav>
     <main class="member-main">
 
-      <h1 class="page-title">Resources</h1>
-      <p class="page-subtitle">Curated tools, papers, and tutorials for learning AI.</p>
-      <div id="resources-list"><p>Loading...</p></div>
+      <h1 class="page-title animate-on-scroll">Resources</h1>
+      <p class="page-subtitle animate-on-scroll">Curated tools, papers, and tutorials for learning AI.</p>
+      <div id="resources-list" class="animate-on-scroll"><p>Loading...</p></div>
       <script>
 document.addEventListener("DOMContentLoaded", async () => {
 
@@ -53,11 +53,11 @@ document.addEventListener("DOMContentLoaded", async () => {
             const res = await api('/resources');
             const list = document.getElementById('resources-list');
             if (!res.ok || !res.data.length) {
-              list.innerHTML = '<div class="card"><p>No resources posted yet.</p></div>';
+              list.innerHTML = '<div class="card animate-on-scroll"><p>No resources posted yet.</p></div>';
               return;
             }
-            list.innerHTML = res.data.map(r => `
-              <div class="card">
+            list.innerHTML = res.data.map((r, i) => `
+              <div class="card animate-on-scroll stagger-${Math.min(i % 4 + 1, 4)}">
                 <h2>${escapeHtml(r.title)} ${r.category ? `<span style="font-size:0.8rem;color:var(--text-muted);font-weight:500;">(${escapeHtml(r.category)})</span>` : ''}</h2>
                 <p>${escapeHtml(r.description || '')}</p>
                 ${r.url ? `<a href="${escapeHtml(r.url)}" target="_blank" rel="noopener" class="btn btn-primary" style="margin-top:10px;">Open resource</a>` : ''}

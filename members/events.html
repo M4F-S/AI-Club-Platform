@@ -42,9 +42,9 @@
     <nav class="member-nav"></nav>
     <main class="member-main">
 
-      <h1 class="page-title">Events</h1>
-      <p class="page-subtitle">Workshops, talks, and meetups for club members.</p>
-      <div id="events-list"><p>Loading...</p></div>
+      <h1 class="page-title animate-on-scroll">Events</h1>
+      <p class="page-subtitle animate-on-scroll">Workshops, talks, and meetups for club members.</p>
+      <div id="events-list" class="animate-on-scroll"><p>Loading...</p></div>
       <script>
 document.addEventListener("DOMContentLoaded", async () => {
 
@@ -53,11 +53,11 @@ document.addEventListener("DOMContentLoaded", async () => {
             const res = await api('/events');
             const list = document.getElementById('events-list');
             if (!res.ok || !res.data.length) {
-              list.innerHTML = '<div class="card"><p>No events scheduled yet.</p></div>';
+              list.innerHTML = '<div class="card animate-on-scroll"><p>No events scheduled yet.</p></div>';
               return;
             }
-            list.innerHTML = res.data.map(e => `
-              <div class="card">
+            list.innerHTML = res.data.map((e, i) => `
+              <div class="card animate-on-scroll stagger-${Math.min(i % 4 + 1, 4)}">
                 <h2>${escapeHtml(e.title)}</h2>
                 <p class="meta">${e.event_date ? new Date(e.event_date).toLocaleString() : 'Date TBD'} ${e.location ? '· ' + escapeHtml(e.location) : ''}</p>
                 <p>${escapeHtml(e.description || '')}</p>

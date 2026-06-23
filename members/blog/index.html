@@ -41,9 +41,9 @@
   <div class="container member-layout">
     <nav class="member-nav"></nav>
     <main class="member-main">
-      <h1 class="page-title">Club Blog</h1>
-      <p class="page-subtitle">Updates, project highlights, and member writings.</p>
-      <div id="posts-list"><p>Loading...</p></div>
+      <h1 class="page-title animate-on-scroll">Club Blog</h1>
+      <p class="page-subtitle animate-on-scroll">Updates, project highlights, and member writings.</p>
+      <div id="posts-list" class="animate-on-scroll"><p>Loading...</p></div>
     </main>
   </div>
 
@@ -54,11 +54,11 @@
       const res = await api('/posts');
       const list = document.getElementById('posts-list');
       if (!res.ok || !res.data.length) {
-        list.innerHTML = '<div class="card"><p>No blog posts yet.</p></div>';
+        list.innerHTML = '<div class="card animate-on-scroll"><p>No blog posts yet.</p></div>';
         return;
       }
-      list.innerHTML = '<div class="post-list">' + res.data.map(p => `
-        <a class="post-item" href="post.html?slug=${encodeURIComponent(p.slug)}">
+      list.innerHTML = '<div class="post-list">' + res.data.map((p, i) => `
+        <a class="post-item animate-on-scroll stagger-${Math.min(i % 4 + 1, 4)}" href="post.html?slug=${encodeURIComponent(p.slug)}">
           <h3>${escapeHtml(p.title)}</h3>
           <div class="meta">${new Date(p.created_at).toLocaleDateString()} · ${escapeHtml(p.author || 'Unknown')}</div>
           <p>${escapeHtml(p.summary || p.content.slice(0, 150))}...</p>

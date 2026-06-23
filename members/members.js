@@ -77,6 +77,7 @@
       animated.forEach((el) => el.classList.add('visible'));
       return;
     }
+    document.body.classList.add('js-animations');
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
