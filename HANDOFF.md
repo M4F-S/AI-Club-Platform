@@ -27,16 +27,17 @@
 - Stats on homepage load real data from `/ai-club/api/stats` (currently 2 members, 0 events/projects/workshops).
 
 ## What Needs Attention
-- **Mobile nav**: Basic responsive markup and toggle are in place; a real-device sanity check would be ideal.
-- Scroll animations are now applied to all member subpages; dynamic content still depends on backend data and admin-created posts/events/resources.
+- **Mobile nav**: Basic responsive markup and toggle are in place; real-device checks show public mobile menu works and member mobile menu works in local layout testing. No horizontal overflow detected on homepage, member forms, or dashboard.
+- Dynamic content still depends on backend data and admin-created posts/events/resources.
 
 ## Next Steps
 1. Change the temporary admin password after you finish testing.
-2. Review public pages on mobile and approve any tweaks.
-3. Add real events/posts/resources via admin panel once login is confirmed.
-4. Keep committing small changes and update this file after each session.
+2. Add real events/posts/resources via admin panel once login is confirmed.
+3. Keep committing small changes and update this file after each session.
 
 ## Recent Commits
+- `24d8a0c` Fix member/auth redirect to absolute login path
+- `fb68267` Update HANDOFF.md: member subpage scroll animations done
 - `593946f` Add scroll animations to all member subpages and enable js-animations in members.js
 - `6a298aa` Ignore DB backup files
 - `2c62ae8` Update HANDOFF.md: login tests pass, temp admin password set
