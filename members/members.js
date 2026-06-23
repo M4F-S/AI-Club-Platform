@@ -18,7 +18,7 @@
   async function requireAuth() {
     const { ok, data } = await api('/member/me');
     if (!ok) {
-      window.location.href = '../login.html';
+      window.location.href = '/ai-club/login.html';
       return null;
     }
     return data.user;
@@ -67,7 +67,7 @@
 
   async function logout() {
     await api('/member/logout', { method: 'POST' });
-    window.location.href = '../login.html';
+    window.location.href = '/ai-club/login.html';
   }
 
   function initScrollAnimations() {
