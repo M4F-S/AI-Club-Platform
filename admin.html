@@ -9,39 +9,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/ai-club.css?v=10">
   <style>
-    :root {
-      --bg: #faf8f7;
-      --surface: #ffffff;
-      --text: #1a1212;
-      --text-muted: #7a6a6a;
-      --accent-1: #ff6b8a;
-      --accent-2: #e07a5f;
-      --accent-3: #f2cc8f;
-      --border: rgba(0, 0, 0, 0.08);
-      --shadow: rgba(0, 0, 0, 0.08);
-      --radius: 16px;
-    }
-
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
     body {
-      font-family: 'Inter', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.6;
       min-height: 100vh;
+      background: linear-gradient(135deg, #faf8f7 0%, #fff1f2 100%);
     }
 
-    .container {
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 0 24px;
-    }
-
-    main {
-      padding: 100px 0 80px;
-    }
+    main { padding: 120px 24px 80px; }
 
     .form-header {
       text-align: center;
@@ -49,62 +24,61 @@
     }
 
     .form-header h1 {
-      font-family: 'Space Grotesk', sans-serif;
+      font-family: var(--font-heading);
       font-size: clamp(1.8rem, 5vw, 2.5rem);
-    }
-
-    .form-header h1 span {
-      background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
     }
 
     .login-card, .admin-panel {
       max-width: 460px;
       margin: 0 auto;
-      background: var(--surface);
+      background: var(--color-surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       padding: 32px;
-      box-shadow: 0 4px 30px var(--shadow);
+      box-shadow: var(--shadow-lg);
     }
 
     .admin-panel { max-width: 900px; display: none; }
 
-    .form-group {
+    .login-card .form-group {
       margin-bottom: 20px;
     }
 
-    .form-group label {
+    .login-card label {
       display: block;
       margin-bottom: 8px;
       font-weight: 500;
     }
 
-    input, select, textarea {
+    .login-card input,
+    .admin-panel input,
+    .admin-panel select,
+    .admin-panel textarea {
       width: 100%;
       padding: 12px 14px;
-      background: #faf8f7;
+      background: var(--color-bg);
       border: 1px solid var(--border);
-      border-radius: 10px;
+      border-radius: 12px;
       color: var(--text);
-      font-family: 'Inter', sans-serif;
+      font-family: inherit;
       font-size: 1rem;
     }
 
-    input:focus, select:focus, textarea:focus {
+    .login-card input:focus,
+    .admin-panel input:focus,
+    .admin-panel select:focus,
+    .admin-panel textarea:focus {
       outline: none;
-      border-color: var(--accent-1);
-      background: #ffffff;
+      border-color: var(--color-accent);
+      background: var(--color-surface);
     }
 
-    .btn {
+    .admin-btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 6px;
-      padding: 12px 20px;
+      padding: 10px 18px;
       border-radius: 10px;
       font-weight: 600;
       font-size: 0.95rem;
@@ -114,15 +88,15 @@
       border: none;
     }
 
-    .btn-primary {
-      background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+    .admin-btn-primary {
+      background: linear-gradient(135deg, var(--color-accent), var(--color-secondary));
       color: #ffffff;
     }
 
-    .btn-primary:hover { transform: translateY(-2px); }
-    .btn-success { background: #2a7a4a; color: white; }
-    .btn-danger { background: #c92a2a; color: white; }
-    .btn-secondary { background: #e9ecef; color: var(--text); }
+    .admin-btn-primary:hover { transform: translateY(-2px); }
+    .admin-btn-success { background: #2a7a4a; color: white; }
+    .admin-btn-danger { background: #c92a2a; color: white; }
+    .admin-btn-secondary { background: #e9ecef; color: var(--text); }
 
     .toolbar {
       display: flex;
@@ -136,6 +110,7 @@
     .tabs {
       display: flex;
       gap: 8px;
+      flex-wrap: wrap;
     }
 
     .tab {
@@ -145,16 +120,17 @@
       background: transparent;
       cursor: pointer;
       font-weight: 500;
+      transition: all 0.2s;
     }
 
     .tab.active {
       background: var(--text);
-      color: var(--bg);
+      color: var(--color-bg);
       border-color: var(--text);
     }
 
     .application-card {
-      background: #faf8f7;
+      background: var(--color-bg);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       padding: 20px;
@@ -162,7 +138,7 @@
     }
 
     .application-card h3 {
-      font-family: 'Space Grotesk', sans-serif;
+      font-family: var(--font-heading);
       margin-bottom: 4px;
     }
 
@@ -188,10 +164,11 @@
       display: flex;
       gap: 10px;
       margin-top: 16px;
+      flex-wrap: wrap;
     }
 
     .member-card {
-      background: #faf8f7;
+      background: var(--color-bg);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       padding: 20px;
@@ -205,7 +182,7 @@
 
     .member-card .info { flex: 1; min-width: 220px; }
     .member-card .info h3 {
-      font-family: 'Space Grotesk', sans-serif;
+      font-family: var(--font-heading);
       margin-bottom: 4px;
     }
     .member-card .role {
@@ -217,8 +194,8 @@
       text-transform: uppercase;
       margin-top: 6px;
     }
-    .role-superadmin { background: #ff6b8a; color: #fff; }
-    .role-admin { background: #7a9e7e; color: #fff; }
+    .role-superadmin { background: var(--color-accent); color: #fff; }
+    .role-admin { background: var(--sage); color: #fff; }
     .role-member { background: #e9ecef; color: var(--text); }
 
     .empty {
@@ -229,84 +206,98 @@
 
     .alert {
       padding: 12px 14px;
-      border-radius: 10px;
+      border-radius: 12px;
       margin-bottom: 16px;
       display: none;
     }
 
-    .alert.show {
-      display: block;
-    }
-
-    .alert.error {
-      background: rgba(255, 107, 138, 0.08);
-      border: 1px solid rgba(255, 107, 138, 0.2);
-      color: #c92a2a;
-    }
-
-    .alert.success {
-      background: rgba(42, 167, 110, 0.08);
-      border: 1px solid rgba(42, 167, 110, 0.2);
-      color: #2a7a4a;
-    }
+    .alert.show { display: block; }
+    .alert.error { background: var(--color-error-bg); border: 1px solid rgba(201, 42, 42, 0.2); color: var(--color-error); }
+    .alert.success { background: var(--color-success-bg); border: 1px solid rgba(42, 122, 74, 0.2); color: var(--color-success); }
 
     @media (max-width: 768px) {
-      .container { padding: 0 16px; }
-      main { padding: 80px 0 48px; }
+      main { padding: 100px 20px 48px; }
       .login-card, .admin-panel { padding: 24px; }
       .field strong { display: block; width: auto; }
       .actions { flex-direction: column; }
       .toolbar { flex-direction: column; align-items: flex-start; }
+      .member-card { flex-direction: column; align-items: flex-start; }
     }
   </style>
 </head>
 <body>
-  <main>
-    <div class="container">
-      <div class="form-header">
-        <h1>Admin <span>panel</span></h1>
-      </div>
-
-      <div class="login-card" id="login-card">
-        <div class="alert" id="login-alert"></div>
-        <form id="admin-login-form">
-          <div class="form-group">
-            <label for="admin-identifier">Admin email or username</label>
-            <input type="text" id="admin-identifier" name="identifier" placeholder="mfathy" required autofocus>
-          </div>
-          <div class="form-group">
-            <label for="password">Admin password</label>
-            <input type="password" id="password" name="password" placeholder="Enter admin password" required>
-          </div>
-          <button type="submit" class="btn btn-primary" style="width: 100%;">
-            <i data-lucide="shield" style="width: 16px; height: 16px;"></i>
-            Log in
-          </button>
-        </form>
-      </div>
-
-      <div class="admin-panel" id="admin-panel">
-        <div class="alert" id="admin-alert"></div>
-
-        <div class="toolbar">
-          <div class="tabs">
-            <button class="tab active" data-status="pending">Pending</button>
-            <button class="tab" data-status="approved">Approved</button>
-            <button class="tab" data-status="rejected">Rejected</button>
-            <button class="tab" data-view="members">Members</button>
-          </div>
-          <button class="btn btn-secondary" id="logout-btn">
-            <i data-lucide="log-out" style="width: 16px; height: 16px;"></i>
-            Log out
-          </button>
+  <header>
+    <nav>
+      <a href="/ai-club/" class="logo">
+        <div class="logo-icon" aria-hidden="true">
+          <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="phoenixGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+                <stop offset="0%" style="stop-color:#c65d3b"/>
+                <stop offset="50%" style="stop-color:#f43f5e"/>
+                <stop offset="100%" style="stop-color:#f2cc8f"/>
+              </linearGradient>
+            </defs>
+            <path d="M16 2 C13 6, 12 11, 14 15 C11 13, 7 14, 5 17 C4 19, 5 22, 8 23 C7 25, 8 27, 10 28 C12 29, 14 28, 15 26 C15 28, 16 30, 17 30 C18 30, 18 28, 18 26 C19 28, 21 29, 23 28 C25 27, 26 25, 25 23 C28 22, 29 19, 27 17 C25 14, 21 13, 18 15 C20 11, 19 6, 16 2 Z" fill="url(#phoenixGrad)"/>
+            <path d="M16 6 C14 9, 13 13, 14 16 C12 15, 10 15, 9 17 C8 18, 9 20, 11 21 C10 22, 11 23, 12 24 C13 24, 14 23, 15 22 C15 24, 16 25, 17 25 C18 25, 18 24, 18 22 C19 23, 20 24, 21 24 C22 23, 23 22, 22 21 C24 20, 25 18, 24 17 C23 15, 21 15, 19 16 C20 13, 19 9, 16 6 Z" fill="#faf3f0" opacity="0.4"/>
+          </svg>
         </div>
+        <span>42 Berlin AI Club</span>
+      </a>
+      <button class="mobile-menu-toggle" aria-label="Toggle menu" aria-expanded="false">&#9776;</button>
+      <ul class="nav-links">
+        <li><a href="/ai-club/">Home</a></li>
+        <li><a href="/ai-club/members/">Members</a></li>
+        <li><a href="/ai-club/admin.html" class="nav-cta">Admin</a></li>
+      </ul>
+    </nav>
+  </header>
 
-        <div id="applications-list"></div>
-        <div id="members-list" style="display:none;"></div>
+  <main>
+    <div class="form-header">
+      <h1>Admin <span class="text-gradient">panel</span></h1>
+    </div>
+
+    <div class="login-card" id="login-card">
+      <div class="alert" id="login-alert"></div>
+      <form id="admin-login-form">
+        <div class="form-group">
+          <label for="admin-identifier">Admin email or username</label>
+          <input type="text" id="admin-identifier" name="identifier" placeholder="mfathy" required autofocus>
+        </div>
+        <div class="form-group">
+          <label for="password">Admin password</label>
+          <input type="password" id="password" name="password" placeholder="Enter admin password" required>
+        </div>
+        <button type="submit" class="admin-btn admin-btn-primary" style="width: 100%;">
+          <i data-lucide="shield" style="width: 16px; height: 16px;"></i>
+          Log in
+        </button>
+      </form>
+    </div>
+
+    <div class="admin-panel" id="admin-panel">
+      <div class="alert" id="admin-alert"></div>
+
+      <div class="toolbar">
+        <div class="tabs">
+          <button class="tab active" data-status="pending">Pending</button>
+          <button class="tab" data-status="approved">Approved</button>
+          <button class="tab" data-status="rejected">Rejected</button>
+          <button class="tab" data-view="members">Members</button>
+        </div>
+        <button class="admin-btn admin-btn-secondary" id="logout-btn">
+          <i data-lucide="log-out" style="width: 16px; height: 16px;"></i>
+          Log out
+        </button>
       </div>
+
+      <div id="applications-list"></div>
+      <div id="members-list" style="display:none;"></div>
     </div>
   </main>
 
+  <script src="assets/ai-club.js?v=10"></script>
   <script>
     lucide.createIcons();
 
@@ -406,11 +397,11 @@
           <div class="field"><strong>Message</strong> ${escapeHtml(app.message || 'No message')}</div>
           ${currentStatus === 'pending' ? `
             <div class="actions">
-              <button class="btn btn-success" onclick="approve(${app.id})">
+              <button class="admin-btn admin-btn-success" onclick="approve(${app.id})">
                 <i data-lucide="check" style="width: 16px; height: 16px;"></i>
                 Approve & create account
               </button>
-              <button class="btn btn-danger" onclick="reject(${app.id})">
+              <button class="admin-btn admin-btn-danger" onclick="reject(${app.id})">
                 <i data-lucide="x" style="width: 16px; height: 16px;"></i>
                 Reject
               </button>
@@ -476,8 +467,8 @@
               <span class="role ${roleClass}">${member.role}</span>
             </div>
             <div class="actions">
-              ${canPromote ? `<button class="btn btn-success" onclick="promoteMember(${member.id})">Promote to admin</button>` : ''}
-              ${canDemote ? `<button class="btn btn-danger" onclick="demoteMember(${member.id})">Demote to member</button>` : ''}
+              ${canPromote ? `<button class="admin-btn admin-btn-success" onclick="promoteMember(${member.id})">Promote to admin</button>` : ''}
+              ${canDemote ? `<button class="admin-btn admin-btn-danger" onclick="demoteMember(${member.id})">Demote to member</button>` : ''}
               ${isSuper ? '<span style="color:var(--text-muted);font-size:0.9rem;">Superadmin</span>' : ''}
             </div>
           </div>
