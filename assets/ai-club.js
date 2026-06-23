@@ -224,6 +224,7 @@
       animated.forEach((el) => el.classList.add('visible'));
       return;
     }
+    document.body.classList.add('js-animations');
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -273,8 +274,8 @@
           y: Math.random() * height,
           vx: (Math.random() - 0.5) * 0.45,
           vy: (Math.random() - 0.5) * 0.45,
-          r: Math.random() * 1.6 + 1,
-          baseAlpha: Math.random() * 0.25 + 0.25,
+          r: Math.random() * 1.8 + 1.2,
+          baseAlpha: Math.random() * 0.3 + 0.6,
         });
       }
     }
@@ -312,9 +313,10 @@
           const dx = p.x - q.x;
           const dy = p.y - q.y;
           const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 130) {
-            ctx.lineWidth = (1 - dist / 130) * 0.8;
-            ctx.strokeStyle = `rgba(198, 93, 59, ${0.16 * (1 - dist / 130)})`;
+          if (dist < 140) {
+            const fade = 1 - dist / 140;
+            ctx.lineWidth = fade * 1.1;
+            ctx.strokeStyle = `rgba(244, 63, 94, ${0.35 * fade})`;
             ctx.beginPath();
             ctx.moveTo(p.x, p.y);
             ctx.lineTo(q.x, q.y);

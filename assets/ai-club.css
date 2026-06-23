@@ -479,12 +479,17 @@ footer a:hover { color: var(--color-accent-light); }
 
 /* Scroll animations */
 .animate-on-scroll {
+  opacity: 1;
+  transform: none;
+}
+
+.js-animations .animate-on-scroll {
   opacity: 0;
   transform: translateY(24px);
   transition: opacity 0.6s var(--ease-out), transform 0.6s var(--ease-out);
 }
 
-.animate-on-scroll.visible {
+.js-animations .animate-on-scroll.visible {
   opacity: 1;
   transform: translateY(0);
 }
