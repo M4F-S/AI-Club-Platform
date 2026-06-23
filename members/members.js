@@ -32,14 +32,17 @@
       ? '<li><a href="../admin.html"><i data-lucide="shield"></i> Admin</a></li>'
       : '';
 
+    const path = location.pathname;
+    const isDashboard = path.endsWith('/members/index.html') || path.endsWith('/members/');
+
     nav.innerHTML = `
       <ul>
-        <li><a href="index.html" class="${location.pathname.endsWith('/members/index.html') || location.pathname.endsWith('/members/') ? 'active' : ''}"><i data-lucide="layout-dashboard"></i> Dashboard</a></li>
-        <li><a href="blog/index.html" class="${location.pathname.includes('/members/blog') ? 'active' : ''}"><i data-lucide="newspaper"></i> Blog</a></li>
-        <li><a href="resources.html" class="${location.pathname.includes('resources.html') ? 'active' : ''}"><i data-lucide="book-open"></i> Resources</a></li>
-        <li><a href="events.html" class="${location.pathname.includes('events.html') ? 'active' : ''}"><i data-lucide="calendar"></i> Events</a></li>
-        <li><a href="perks.html" class="${location.pathname.includes('perks.html') ? 'active' : ''}"><i data-lucide="gift"></i> Perks</a></li>
-        <li><a href="profile.html" class="${location.pathname.includes('profile.html') ? 'active' : ''}"><i data-lucide="user"></i> Profile</a></li>
+        <li><a href="index.html" class="${isDashboard ? 'active' : ''}"><i data-lucide="layout-dashboard"></i> Dashboard</a></li>
+        <li><a href="blog/index.html" class="${path.includes('/members/blog') ? 'active' : ''}"><i data-lucide="newspaper"></i> Blog</a></li>
+        <li><a href="resources.html" class="${path.includes('resources.html') ? 'active' : ''}"><i data-lucide="book-open"></i> Resources</a></li>
+        <li><a href="events.html" class="${path.includes('events.html') ? 'active' : ''}"><i data-lucide="calendar"></i> Events</a></li>
+        <li><a href="perks.html" class="${path.includes('perks.html') ? 'active' : ''}"><i data-lucide="gift"></i> Perks</a></li>
+        <li><a href="profile.html" class="${path.includes('profile.html') ? 'active' : ''}"><i data-lucide="user"></i> Profile</a></li>
         ${adminLink}
       </ul>
       <button class="mobile-nav-toggle" id="mobile-nav-toggle" aria-label="Toggle navigation"><i data-lucide="menu"></i></button>
@@ -67,6 +70,27 @@
     window.location.href = '../login.html';
   }
 
+  function initScrollAnimations() {
+    const animated = document.querySelectorAll('.animate-on-scroll');
+    if (animated.length === 0) return;
+    if (!('IntersectionObserver' in window)) {
+      animated.forEach((el) => el.classList.add('visible'));
+      return;
+    }
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
+    );
+    animated.forEach((el) => observer.observe(el));
+  }
+
   async function boot() {
     const user = await requireAuth();
     if (!user) return;
@@ -77,6 +101,7 @@
     const logoutBtn = document.getElementById('logout-btn');
     if (logoutBtn) logoutBtn.addEventListener('click', logout);
 
+    initScrollAnimations();
     document.body.classList.add('loaded');
   }
 
