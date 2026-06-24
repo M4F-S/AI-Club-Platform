@@ -3,6 +3,7 @@ import os
 from pathlib import Path
 
 from dotenv import load_dotenv
+from sqlalchemy.pool import NullPool
 
 BASE_DIR = Path(__file__).resolve().parent
 load_dotenv(BASE_DIR / ".env")
@@ -16,6 +17,9 @@ class Config:
     DATABASE_PATH = os.environ.get("DATABASE_PATH", "/app/data/ai-club.db")
     SQLALCHEMY_DATABASE_URI = f"sqlite:///{DATABASE_PATH}"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_ENGINE_OPTIONS = {
+        "poolclass": NullPool,
+    }
 
     ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL", "mohamedfathy7@hotmail.com")
     ADMIN_INITIAL_PASSWORD = os.environ.get("ADMIN_INITIAL_PASSWORD")
