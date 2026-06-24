@@ -480,6 +480,7 @@
             <div class="actions">
               ${canPromote ? `<button class="admin-btn admin-btn-success" onclick="promoteMember(${member.id})">Promote to admin</button>` : ''}
               ${canDemote ? `<button class="admin-btn admin-btn-danger" onclick="demoteMember(${member.id})">Demote to member</button>` : ''}
+              ${!isSuper ? `<button class="admin-btn admin-btn-danger" onclick="deleteMember(${member.id})">🗑️ Delete</button>` : ''}
               ${isSuper ? '<span style="color:var(--text-muted);font-size:0.9rem;">Superadmin</span>' : ''}
             </div>
           </div>
@@ -535,9 +536,30 @@
           <div class="field"><strong>Email</strong> ${escapeHtml(inq.email)}</div>
           <div class="field"><strong>Type</strong> ${escapeHtml(inq.partnership_type)}</div>
           <div class="field"><strong>Message</strong> ${escapeHtml(inq.message || 'No message')}</div>
+          <div class="actions">
+            <button class="admin-btn admin-btn-danger" onclick="deletePartnerInquiry(${inq.id})">🗑️ Delete</button>
+          </div>
         </div>
       `).join('');
       lucide.createIcons();
+    }
+
+    async function deleteMember(id) {
+      if (!confirm('Delete this member account? This cannot be undone.')) return;
+      adminAlert.className = 'alert';
+      const { ok, data } = await api('/admin/members/' + id, { method: 'DELETE' });
+      adminAlert.className = `alert show ${ok ? 'success' : 'error'}`;
+      adminAlert.textContent = ok ? 'Member deleted.' : (data.error || 'Failed to delete member');
+      if (ok) loadMembers();
+    }
+
+    async function deletePartnerInquiry(id) {
+      if (!confirm('Delete this partner inquiry? This cannot be undone.')) return;
+      adminAlert.className = 'alert';
+      const { ok, data } = await api('/admin/partner-inquiries/' + id, { method: 'DELETE' });
+      adminAlert.className = `alert show ${ok ? 'success' : 'error'}`;
+      adminAlert.textContent = ok ? 'Partner inquiry deleted.' : (data.error || 'Failed to delete');
+      if (ok) loadPartners();
     }
 
     function escapeHtml(text) {

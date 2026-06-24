@@ -432,6 +432,15 @@ def list_partner_inquiries():
     return jsonify([i.to_dict() for i in inquiries]), 200
 
 
+@app.delete("/admin/partner-inquiries/<int:inquiry_id>")
+@_require_admin
+def delete_partner_inquiry(inquiry_id):
+    inquiry = PartnerInquiry.query.get_or_404(inquiry_id)
+    db.session.delete(inquiry)
+    db.session.commit()
+    return jsonify({"message": "Partner inquiry deleted"}), 200
+
+
 # ---------------------------------------------------------------------------
 # Admin member management
 # ---------------------------------------------------------------------------
@@ -473,6 +482,19 @@ def demote_member():
     user.role = "member"
     db.session.commit()
     return jsonify({"user": user.to_dict()}), 200
+
+
+@app.delete("/admin/members/<int:user_id>")
+@_require_admin
+def delete_member(user_id):
+    user = User.query.get_or_404(user_id)
+    if user.role == "superadmin":
+        return jsonify({"error": "Cannot delete superadmin"}), 400
+    if user.id == request.current_user.id:
+        return jsonify({"error": "Cannot delete yourself"}), 400
+    db.session.delete(user)
+    db.session.commit()
+    return jsonify({"message": "Member deleted"}), 200
 
 
 # ---------------------------------------------------------------------------
