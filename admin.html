@@ -285,6 +285,7 @@
           <button class="tab" data-status="approved">Approved</button>
           <button class="tab" data-status="rejected">Rejected</button>
           <button class="tab" data-view="members">Members</button>
+          <button class="tab" data-view="partners">Partners</button>
         </div>
         <button class="admin-btn admin-btn-secondary" id="logout-btn">
           <i data-lucide="log-out" style="width: 16px; height: 16px;"></i>
@@ -294,6 +295,7 @@
 
       <div id="applications-list"></div>
       <div id="members-list" style="display:none;"></div>
+      <div id="partners-list" style="display:none;"></div>
     </div>
   </main>
 
@@ -357,15 +359,24 @@
         tab.classList.add('active');
         const appList = document.getElementById('applications-list');
         const memberList = document.getElementById('members-list');
+        const partnerList = document.getElementById('partners-list');
         if (tab.dataset.view === 'members') {
           currentView = 'members';
           appList.style.display = 'none';
           memberList.style.display = 'block';
+          partnerList.style.display = 'none';
           loadMembers();
+        } else if (tab.dataset.view === 'partners') {
+          currentView = 'partners';
+          appList.style.display = 'none';
+          memberList.style.display = 'none';
+          partnerList.style.display = 'block';
+          loadPartners();
         } else {
           currentView = 'applications';
           currentStatus = tab.dataset.status;
           memberList.style.display = 'none';
+          partnerList.style.display = 'none';
           appList.style.display = 'block';
           loadApplications();
         }
@@ -499,6 +510,34 @@
       adminAlert.className = `alert show ${ok ? 'success' : 'error'}`;
       adminAlert.textContent = ok ? 'Admin demoted to member.' : (data.error || 'Failed to demote');
       if (ok) loadMembers();
+    }
+
+    async function loadPartners() {
+      const list = document.getElementById('partners-list');
+      list.innerHTML = '<div class="empty">Loading partner inquiries...</div>';
+
+      const { ok, data } = await api('/admin/partner-inquiries');
+      if (!ok) {
+        list.innerHTML = `<div class="empty">Failed to load partner inquiries: ${data.error}</div>`;
+        return;
+      }
+
+      if (data.length === 0) {
+        list.innerHTML = '<div class="empty">No partner inquiries.</div>';
+        return;
+      }
+
+      list.innerHTML = data.map(inq => `
+        <div class="application-card">
+          <h3>${escapeHtml(inq.organization)}</h3>
+          <div class="meta">Submitted ${new Date(inq.created_at).toLocaleString()}</div>
+          <div class="field"><strong>Contact</strong> ${escapeHtml(inq.contact_name)}</div>
+          <div class="field"><strong>Email</strong> ${escapeHtml(inq.email)}</div>
+          <div class="field"><strong>Type</strong> ${escapeHtml(inq.partnership_type)}</div>
+          <div class="field"><strong>Message</strong> ${escapeHtml(inq.message || 'No message')}</div>
+        </div>
+      `).join('');
+      lucide.createIcons();
     }
 
     function escapeHtml(text) {

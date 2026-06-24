@@ -422,6 +422,17 @@ def reject_application():
 
 
 # ---------------------------------------------------------------------------
+# Admin partner inquiries
+# ---------------------------------------------------------------------------
+
+@app.get("/admin/partner-inquiries")
+@_require_admin
+def list_partner_inquiries():
+    inquiries = PartnerInquiry.query.order_by(PartnerInquiry.created_at.desc()).all()
+    return jsonify([i.to_dict() for i in inquiries]), 200
+
+
+# ---------------------------------------------------------------------------
 # Admin member management
 # ---------------------------------------------------------------------------
 
