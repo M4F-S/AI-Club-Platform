@@ -469,11 +469,12 @@ body:not(.loaded) .member-main {
 
   .member-layout {
     grid-template-columns: 1fr;
-    padding: 20px 0 48px;
+    padding: 20px;
   }
 
   .member-nav {
     position: relative;
+    width: 100%;
     top: auto;
     display: flex;
     justify-content: flex-end;
@@ -496,5 +497,6 @@ body:not(.loaded) .member-main {
 
   .member-nav ul.open { display: flex; }
   .mobile-nav-toggle { display: block; }
+  .card { padding: 18px; }
   .grid-2 { grid-template-columns: 1fr; }
 }
