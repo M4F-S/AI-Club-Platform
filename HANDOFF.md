@@ -25,6 +25,10 @@
 - Admin login works end-to-end; admin panel loads applications and members.
 - Member login works end-to-end; member dashboard loads for `testuser`.
 - Stats on homepage load real data from `/ai-club/api/stats` (currently 2 members, 0 events/projects/workshops).
+- Member navigation now uses absolute URLs, so links work from every member page including `/members/blog/index.html`.
+- Member logo now links to the dashboard (`/ai-club/members/index.html`) and does not log the user out.
+- Public site exit link in the member sidebar lets users leave the members area while keeping their session.
+- Public assets (CSS/JS) use absolute paths, so 404-fallback pages remain styled.
 
 ## What Needs Attention
 - **Mobile nav**: Basic responsive markup and toggle are in place; real-device checks show public mobile menu works and member mobile menu works in local layout testing. No horizontal overflow detected on homepage, member forms, or dashboard.
@@ -32,24 +36,14 @@
 
 ## Next Steps
 1. Change the temporary admin password after you finish testing.
-2. Add real events/posts/resources via admin panel once login is confirmed.
-3. Keep committing small changes and update this file after each session.
+2. Change the temporary test-member password after you finish testing.
+3. Add real events/posts/resources via admin panel once login is confirmed.
+4. Keep committing small changes and update this file after each session.
 
 ## Recent Commits
+- `f2ed4d4` Option B: absolute member nav/logo, dashboard logo, public site exit, absolute assets
+- `47d1cd7` Update HANDOFF.md: mobile audit results and redirect fix
 - `24d8a0c` Fix member/auth redirect to absolute login path
-- `fb68267` Update HANDOFF.md: member subpage scroll animations done
-- `593946f` Add scroll animations to all member subpages and enable js-animations in members.js
-- `6a298aa` Ignore DB backup files
-- `2c62ae8` Update HANDOFF.md: login tests pass, temp admin password set
-- `7e661d1` Update HANDOFF.md with polish status and backup note
-- `6e02dd3` Polish scroll animations (visible by default) and strengthen particle canvas
-- `2c017a4` Rebuild shared CSS/JS with design tokens, animations, and canvas particles
-- `f021f1c` Rebuild index.html with design system, animations, and real stats
-- `d505058` Rebuild membership and partner pages with design system
-- `613e000` Update login.html nav/logo to match design system
-- `89c4718` Update admin.html header/nav to match design system
-- `7b628d2` Apply design system to members area CSS/JS/dashboard
-- `12b66b9` Fix lucide dependency in login/admin; use inline icon in login
 
 ## Agents
 - Toy = main agent (VPS, 24/7, Telegram).
