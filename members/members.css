@@ -209,6 +209,38 @@ body {
 
 .member-nav a i { width: 18px; height: 18px; }
 
+.member-exit {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.member-exit a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: all 0.2s;
+}
+
+.member-exit a:hover {
+  background: var(--color-surface);
+  color: var(--color-accent);
+}
+
+.member-exit a i { width: 18px; height: 18px; }
+
+@media (max-width: 768px) {
+  .member-exit {
+    display: none;
+  }
+}
+
 .mobile-nav-toggle {
   display: none;
   background: var(--color-surface);

@@ -28,23 +28,30 @@
     const nav = document.querySelector('.member-nav');
     if (!nav) return;
 
+    const MEMBER_BASE = '/ai-club/members/';
+
     const adminLink = user.role === 'superadmin' || user.role === 'admin'
-      ? '<li><a href="../admin.html"><i data-lucide="shield"></i> Admin</a></li>'
+      ? `<li><a href="/ai-club/admin.html" class="${location.pathname.includes('/admin.html') ? 'active' : ''}"><i data-lucide="shield"></i> Admin</a></li>`
       : '';
 
     const path = location.pathname;
-    const isDashboard = path.endsWith('/members/index.html') || path.endsWith('/members/');
+    const isDashboard = path === '/ai-club/members/index.html' || path === '/ai-club/members/';
 
     nav.innerHTML = `
       <ul>
-        <li><a href="index.html" class="${isDashboard ? 'active' : ''}"><i data-lucide="layout-dashboard"></i> Dashboard</a></li>
-        <li><a href="blog/index.html" class="${path.includes('/members/blog') ? 'active' : ''}"><i data-lucide="newspaper"></i> Blog</a></li>
-        <li><a href="resources.html" class="${path.includes('resources.html') ? 'active' : ''}"><i data-lucide="book-open"></i> Resources</a></li>
-        <li><a href="events.html" class="${path.includes('events.html') ? 'active' : ''}"><i data-lucide="calendar"></i> Events</a></li>
-        <li><a href="perks.html" class="${path.includes('perks.html') ? 'active' : ''}"><i data-lucide="gift"></i> Perks</a></li>
-        <li><a href="profile.html" class="${path.includes('profile.html') ? 'active' : ''}"><i data-lucide="user"></i> Profile</a></li>
+        <li><a href="${MEMBER_BASE}index.html" class="${isDashboard ? 'active' : ''}"><i data-lucide="layout-dashboard"></i> Dashboard</a></li>
+        <li><a href="${MEMBER_BASE}blog/index.html" class="${path.includes('/members/blog') ? 'active' : ''}"><i data-lucide="newspaper"></i> Blog</a></li>
+        <li><a href="${MEMBER_BASE}resources.html" class="${path.includes('/members/resources.html') ? 'active' : ''}"><i data-lucide="book-open"></i> Resources</a></li>
+        <li><a href="${MEMBER_BASE}events.html" class="${path.includes('/members/events.html') ? 'active' : ''}"><i data-lucide="calendar"></i> Events</a></li>
+        <li><a href="${MEMBER_BASE}perks.html" class="${path.includes('/members/perks.html') ? 'active' : ''}"><i data-lucide="gift"></i> Perks</a></li>
+        <li><a href="${MEMBER_BASE}profile.html" class="${path.includes('/members/profile.html') ? 'active' : ''}"><i data-lucide="user"></i> Profile</a></li>
         ${adminLink}
       </ul>
+      <div class="member-exit">
+        <a href="/ai-club/">
+          <i data-lucide="arrow-left"></i> Public site
+        </a>
+      </div>
       <button class="mobile-nav-toggle" id="mobile-nav-toggle" aria-label="Toggle navigation"><i data-lucide="menu"></i></button>
     `;
 
