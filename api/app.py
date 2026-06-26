@@ -324,7 +324,7 @@ def partner():
 # ---------------------------------------------------------------------------
 
 @app.post("/admin/login")
-@limiter.limit("5 per 15 minutes")
+@limiter.limit("10 per hour")
 def admin_login():
     data = request.get_json(silent=True) or {}
     login = (data.get("email") or data.get("username") or "").strip().lower()
@@ -341,7 +341,6 @@ def admin_login():
     if not _check_password(password, user.password_hash):
         return jsonify({"error": "Invalid email or password"}), 401
 
-    session.clear()
     session.permanent = True
     session["user_id"] = user.id
     session["role"] = user.role
@@ -1008,7 +1007,7 @@ def submit_quiz(event_id):
 # ---------------------------------------------------------------------------
 
 @app.post("/member/login")
-@limiter.limit("5 per 15 minutes")
+@limiter.limit("10 per hour")
 def member_login():
     data = request.get_json(silent=True) or {}
     login = (data.get("intra_username") or data.get("email") or "").strip().lower()
@@ -1023,7 +1022,6 @@ def member_login():
     if not _check_password(password, user.password_hash):
         return jsonify({"error": "Invalid username or password"}), 401
 
-    session.clear()
     session.permanent = True
     session["user_id"] = user.id
     session["role"] = user.role

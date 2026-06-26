@@ -626,6 +626,21 @@
                 <span class="meta" id="material-count-${event.id}">Loading...</span>
               </div>
               <div id="materials-${event.id}"></div>
+              <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border);">
+                <strong>Upload Material</strong>
+                <div class="form-group" style="margin-top: 8px;">
+                  <input type="file" id="upload-file-${event.id}" style="margin-bottom: 8px; width: 100%;">
+                  <input type="text" id="upload-title-${event.id}" placeholder="Title" style="width: 100%; margin-bottom: 8px;">
+                  <select id="upload-type-${event.id}" style="width: 100%; margin-bottom: 8px;">
+                    <option value="slide">slide</option>
+                    <option value="pdf">pdf</option>
+                    <option value="quiz">quiz</option>
+                    <option value="file">file</option>
+                  </select>
+                  <input type="number" id="upload-sort-${event.id}" value="0" placeholder="Sort order" style="width: 100%; margin-bottom: 8px;">
+                  <button class="admin-btn admin-btn-primary" onclick="uploadMaterial(${event.id})">Upload</button>
+                </div>
+              </div>
             </div>
           </div>
         `).join('');
@@ -771,6 +786,39 @@
       adminAlert.className = `alert show ${ok ? 'success' : 'error'}`;
       adminAlert.textContent = ok ? 'Partner inquiry deleted.' : (data.error || 'Failed to delete');
       if (ok) loadPartners();
+    }
+
+    async function uploadMaterial(eventId) {
+      const fileInput = document.getElementById('upload-file-' + eventId);
+      const titleInput = document.getElementById('upload-title-' + eventId);
+      const typeInput = document.getElementById('upload-type-' + eventId);
+      const sortInput = document.getElementById('upload-sort-' + eventId);
+
+      if (!fileInput.files || !fileInput.files[0]) {
+        adminAlert.className = 'alert show error';
+        adminAlert.textContent = 'Please select a file';
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('file', fileInput.files[0]);
+      formData.append('title', titleInput.value || fileInput.files[0].name);
+      formData.append('file_type', typeInput.value || 'file');
+      formData.append('sort_order', sortInput.value || 0);
+      formData.append('is_revealed', 'false');
+
+      const { ok, data } = await api('/admin/events/' + eventId + '/materials', {
+        method: 'POST',
+        body: formData
+      });
+
+      adminAlert.className = `alert show ${ok ? 'success' : 'error'}`;
+      adminAlert.textContent = ok ? 'Material uploaded!' : (data.error || 'Upload failed');
+      if (ok) {
+        fileInput.value = '';
+        titleInput.value = '';
+        loadEventMaterials(eventId);
+      }
     }
 
     function escapeHtml(text) {
