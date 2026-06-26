@@ -236,6 +236,7 @@ internet
 ├── become-member.html       # Apply form
 ├── become-partner.html      # Partner inquiry form
 ├── login.html               # Member login page
+├── reset-password.html      # Password reset (request + set new)
 ├── admin.html               # Admin panel (login + dashboard)
 ├── privacy-policy.html      # Legal page
 ├── AGENTS.md                # Agent rules (read before editing!)
@@ -254,7 +255,7 @@ internet
 
 | Table | Purpose | Key columns |
 |-------|---------|-------------|
-| `users` | Members + admins | `id, email, intra_username, name, password_hash (bcrypt), role (member/admin/superadmin), is_active` |
+| `users` | Members + admins | `id, email, intra_username, name, password_hash (bcrypt), role (member/admin/superadmin), is_active, password_reset_token, password_reset_expires_at` |
 | `applications` | Membership applications | `id, name, email, intra_username, level, message, status (pending/approved/rejected), reviewed_by_id → users` |
 | `partner_inquiries` | Partnership requests | `id, organization, contact_name, email, partnership_type, message` |
 | `contact_messages` | Contact form submissions | `id, name, email, message` |
@@ -289,6 +290,8 @@ internet
 | POST | `/member/logout` | login | Member logout |
 | GET | `/member/me` | login | Current member info |
 | POST | `/member/change-password` | login | Change password (requires current) |
+| POST | `/forgot-password` | — | Request password reset link | 3/hour |
+| POST | `/reset-password` | — | Reset password with token | 5/hour |
 
 ### Admin — Applications
 | Method | Path | Auth | Description |
@@ -387,6 +390,13 @@ cp /opt/sophia-shopper/landing/ai-club/api/app.py /root/backups-$(date +%s)/
 6. **The API container has NO live file mount** for code. Only `/app/data` is a volume. `docker cp` or rebuild the image for code changes.
 7. **No forced password change** on first login — the approval email tells the user to change it, but the system doesn't enforce this.
 
+### 🔐 Forgot Password Flow (added 2026-06-26)
+- **Endpoints:** `POST /forgot-password` (3/hour), `POST /reset-password` (5/hour)
+- **Token storage:** SHA-256 hash of secure token, 24h expiry, single-use
+- **Email enumeration prevention:** Generic success message for all cases (existent and non-existent emails)
+- **SMTP dependency:** If Gmail SMTP fails, user sees success message but no email arrives. Check `docker logs` for `Failed to send email`.
+- **Reset URL:** `https://mysophia.tech/ai-club/reset-password.html?token=<token>`
+
 ---
 
 ## 📂 Useful Commands Reference
@@ -452,8 +462,8 @@ git push origin main
 ### Known things to do next
 - Real events/posts/resources need to be created via the admin panel
 - 42 Intra API integration is pending (user said they'd provide UID+SECRET)
-- Member password reset flow could be improved
-- The login page could use a "Forgot password?" feature
+- ~~Member password reset flow could be improved~~ ✅ Implemented 2026-06-26
+- ~~The login page could use a "Forgot password?" feature~~ ✅ Implemented 2026-06-26
 - Stats on the homepage still show 0 for events/projects/workshops
 
 ---
