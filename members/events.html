@@ -58,10 +58,13 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
             list.innerHTML = res.data.map((e, i) => `
               <div class="card animate-on-scroll stagger-${Math.min(i % 4 + 1, 4)}">
-                <h2>${escapeHtml(e.title)}</h2>
+                <h2><a href="event.html?id=${e.id}" style="text-decoration: none; color: inherit;">${escapeHtml(e.title)}</a></h2>
                 <p class="meta">${e.event_date ? new Date(e.event_date).toLocaleString() : 'Date TBD'} ${e.location ? '· ' + escapeHtml(e.location) : ''}</p>
                 <p>${escapeHtml(e.description || '')}</p>
-                ${e.link ? `<a href="${escapeHtml(e.link)}" target="_blank" rel="noopener" class="btn btn-primary" style="margin-top:10px;">Details / RSVP</a>` : ''}
+                <div style="margin-top: 12px;">
+                  <a href="event.html?id=${e.id}" class="btn btn-primary">View event →</a>
+                  ${e.link ? `<a href="${escapeHtml(e.link)}" target="_blank" rel="noopener" class="btn btn-secondary" style="margin-left: 8px;">RSVP</a>` : ''}
+                </div>
               </div>
             `).join('');
           })();

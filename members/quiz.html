@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz — 42 Berlin AI Club</title>
+  <meta name="robots" content="noindex, nofollow">
+  <script src="https://unpkg.com/lucide@1.21.0/dist/umd/lucide.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/ai-club/members/members.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23120a0d'/%3E%3Cpath d='M16 2 C13 6, 12 11, 14 15 C11 13, 7 14, 5 17 C4 19, 5 22, 8 23 C7 25, 8 27, 10 28 C12 29, 14 28, 15 26 C15 28, 16 30, 17 30 C18 30, 18 28, 18 26 C19 28, 21 29, 23 28 C25 27, 26 25, 25 23 C28 22, 29 19, 27 17 C25 14, 21 13, 18 15 C20 11, 19 6, 16 2 Z' fill='%23ff6b8a'/%3E%3C/svg%3E">
+  <style>
+    .quiz-container { max-width: 720px; margin: 0 auto; }
+    .quiz-header {
+      margin-bottom: 32px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+    }
+    .quiz-header h1 {
+      font-family: var(--font-heading);
+      font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+      margin-bottom: 8px;
+    }
+    .quiz-meta { color: var(--text-muted); font-size: 0.95rem; }
+
+    /* Progress bar */
+    .progress-bar {
+      height: 6px;
+      background: var(--color-bg);
+      border-radius: 100px;
+      overflow: hidden;
+      margin-bottom: 24px;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--color-accent);
+      border-radius: 100px;
+      transition: width 0.3s ease;
+    }
+    .progress-text {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-bottom: 24px;
+    }
+
+    /* Question card */
+    .question-card {
+      background: var(--color-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+    .question-number {
+      color: var(--color-accent);
+      font-weight: 600;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .question-text {
+      font-family: var(--font-heading);
+      font-size: 1.2rem;
+      font-weight: 600;
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+    .hint-box {
+      background: rgba(255, 107, 138, 0.08);
+      border-left: 3px solid var(--color-accent);
+      padding: 12px 16px;
+      border-radius: 0 8px 8px 0;
+      margin-bottom: 20px;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      display: none;
+    }
+    .hint-box.visible { display: block; }
+    .hint-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--color-accent);
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      margin-bottom: 12px;
+      user-select: none;
+    }
+    .hint-toggle:hover { opacity: 0.8; }
+
+    /* Options */
+    .options-list { display: flex; flex-direction: column; gap: 12px; }
+    .option-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px 16px;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .option-item:hover {
+      border-color: var(--color-accent);
+      background: rgba(255, 107, 138, 0.03);
+    }
+    .option-item.selected {
+      border-color: var(--color-accent);
+      background: rgba(255, 107, 138, 0.08);
+    }
+    .option-radio {
+      width: 22px;
+      height: 22px;
+      border: 2px solid var(--border);
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+    .option-item.selected .option-radio {
+      border-color: var(--color-accent);
+      background: var(--color-accent);
+    }
+    .option-radio::after {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: #fff;
+      border-radius: 50%;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .option-item.selected .option-radio::after { opacity: 1; }
+    .option-text { font-size: 0.95rem; line-height: 1.5; }
+
+    /* Navigation */
+    .quiz-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+    .quiz-nav .btn {
+      min-width: 120px;
+    }
+    .quiz-nav .btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    /* Submit screen */
+    .submit-screen {
+      text-align: center;
+      padding: 40px 20px;
+    }
+    .submit-screen h2 {
+      font-family: var(--font-heading);
+      font-size: 1.5rem;
+      margin-bottom: 12px;
+    }
+    .submit-screen p { color: var(--text-muted); margin-bottom: 24px; }
+
+    /* Results */
+    .results-card {
+      background: var(--color-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    .score-display {
+      font-family: var(--font-heading);
+      font-size: 4rem;
+      font-weight: 700;
+      color: var(--color-accent);
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+    .score-label {
+      color: var(--text-muted);
+      font-size: 1rem;
+      margin-bottom: 4px;
+    }
+    .score-detail { color: var(--text-muted); font-size: 0.9rem; }
+    .score-pass { color: #22c55e; font-weight: 600; }
+    .score-fail { color: #ef4444; font-weight: 600; }
+
+    /* Result breakdown */
+    .result-item {
+      background: var(--color-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    .result-item.correct { border-left: 4px solid #22c55e; }
+    .result-item.incorrect { border-left: 4px solid #ef4444; }
+    .result-question {
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .result-answer {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+    .result-explanation {
+      font-size: 0.9rem;
+      color: var(--text);
+      background: var(--color-bg);
+      padding: 12px;
+      border-radius: 8px;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.95rem;
+      margin-bottom: 16px;
+    }
+    .back-link:hover { color: var(--color-accent); }
+
+    @media (max-width: 600px) {
+      .question-card { padding: 20px; }
+      .quiz-nav { flex-direction: column-reverse; }
+      .quiz-nav .btn { width: 100%; }
+      .score-display { font-size: 3rem; }
+    }
+  </style>
+</head>
+<body>
+  <header class="member-header">
+    <div class="container member-header-inner">
+      <a href="/ai-club/members/index.html" class="logo" aria-label="Dashboard">
+        <div class="logo-icon">
+          <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="phoenixGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+                <stop offset="0%" style="stop-color:#e07a5f"/>
+                <stop offset="50%" style="stop-color:#ff6b8a"/>
+                <stop offset="100%" style="stop-color:#f2cc8f"/>
+              </linearGradient>
+            </defs>
+            <path d="M16 2 C13 6, 12 11, 14 15 C11 13, 7 14, 5 17 C4 19, 5 22, 8 23 C7 25, 8 27, 10 28 C12 29, 14 28, 15 26 C15 28, 16 30, 17 30 C18 30, 18 28, 18 26 C19 28, 21 29, 23 28 C25 27, 26 25, 25 23 C28 22, 29 19, 27 17 C25 14, 21 13, 18 15 C20 11, 19 6, 16 2 Z" fill="url(#phoenixGrad)"/>
+          </svg>
+        </div>
+        42 Berlin AI Club
+      </a>
+      <div class="user-menu">
+        <span class="user-name" id="user-name">Loading...</span>
+        <button class="logout-btn" id="logout-btn">Log out</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="container member-layout">
+    <nav class="member-nav"></nav>
+    <main class="member-main">
+      <a href="events.html" class="back-link">← Back to events</a>
+      <div class="quiz-container" id="quiz-container">
+        <p>Loading quiz...</p>
+      </div>
+    </main>
+  </div>
+
+  <script src="/ai-club/members/members.js"></script>
+  <script>
+  document.addEventListener("DOMContentLoaded", async () => {
+    const { api } = window.MemberAPI;
+    const urlParams = new URLSearchParams(window.location.search);
+    const eventId = urlParams.get('event');
+    const container = document.getElementById('quiz-container');
+
+    if (!eventId) {
+      container.innerHTML = '<div class="card"><p>Quiz not found.</p></div>';
+      return;
+    }
+
+    // Fetch quiz data
+    const res = await api('/events/' + eventId + '/quiz');
+    if (!res.ok) {
+      container.innerHTML = '<div class="card"><p>Quiz not available or you need to be logged in.</p></div>';
+      return;
+    }
+
+    const { event, questions, total } = res.data;
+    if (!questions || questions.length === 0) {
+      container.innerHTML = '<div class="card"><p>No quiz questions available for this event yet.</p></div>';
+      return;
+    }
+
+    let currentIndex = 0;
+    const answers = {}; // {questionId: selectedIndex}
+    let submitted = false;
+    let results = null;
+
+    function render() {
+      if (submitted && results) {
+        renderResults();
+        return;
+      }
+      if (currentIndex >= questions.length) {
+        renderSubmitScreen();
+        return;
+      }
+      renderQuestion();
+    }
+
+    function renderQuestion() {
+      const q = questions[currentIndex];
+      const hasHint = q.hint && q.hint.trim();
+      const progress = ((currentIndex + 1) / questions.length) * 100;
+      const selectedAnswer = answers[q.id];
+
+      let html = `
+        <div class="quiz-header animate-on-scroll">
+          <h1>${escapeHtml(event.title)}</h1>
+          <div class="quiz-meta">Quiz · ${total} questions</div>
+        </div>
+        <div class="progress-bar animate-on-scroll">
+          <div class="progress-fill" style="width: ${progress}%"></div>
+        </div>
+        <div class="progress-text animate-on-scroll">Question ${currentIndex + 1} of ${questions.length}</div>
+
+        <div class="question-card animate-on-scroll">
+          <div class="question-number">Question ${currentIndex + 1}</div>
+          <div class="question-text">${escapeHtml(q.question)}</div>
+          ${hasHint ? `
+            <div class="hint-toggle" id="hint-toggle">
+              <span>💡 Need a hint?</span>
+            </div>
+            <div class="hint-box" id="hint-box">${escapeHtml(q.hint)}</div>
+          ` : ''}
+          <div class="options-list">
+            ${q.options.map((opt, i) => `
+              <div class="option-item ${selectedAnswer === i ? 'selected' : ''}" data-index="${i}" data-question="${q.id}">
+                <div class="option-radio"></div>
+                <div class="option-text">${escapeHtml(opt)}</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <div class="quiz-nav animate-on-scroll">
+          <button class="btn btn-secondary" id="btn-prev" ${currentIndex === 0 ? 'disabled' : ''}>Previous</button>
+          <button class="btn btn-primary" id="btn-next">${currentIndex === questions.length - 1 ? 'Review' : 'Next'}</button>
+        </div>
+      `;
+
+      container.innerHTML = html;
+
+      // Hint toggle
+      const hintToggle = document.getElementById('hint-toggle');
+      const hintBox = document.getElementById('hint-box');
+      if (hintToggle) {
+        hintToggle.addEventListener('click', () => {
+          hintBox.classList.toggle('visible');
+          hintToggle.querySelector('span').textContent = hintBox.classList.contains('visible') ? '💡 Hide hint' : '💡 Need a hint?';
+        });
+      }
+
+      // Option selection
+      document.querySelectorAll('.option-item').forEach(item => {
+        item.addEventListener('click', () => {
+          const qId = parseInt(item.dataset.question);
+          const idx = parseInt(item.dataset.index);
+          answers[qId] = idx;
+          document.querySelectorAll('.option-item[data-question="' + qId + '"]').forEach(el => el.classList.remove('selected'));
+          item.classList.add('selected');
+        });
+      });
+
+      // Navigation
+      document.getElementById('btn-prev').addEventListener('click', () => {
+        if (currentIndex > 0) { currentIndex--; render(); }
+      });
+      document.getElementById('btn-next').addEventListener('click', () => {
+        if (currentIndex < questions.length - 1) { currentIndex++; render(); }
+        else { currentIndex++; render(); } // Go to submit screen
+      });
+    }
+
+    function renderSubmitScreen() {
+      const answered = Object.keys(answers).length;
+      const unanswered = questions.length - answered;
+
+      let html = `
+        <div class="quiz-header animate-on-scroll">
+          <h1>${escapeHtml(event.title)}</h1>
+          <div class="quiz-meta">Quiz · ${total} questions</div>
+        </div>
+        <div class="submit-screen animate-on-scroll">
+          <h2>Ready to Submit?</h2>
+          <p>You've answered ${answered} of ${questions.length} questions. ${unanswered > 0 ? `<strong>${unanswered} unanswered</strong> — you can go back and review.` : ''}</p>
+          <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+            <button class="btn btn-secondary" id="btn-back-review">← Review Answers</button>
+            <button class="btn btn-primary" id="btn-submit">Submit Quiz</button>
+          </div>
+        </div>
+      `;
+
+      container.innerHTML = html;
+
+      document.getElementById('btn-back-review').addEventListener('click', () => {
+        currentIndex = questions.length - 1;
+        render();
+      });
+
+      document.getElementById('btn-submit').addEventListener('click', async () => {
+        const submitBtn = document.getElementById('btn-submit');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Submitting...';
+
+        const payload = { answers: answers };
+        const res = await api('/events/' + eventId + '/quiz/submit', {
+          method: 'POST',
+          body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Submit Quiz';
+          alert('Submission failed: ' + (res.data?.error || 'Unknown error'));
+          return;
+        }
+
+        results = res.data;
+        submitted = true;
+        render();
+      });
+    }
+
+    function renderResults() {
+      const score = results.score;
+      const passed = score >= 70;
+
+      let html = `
+        <div class="quiz-header animate-on-scroll">
+          <h1>${escapeHtml(event.title)}</h1>
+          <div class="quiz-meta">Quiz Results</div>
+        </div>
+
+        <div class="results-card animate-on-scroll">
+          <div class="score-label">Your Score</div>
+          <div class="score-display">${score}%</div>
+          <div class="score-detail">
+            <span class="${passed ? 'score-pass' : 'score-fail'}">${passed ? '✓ Passed' : '✗ Did not pass'}</span> ·
+            ${results.correct} of ${results.total} correct
+          </div>
+          <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 12px;">
+            ${passed ? 'Great job! You understand the key security concepts.' : 'Review the explanations below and try again next time.'}
+          </p>
+        </div>
+
+        <h2 class="page-title animate-on-scroll" style="font-size: 1.3rem; margin-bottom: 16px;">Answer Breakdown</h2>
+      `;
+
+      results.results.forEach((r, i) => {
+        const q = questions.find(q => q.id === r.question_id);
+        html += `
+          <div class="result-item ${r.is_correct ? 'correct' : 'incorrect'} animate-on-scroll">
+            <div class="result-question">${i + 1}. ${escapeHtml(r.question)}</div>
+            <div class="result-answer">
+              Your answer: ${r.selected !== null ? escapeHtml(q.options[r.selected]) : '<em>Not answered</em>'} ·
+              Correct: ${escapeHtml(q.options[r.correct_answer])}
+              ${r.is_correct ? '✓' : '✗'}
+            </div>
+            ${r.explanation ? `<div class="result-explanation">${escapeHtml(r.explanation)}</div>` : ''}
+          </div>
+        `;
+      });
+
+      html += `
+        <div style="text-align: center; margin-top: 32px;">
+          <a href="event.html?id=${eventId}" class="btn btn-secondary">← Back to Event</a>
+        </div>
+      `;
+
+      container.innerHTML = html;
+    }
+
+    function escapeHtml(t) {
+      if (!t) return '';
+      const d = document.createElement('div');
+      d.textContent = t;
+      return d.innerHTML;
+    }
+
+    render();
+  });
+  </script>
+</body>
+</html>

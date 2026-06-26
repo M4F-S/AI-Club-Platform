@@ -2,6 +2,7 @@
 import re
 import os
 import uuid
+import json
 import secrets
 import hashlib
 import smtplib
@@ -23,6 +24,8 @@ from models import (
     Event,
     EventMaterial,
     PartnerInquiry,
+    QuizAttempt,
+    QuizQuestion,
     Resource,
     User,
     db,
@@ -855,6 +858,149 @@ def download_event_material(event_id, material_id):
     event_dir = os.path.join("/app/data/materials", str(event_id))
     from flask import send_from_directory
     return send_from_directory(event_dir, material.file_path, as_attachment=True)
+
+
+# ---------------------------------------------------------------------------
+# Admin quiz questions
+# ---------------------------------------------------------------------------
+
+@app.get("/admin/events/<int:event_id>/quiz")
+@_require_admin
+def list_quiz_questions(event_id):
+    Event.query.get_or_404(event_id)
+    questions = QuizQuestion.query.filter_by(event_id=event_id).order_by(QuizQuestion.sort_order.asc()).all()
+    return jsonify([q.to_dict(include_answer=True) for q in questions]), 200
+
+
+@app.post("/admin/events/<int:event_id>/quiz")
+@_require_admin
+def create_quiz_question(event_id):
+    Event.query.get_or_404(event_id)
+    data = request.get_json(silent=True) or {}
+    question = (data.get("question") or "").strip()
+    hint = (data.get("hint") or "").strip()
+    options = data.get("options") or []
+    correct_answer = data.get("correct_answer")
+    explanation = (data.get("explanation") or "").strip()
+    sort_order = int(data.get("sort_order") or 0)
+
+    if not question or not options or correct_answer is None:
+        return jsonify({"error": "Question, options, and correct_answer are required"}), 400
+    if not isinstance(options, list) or len(options) < 2:
+        return jsonify({"error": "Options must be an array with at least 2 items"}), 400
+    if not (0 <= int(correct_answer) < len(options)):
+        return jsonify({"error": "correct_answer must be a valid index into options"}), 400
+
+    qq = QuizQuestion(
+        event_id=event_id,
+        question=question,
+        hint=hint,
+        options_json=json.dumps(options),
+        correct_answer=int(correct_answer),
+        explanation=explanation,
+        sort_order=sort_order,
+    )
+    db.session.add(qq)
+    db.session.commit()
+    return jsonify(qq.to_dict(include_answer=True)), 201
+
+
+@app.put("/admin/events/<int:event_id>/quiz/<int:question_id>")
+@_require_admin
+def update_quiz_question(event_id, question_id):
+    Event.query.get_or_404(event_id)
+    qq = QuizQuestion.query.filter_by(id=question_id, event_id=event_id).first_or_404()
+    data = request.get_json(silent=True) or {}
+    qq.question = (data.get("question") or qq.question).strip()
+    qq.hint = (data.get("hint") or qq.hint).strip()
+    options = data.get("options")
+    if options is not None:
+        if not isinstance(options, list) or len(options) < 2:
+            return jsonify({"error": "Options must be an array with at least 2 items"}), 400
+        qq.options_json = json.dumps(options)
+    if "correct_answer" in data:
+        opts = json.loads(qq.options_json)
+        if not (0 <= int(data["correct_answer"]) < len(opts)):
+            return jsonify({"error": "correct_answer must be a valid index"}), 400
+        qq.correct_answer = int(data["correct_answer"])
+    qq.explanation = (data.get("explanation") or qq.explanation).strip()
+    if "sort_order" in data:
+        qq.sort_order = int(data["sort_order"])
+    db.session.commit()
+    return jsonify(qq.to_dict(include_answer=True)), 200
+
+
+@app.delete("/admin/events/<int:event_id>/quiz/<int:question_id>")
+@_require_admin
+def delete_quiz_question(event_id, question_id):
+    Event.query.get_or_404(event_id)
+    qq = QuizQuestion.query.filter_by(id=question_id, event_id=event_id).first_or_404()
+    db.session.delete(qq)
+    db.session.commit()
+    return jsonify({"message": "Question deleted"}), 200
+
+
+# ---------------------------------------------------------------------------
+# Public quiz (members-only)
+# ---------------------------------------------------------------------------
+
+@app.get("/events/<int:event_id>/quiz")
+@_require_login
+def get_quiz(event_id):
+    event = Event.query.get_or_404(event_id)
+    questions = QuizQuestion.query.filter_by(event_id=event_id).order_by(QuizQuestion.sort_order.asc()).all()
+    return jsonify({
+        "event": event.to_dict(),
+        "questions": [q.to_dict(include_answer=False) for q in questions],
+        "total": len(questions),
+    }), 200
+
+
+@app.post("/events/<int:event_id>/quiz/submit")
+@_require_login
+@limiter.limit("10 per hour")
+def submit_quiz(event_id):
+    event = Event.query.get_or_404(event_id)
+    data = request.get_json(silent=True) or {}
+    answers = data.get("answers") or {}  # {question_id: selected_index}
+
+    questions = QuizQuestion.query.filter_by(event_id=event_id).order_by(QuizQuestion.sort_order.asc()).all()
+    if not questions:
+        return jsonify({"error": "No quiz questions found for this event"}), 404
+
+    correct_count = 0
+    results = []
+    for q in questions:
+        selected = answers.get(str(q.id))
+        is_correct = selected is not None and int(selected) == q.correct_answer
+        if is_correct:
+            correct_count += 1
+        results.append({
+            "question_id": q.id,
+            "question": q.question,
+            "selected": selected,
+            "correct_answer": q.correct_answer,
+            "is_correct": is_correct,
+            "explanation": q.explanation,
+        })
+
+    score = round((correct_count / len(questions)) * 100) if questions else 0
+
+    attempt = QuizAttempt(
+        user_id=request.current_user.id,
+        event_id=event_id,
+        score=score,
+        answers_json=json.dumps(answers),
+    )
+    db.session.add(attempt)
+    db.session.commit()
+
+    return jsonify({
+        "score": score,
+        "correct": correct_count,
+        "total": len(questions),
+        "results": results,
+    }), 200
 
 
 # ---------------------------------------------------------------------------
