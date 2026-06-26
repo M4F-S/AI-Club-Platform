@@ -144,20 +144,28 @@ class Event(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(255), nullable=False)
+    slug = db.Column(db.String(255), nullable=True, index=True)
     description = db.Column(db.Text, nullable=True)
     event_date = db.Column(db.DateTime, nullable=True)
     location = db.Column(db.String(255), nullable=True)
     link = db.Column(db.String(500), nullable=True)
+    event_type = db.Column(db.String(64), nullable=False, default="workshop")
+    is_public = db.Column(db.Boolean, nullable=False, default=True)
+    cover_image = db.Column(db.String(500), nullable=True)
     created_at = db.Column(db.DateTime, nullable=False, default=utcnow)
 
     def to_dict(self):
         return {
             "id": self.id,
             "title": self.title,
+            "slug": self.slug,
             "description": self.description,
             "event_date": self.event_date.isoformat() if self.event_date else None,
             "location": self.location,
             "link": self.link,
+            "event_type": self.event_type,
+            "is_public": self.is_public,
+            "cover_image": self.cover_image,
             "created_at": self.created_at.isoformat() if self.created_at else None,
         }
 
@@ -180,4 +188,37 @@ class Resource(db.Model):
             "url": self.url,
             "category": self.category,
             "created_at": self.created_at.isoformat() if self.created_at else None,
+        }
+
+
+class EventMaterial(db.Model):
+    __tablename__ = "event_materials"
+
+    id = db.Column(db.Integer, primary_key=True)
+    event_id = db.Column(db.Integer, db.ForeignKey("events.id"), nullable=False)
+    title = db.Column(db.String(255), nullable=False)
+    description = db.Column(db.Text, nullable=True)
+    file_path = db.Column(db.String(500), nullable=False)
+    file_type = db.Column(db.String(64), nullable=False)  # slide, pdf, quiz, link
+    file_size = db.Column(db.Integer, nullable=True)
+    sort_order = db.Column(db.Integer, nullable=False, default=0)
+    is_revealed = db.Column(db.Boolean, nullable=False, default=False)
+    is_downloadable = db.Column(db.Boolean, nullable=False, default=True)
+    uploaded_at = db.Column(db.DateTime, nullable=False, default=utcnow)
+
+    event = db.relationship("Event", backref="materials")
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "event_id": self.event_id,
+            "title": self.title,
+            "description": self.description,
+            "file_path": self.file_path,
+            "file_type": self.file_type,
+            "file_size": self.file_size,
+            "sort_order": self.sort_order,
+            "is_revealed": self.is_revealed,
+            "is_downloadable": self.is_downloadable,
+            "uploaded_at": self.uploaded_at.isoformat() if self.uploaded_at else None,
         }

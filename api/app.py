@@ -1,8 +1,11 @@
 """42 Berlin AI Club API."""
 import re
+import os
+import uuid
 import secrets
+import hashlib
 import smtplib
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from email.mime.text import MIMEText
 from functools import wraps
 
@@ -18,6 +21,7 @@ from models import (
     BlogPost,
     ContactMessage,
     Event,
+    EventMaterial,
     PartnerInquiry,
     Resource,
     User,
@@ -567,15 +571,36 @@ def delete_post(post_id):
 def create_event():
     data = request.get_json(silent=True) or {}
     title = (data.get("title") or "").strip()
+    slug = (data.get("slug") or "").strip().lower()
     description = (data.get("description") or "").strip()
     location = (data.get("location") or "").strip()
     link = (data.get("link") or "").strip()
+    event_type = (data.get("event_type") or "workshop").strip().lower()
+    is_public = bool(data.get("is_public", True))
+    cover_image = (data.get("cover_image") or "").strip()
     event_date = data.get("event_date")
 
     if not title:
         return jsonify({"error": "Title is required"}), 400
 
-    event = Event(title=title, description=description, location=location, link=link)
+    if not slug:
+        slug = re.sub(r'[^a-z0-9]+', '-', title.lower()).strip('-')
+    if not re.match(r"^[a-z0-9-]+$", slug):
+        return jsonify({"error": "Slug may only contain lowercase letters, numbers, and hyphens"}), 400
+
+    if Event.query.filter_by(slug=slug).first():
+        return jsonify({"error": "An event with this slug already exists"}), 409
+
+    event = Event(
+        title=title,
+        slug=slug,
+        description=description,
+        location=location,
+        link=link,
+        event_type=event_type,
+        is_public=is_public,
+        cover_image=cover_image,
+    )
     if event_date:
         try:
             event.event_date = datetime.fromisoformat(event_date.replace("Z", "+00:00"))
@@ -591,9 +616,16 @@ def create_event():
 @_require_admin
 def delete_event(event_id):
     event = Event.query.get_or_404(event_id)
+    # Delete materials first (SQLite FK is disabled, no CASCADE)
+    for material in event.materials:
+        import os
+        full_path = os.path.join("/app/data/materials", str(event_id), material.file_path)
+        if os.path.exists(full_path):
+            os.remove(full_path)
+        db.session.delete(material)
     db.session.delete(event)
     db.session.commit()
-    return jsonify({"message": "Event deleted"}), 200
+    return jsonify({"message": "Event and all materials deleted"}), 200
 
 
 @app.post("/admin/resources")
@@ -621,6 +653,208 @@ def delete_resource(resource_id):
     db.session.delete(resource)
     db.session.commit()
     return jsonify({"message": "Resource deleted"}), 200
+
+
+# ---------------------------------------------------------------------------
+# Admin events (enhanced)
+# ---------------------------------------------------------------------------
+
+@app.get("/admin/events")
+@_require_admin
+def list_events_admin():
+    events = Event.query.order_by(Event.event_date.desc()).all()
+    return jsonify([e.to_dict() for e in events]), 200
+
+
+@app.put("/admin/events/<int:event_id>")
+@_require_admin
+def update_event(event_id):
+    event = Event.query.get_or_404(event_id)
+    data = request.get_json(silent=True) or {}
+    event.title = (data.get("title") or event.title).strip()
+    event.description = (data.get("description") or event.description).strip()
+    event.location = (data.get("location") or event.location).strip()
+    event.link = (data.get("link") or event.link).strip()
+    event.event_type = (data.get("event_type") or event.event_type).strip().lower()
+    if "is_public" in data:
+        event.is_public = bool(data["is_public"])
+    event.cover_image = (data.get("cover_image") or event.cover_image).strip()
+    event_date = data.get("event_date")
+    if event_date:
+        try:
+            event.event_date = datetime.fromisoformat(event_date.replace("Z", "+00:00"))
+        except ValueError:
+            return jsonify({"error": "Invalid event date"}), 400
+    db.session.commit()
+    return jsonify(event.to_dict()), 200
+
+
+# ---------------------------------------------------------------------------
+# Admin event materials
+# ---------------------------------------------------------------------------
+
+ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png", "gif", "pdf", "webp", "svg"}
+MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16 MB
+
+
+def _allowed_file(filename):
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+@app.get("/admin/events/<int:event_id>/materials")
+@_require_admin
+def list_event_materials_admin(event_id):
+    event = Event.query.get_or_404(event_id)
+    materials = EventMaterial.query.filter_by(event_id=event_id).order_by(EventMaterial.sort_order.asc()).all()
+    return jsonify([m.to_dict() for m in materials]), 200
+
+
+@app.post("/admin/events/<int:event_id>/materials")
+@_require_admin
+def upload_event_material(event_id):
+    event = Event.query.get_or_404(event_id)
+
+    if "file" not in request.files:
+        return jsonify({"error": "No file provided"}), 400
+
+    file = request.files["file"]
+    if file.filename == "":
+        return jsonify({"error": "Empty filename"}), 400
+
+    title = (request.form.get("title") or file.filename).strip()
+    description = (request.form.get("description") or "").strip()
+    file_type = (request.form.get("file_type") or "").strip().lower()
+    sort_order = int(request.form.get("sort_order") or 0)
+    is_revealed = request.form.get("is_revealed", "false").lower() == "true"
+    is_downloadable = request.form.get("is_downloadable", "true").lower() == "true"
+
+    if not file_type:
+        ext = file.filename.rsplit(".", 1)[1].lower() if "." in file.filename else ""
+        if ext in {"jpg", "jpeg", "png", "gif", "webp", "svg"}:
+            file_type = "slide" if ext in {"jpg", "jpeg", "png", "webp"} else "image"
+        elif ext == "pdf":
+            file_type = "pdf"
+        else:
+            file_type = "file"
+
+    if not _allowed_file(file.filename):
+        return jsonify({"error": f"File type not allowed. Allowed: {', '.join(ALLOWED_EXTENSIONS)}"}), 400
+
+    # Save file
+    event_dir = os.path.join("/app/data/materials", str(event_id))
+    os.makedirs(event_dir, exist_ok=True)
+
+    ext = file.filename.rsplit(".", 1)[1].lower() if "." in file.filename else ""
+    filename = f"{uuid.uuid4()}.{ext}"
+    file_path = os.path.join(event_dir, filename)
+    file.save(file_path)
+
+    file_size = os.path.getsize(file_path)
+
+    material = EventMaterial(
+        event_id=event_id,
+        title=title,
+        description=description,
+        file_path=filename,
+        file_type=file_type,
+        file_size=file_size,
+        sort_order=sort_order,
+        is_revealed=is_revealed,
+        is_downloadable=is_downloadable,
+    )
+    db.session.add(material)
+    db.session.commit()
+
+    return jsonify(material.to_dict()), 201
+
+
+@app.put("/admin/events/<int:event_id>/materials/<int:material_id>")
+@_require_admin
+def update_event_material(event_id, material_id):
+    material = EventMaterial.query.filter_by(id=material_id, event_id=event_id).first_or_404()
+    data = request.get_json(silent=True) or {}
+    material.title = (data.get("title") or material.title).strip()
+    material.description = (data.get("description") or material.description).strip()
+    material.file_type = (data.get("file_type") or material.file_type).strip().lower()
+    if "sort_order" in data:
+        material.sort_order = int(data["sort_order"])
+    if "is_revealed" in data:
+        material.is_revealed = bool(data["is_revealed"])
+    if "is_downloadable" in data:
+        material.is_downloadable = bool(data["is_downloadable"])
+    db.session.commit()
+    return jsonify(material.to_dict()), 200
+
+
+@app.post("/admin/events/<int:event_id>/materials/<int:material_id>/reveal")
+@_require_admin
+def toggle_material_reveal(event_id, material_id):
+    material = EventMaterial.query.filter_by(id=material_id, event_id=event_id).first_or_404()
+    material.is_revealed = not material.is_revealed
+    db.session.commit()
+    return jsonify({"message": f"Material is now {'revealed' if material.is_revealed else 'hidden'}", "is_revealed": material.is_revealed}), 200
+
+
+@app.delete("/admin/events/<int:event_id>/materials/<int:material_id>")
+@_require_admin
+def delete_event_material(event_id, material_id):
+    material = EventMaterial.query.filter_by(id=material_id, event_id=event_id).first_or_404()
+    full_path = os.path.join("/app/data/materials", str(event_id), material.file_path)
+    if os.path.exists(full_path):
+        os.remove(full_path)
+    db.session.delete(material)
+    db.session.commit()
+    return jsonify({"message": "Material deleted"}), 200
+
+
+# ---------------------------------------------------------------------------
+# Public event details and materials
+# ---------------------------------------------------------------------------
+
+@app.get("/events/<int:event_id>")
+def get_event(event_id):
+    event = Event.query.get_or_404(event_id)
+    if not event.is_public:
+        return jsonify({"error": "This event is not public"}), 403
+    data = event.to_dict()
+    # Include only revealed materials
+    materials = EventMaterial.query.filter_by(event_id=event_id, is_revealed=True).order_by(EventMaterial.sort_order.asc()).all()
+    data["materials"] = [m.to_dict() for m in materials]
+    return jsonify(data), 200
+
+
+@app.get("/events/<int:event_id>/materials")
+def list_event_materials(event_id):
+    event = Event.query.get_or_404(event_id)
+    if not event.is_public:
+        return jsonify({"error": "This event is not public"}), 403
+    materials = EventMaterial.query.filter_by(event_id=event_id, is_revealed=True).order_by(EventMaterial.sort_order.asc()).all()
+    return jsonify([m.to_dict() for m in materials]), 200
+
+
+@app.get("/events/<int:event_id>/materials/<int:material_id>/download")
+def download_event_material(event_id, material_id):
+    event = Event.query.get_or_404(event_id)
+    material = EventMaterial.query.filter_by(id=material_id, event_id=event_id).first_or_404()
+
+    # Check auth for non-public events
+    if not event.is_public:
+        user = _current_user()
+        if not user or not user.is_active:
+            return jsonify({"error": "Authentication required"}), 401
+
+    # Only revealed materials are downloadable by public
+    if not material.is_revealed:
+        user = _current_user()
+        if not user or not user.is_active:
+            return jsonify({"error": "This material is not yet available"}), 403
+
+    if not material.is_downloadable:
+        return jsonify({"error": "This material is not available for download"}), 403
+
+    event_dir = os.path.join("/app/data/materials", str(event_id))
+    from flask import send_from_directory
+    return send_from_directory(event_dir, material.file_path, as_attachment=True)
 
 
 # ---------------------------------------------------------------------------
@@ -678,6 +912,65 @@ def change_password():
     request.current_user.password_hash = _hash_password(new)
     db.session.commit()
     return jsonify({"message": "Password updated"}), 200
+
+
+@app.post("/forgot-password")
+@limiter.limit("3 per hour")
+def forgot_password():
+    data = request.get_json(silent=True) or {}
+    email = (data.get("email") or "").strip().lower()
+
+    if not email or not _is_valid_email(email):
+        return jsonify({"error": "Please provide a valid email address."}), 400
+
+    user = User.query.filter_by(email=email).first()
+    # Always return same message to prevent email enumeration
+    if not user:
+        return jsonify({"message": "If this email is registered, a reset link has been sent."}), 200
+
+    # Generate token and hash it for storage
+    raw_token = secrets.token_urlsafe(32)
+    token_hash = hashlib.sha256(raw_token.encode()).hexdigest()
+
+    user.password_reset_token = token_hash
+    user.password_reset_expires_at = utcnow() + timedelta(hours=24)
+    db.session.commit()
+
+    reset_url = f"https://mysophia.tech/ai-club/reset-password.html?token={raw_token}"
+    _send_email(
+        subject="42 Berlin AI Club — Password Reset Request",
+        body=f"Hi {user.name},\n\nYou requested a password reset.\n\nClick the link below to set a new password:\n{reset_url}\n\nThis link expires in 24 hours.\n\nIf you didn't request this, ignore this email.",
+        to=user.email,
+    )
+
+    return jsonify({"message": "If this email is registered, a reset link has been sent."}), 200
+
+
+@app.post("/reset-password")
+@limiter.limit("5 per hour")
+def reset_password():
+    data = request.get_json(silent=True) or {}
+    token = (data.get("token") or "").strip()
+    new_password = data.get("new_password") or ""
+
+    if not token or len(new_password) < 8:
+        return jsonify({"error": "Invalid token or password too short (min 8 characters)."}), 400
+
+    token_hash = hashlib.sha256(token.encode()).hexdigest()
+    user = User.query.filter(
+        User.password_reset_token == token_hash,
+        User.password_reset_expires_at > utcnow(),
+    ).first()
+
+    if not user:
+        return jsonify({"error": "Invalid or expired reset token."}), 400
+
+    user.password_hash = _hash_password(new_password)
+    user.password_reset_token = None
+    user.password_reset_expires_at = None
+    db.session.commit()
+
+    return jsonify({"message": "Password reset successfully. You can now log in with your new password."}), 200
 
 
 # ---------------------------------------------------------------------------

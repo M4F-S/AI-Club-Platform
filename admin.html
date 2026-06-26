@@ -286,6 +286,7 @@
           <button class="tab" data-status="rejected">Rejected</button>
           <button class="tab" data-view="members">Members</button>
           <button class="tab" data-view="partners">Partners</button>
+          <button class="tab" data-view="events">Events</button>
         </div>
         <button class="admin-btn admin-btn-secondary" id="logout-btn">
           <i data-lucide="log-out" style="width: 16px; height: 16px;"></i>
@@ -296,6 +297,7 @@
       <div id="applications-list"></div>
       <div id="members-list" style="display:none;"></div>
       <div id="partners-list" style="display:none;"></div>
+      <div id="events-list" style="display:none;"></div>
     </div>
   </main>
 
@@ -360,23 +362,34 @@
         const appList = document.getElementById('applications-list');
         const memberList = document.getElementById('members-list');
         const partnerList = document.getElementById('partners-list');
+        const eventsList = document.getElementById('events-list');
         if (tab.dataset.view === 'members') {
           currentView = 'members';
           appList.style.display = 'none';
           memberList.style.display = 'block';
           partnerList.style.display = 'none';
+          eventsList.style.display = 'none';
           loadMembers();
         } else if (tab.dataset.view === 'partners') {
           currentView = 'partners';
           appList.style.display = 'none';
           memberList.style.display = 'none';
           partnerList.style.display = 'block';
+          eventsList.style.display = 'none';
           loadPartners();
+        } else if (tab.dataset.view === 'events') {
+          currentView = 'events';
+          appList.style.display = 'none';
+          memberList.style.display = 'none';
+          partnerList.style.display = 'none';
+          eventsList.style.display = 'block';
+          loadEvents();
         } else {
           currentView = 'applications';
           currentStatus = tab.dataset.status;
           memberList.style.display = 'none';
           partnerList.style.display = 'none';
+          eventsList.style.display = 'none';
           appList.style.display = 'block';
           loadApplications();
         }
@@ -542,6 +555,204 @@
         </div>
       `).join('');
       lucide.createIcons();
+    }
+
+    async function loadEvents() {
+      const list = document.getElementById('events-list');
+      list.innerHTML = '<div class="empty">Loading events...</div>';
+
+      const { ok, data } = await api('/admin/events');
+      if (!ok) {
+        list.innerHTML = `<div class="empty">Failed to load events: ${data.error}</div>`;
+        return;
+      }
+
+      let html = `
+        <div class="toolbar" style="margin-bottom: 24px;">
+          <button class="admin-btn admin-btn-primary" onclick="showCreateEventForm()">
+            <i data-lucide="plus" style="width: 16px; height: 16px;"></i> Create Event
+          </button>
+        </div>
+        <div id="create-event-form" style="display:none; margin-bottom: 24px;">
+          <div class="application-card">
+            <h3>Create New Event</h3>
+            <div class="form-group" style="margin-top: 12px;">
+              <input type="text" id="event-title" placeholder="Event title" style="width: 100%; margin-bottom: 10px;">
+              <input type="text" id="event-slug" placeholder="URL slug (e.g. defensible-ai)" style="width: 100%; margin-bottom: 10px;">
+              <textarea id="event-description" placeholder="Description" style="width: 100%; margin-bottom: 10px; min-height: 60px;"></textarea>
+              <input type="datetime-local" id="event-date" style="width: 100%; margin-bottom: 10px;">
+              <input type="text" id="event-location" placeholder="Location" style="width: 100%; margin-bottom: 10px;">
+              <select id="event-type" style="width: 100%; margin-bottom: 10px;">
+                <option value="workshop">Workshop</option>
+                <option value="talk">Talk</option>
+                <option value="meetup">Meetup</option>
+              </select>
+              <label style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
+                <input type="checkbox" id="event-public" checked> Public event
+              </label>
+              <div class="actions">
+                <button class="admin-btn admin-btn-success" onclick="createEvent()">Create</button>
+                <button class="admin-btn admin-btn-secondary" onclick="hideCreateEventForm()">Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      if (data.length === 0) {
+        html += '<div class="empty">No events yet. Create one above.</div>';
+      } else {
+        html += data.map(event => `
+          <div class="application-card" style="margin-bottom: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px;">
+              <div>
+                <h3>${escapeHtml(event.title)}</h3>
+                <div class="meta">
+                  ${event.event_date ? new Date(event.event_date).toLocaleString() : 'Date TBD'}
+                  ${event.location ? '· ' + escapeHtml(event.location) : ''}
+                  · ${event.event_type}
+                  · ${event.is_public ? 'Public' : 'Members-only'}
+                </div>
+                <div class="field"><strong>Slug</strong> ${escapeHtml(event.slug || 'N/A')}</div>
+                <div class="field"><strong>Description</strong> ${escapeHtml(event.description || 'No description')}</div>
+              </div>
+              <div class="actions">
+                <button class="admin-btn admin-btn-danger" onclick="deleteEvent(${event.id})">🗑️ Delete</button>
+              </div>
+            </div>
+            <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border);">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <strong>Materials</strong>
+                <span class="meta" id="material-count-${event.id}">Loading...</span>
+              </div>
+              <div id="materials-${event.id}"></div>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      list.innerHTML = html;
+      lucide.createIcons();
+
+      // Load materials for each event
+      if (data.length > 0) {
+        for (const event of data) {
+          loadEventMaterials(event.id);
+        }
+      }
+    }
+
+    function showCreateEventForm() {
+      document.getElementById('create-event-form').style.display = 'block';
+    }
+
+    function hideCreateEventForm() {
+      document.getElementById('create-event-form').style.display = 'none';
+      document.getElementById('event-title').value = '';
+      document.getElementById('event-slug').value = '';
+      document.getElementById('event-description').value = '';
+      document.getElementById('event-date').value = '';
+      document.getElementById('event-location').value = '';
+    }
+
+    async function createEvent() {
+      adminAlert.className = 'alert';
+      const title = document.getElementById('event-title').value.trim();
+      const slug = document.getElementById('event-slug').value.trim().toLowerCase();
+      const description = document.getElementById('event-description').value.trim();
+      const eventDate = document.getElementById('event-date').value;
+      const location = document.getElementById('event-location').value.trim();
+      const eventType = document.getElementById('event-type').value;
+      const isPublic = document.getElementById('event-public').checked;
+
+      if (!title) {
+        adminAlert.className = 'alert show error';
+        adminAlert.textContent = 'Title is required';
+        return;
+      }
+
+      const payload = {
+        title,
+        slug: slug || undefined,
+        description,
+        event_date: eventDate ? new Date(eventDate).toISOString() : undefined,
+        location,
+        event_type: eventType,
+        is_public: isPublic
+      };
+
+      const { ok, data } = await api('/admin/events', {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+
+      adminAlert.className = `alert show ${ok ? 'success' : 'error'}`;
+      adminAlert.textContent = ok ? 'Event created!' : (data.error || 'Failed to create event');
+      if (ok) {
+        hideCreateEventForm();
+        loadEvents();
+      }
+    }
+
+    async function deleteEvent(id) {
+      if (!confirm('Delete this event and all its materials? This cannot be undone.')) return;
+      adminAlert.className = 'alert';
+      const { ok, data } = await api('/admin/events/' + id, { method: 'DELETE' });
+      adminAlert.className = `alert show ${ok ? 'success' : 'error'}`;
+      adminAlert.textContent = ok ? 'Event deleted.' : (data.error || 'Failed to delete event');
+      if (ok) loadEvents();
+    }
+
+    async function loadEventMaterials(eventId) {
+      const container = document.getElementById('materials-' + eventId);
+      const countEl = document.getElementById('material-count-' + eventId);
+      if (!container) return;
+
+      const { ok, data } = await api('/admin/events/' + eventId + '/materials');
+      if (!ok) {
+        container.innerHTML = '<div class="empty">Failed to load materials</div>';
+        if (countEl) countEl.textContent = 'Error';
+        return;
+      }
+
+      if (countEl) countEl.textContent = data.length + ' material(s)';
+
+      if (data.length === 0) {
+        container.innerHTML = '<div class="empty" style="padding: 16px;">No materials uploaded.</div>';
+        return;
+      }
+
+      container.innerHTML = data.map(m => `
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: var(--color-bg); border-radius: 8px; margin-bottom: 8px;">
+          <div>
+            <strong>${escapeHtml(m.title)}</strong>
+            <span class="meta" style="margin-left: 8px;">${m.file_type} · ${m.is_revealed ? 'Revealed' : 'Hidden'}</span>
+          </div>
+          <div class="actions">
+            <button class="admin-btn ${m.is_revealed ? 'admin-btn-secondary' : 'admin-btn-success'}" onclick="toggleMaterialReveal(${eventId}, ${m.id})" style="font-size: 0.85rem; padding: 6px 12px;">
+              ${m.is_revealed ? 'Hide' : 'Reveal'}
+            </button>
+            <button class="admin-btn admin-btn-danger" onclick="deleteMaterial(${eventId}, ${m.id})" style="font-size: 0.85rem; padding: 6px 12px;">🗑️</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function toggleMaterialReveal(eventId, materialId) {
+      adminAlert.className = 'alert';
+      const { ok, data } = await api('/admin/events/' + eventId + '/materials/' + materialId + '/reveal', { method: 'POST' });
+      adminAlert.className = `alert show ${ok ? 'success' : 'error'}`;
+      adminAlert.textContent = ok ? (data.message || 'Toggled') : (data.error || 'Failed');
+      if (ok) loadEventMaterials(eventId);
+    }
+
+    async function deleteMaterial(eventId, materialId) {
+      if (!confirm('Delete this material? This cannot be undone.')) return;
+      adminAlert.className = 'alert';
+      const { ok, data } = await api('/admin/events/' + eventId + '/materials/' + materialId, { method: 'DELETE' });
+      adminAlert.className = `alert show ${ok ? 'success' : 'error'}`;
+      adminAlert.textContent = ok ? 'Material deleted.' : (data.error || 'Failed to delete');
+      if (ok) loadEventMaterials(eventId);
     }
 
     async function deleteMember(id) {
