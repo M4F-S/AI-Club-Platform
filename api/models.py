@@ -23,6 +23,8 @@ class User(db.Model):
     is_active = db.Column(db.Boolean, nullable=False, default=True)
     created_at = db.Column(db.DateTime, nullable=False, default=utcnow)
     updated_at = db.Column(db.DateTime, nullable=False, default=utcnow, onupdate=utcnow)
+    password_reset_token = db.Column(db.String(255), nullable=True, index=True)
+    password_reset_expires_at = db.Column(db.DateTime, nullable=True)
 
     def to_dict(self):
         return {
