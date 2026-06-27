@@ -3,9 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23120a0d'/%3E%3Cpath d='M16 2 C13 6, 12 11, 14 15 C11 13, 7 14, 5 17 C4 19, 5 22, 8 23 C7 25, 8 27, 10 28 C12 29, 14 28, 15 26 C15 28, 16 30, 17 30 C18 30, 18 28, 18 26 C19 28, 21 29, 23 28 C25 27, 26 25, 25 23 C28 22, 29 19, 27 17 C25 14, 21 13, 18 15 C20 11, 19 6, 16 2 Z' fill='%23f43f5e'/%3E%3Cpath d='M16 6 C14 9, 13 13, 14 16 C12 15, 10 15, 9 17 C8 18, 9 20, 11 21 C10 22, 11 23, 12 24 C13 24, 14 23, 15 22 C15 24, 16 25, 17 25 C18 25, 18 24, 18 22 C19 23, 20 24, 21 24 C22 23, 23 22, 22 21 C24 20, 25 18, 24 17 C23 15, 21 15, 19 16 C20 13, 19 9, 16 6 Z' fill='%23f2cc8f'/%3E%3C/svg%3E">
   <title>Admin — 42 Berlin AI Club</title>
   <meta name="robots" content="noindex, nofollow">
   <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" as="style">
+  <link rel="preload" href="/ai-club/assets/ai-club.css?v=11" as="style">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
@@ -226,8 +229,9 @@
   </style>
 </head>
 <body>
-  <header>
-    <nav>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header role="banner">
+    <nav aria-label="Main">
       <a href="/ai-club/" class="logo">
         <div class="logo-icon" aria-hidden="true">
           <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -253,7 +257,7 @@
     </nav>
   </header>
 
-  <main>
+  <main id="main-content">
     <div class="form-header">
       <h1>Admin <span class="text-gradient">panel</span></h1>
     </div>
@@ -301,7 +305,7 @@
     </div>
   </main>
 
-  <script src="/ai-club/assets/ai-club.js?v=10"></script>
+  <script src="/ai-club/assets/ai-club.js?v=10" defer></script>
   <script>
     if (window.lucide) lucide.createIcons();
 

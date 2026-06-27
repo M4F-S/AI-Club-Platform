@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23120a0d'/%3E%3Cpath d='M16 2 C13 6, 12 11, 14 15 C11 13, 7 14, 5 17 C4 19, 5 22, 8 23 C7 25, 8 27, 10 28 C12 29, 14 28, 15 26 C15 28, 16 30, 17 30 C18 30, 18 28, 18 26 C19 28, 21 29, 23 28 C25 27, 26 25, 25 23 C28 22, 29 19, 27 17 C25 14, 21 13, 18 15 C20 11, 19 6, 16 2 Z' fill='%23f43f5e'/%3E%3Cpath d='M16 6 C14 9, 13 13, 14 16 C12 15, 10 15, 9 17 C8 18, 9 20, 11 21 C10 22, 11 23, 12 24 C13 24, 14 23, 15 22 C15 24, 16 25, 17 25 C18 25, 18 24, 18 22 C19 23, 20 24, 21 24 C22 23, 23 22, 22 21 C24 20, 25 18, 24 17 C23 15, 21 15, 19 16 C20 13, 19 9, 16 6 Z' fill='%23f2cc8f'/%3E%3C/svg%3E">
   <title>42 Berlin AI Club</title>
   <meta name="description" content="A student-led, vendor-neutral community at 42 Berlin helping members learn, explore, and build with AI responsibly.">
   <meta name="theme-color" content="#f43f5e">
@@ -10,20 +11,64 @@
   <meta property="og:description" content="Student-led AI community at 42 Berlin. Learn, build, and explore AI responsibly.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://mysophia.tech/ai-club/">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="42 Berlin AI Club">
+  <meta name="twitter:description" content="Student-led AI community at 42 Berlin. Learn, build, and explore AI responsibly.">
   <link rel="canonical" href="https://mysophia.tech/ai-club/">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" as="style">
+  <link rel="preload" href="/ai-club/assets/ai-club.css?v=11" as="style">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/ai-club/assets/ai-club.css?v=11">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "42 Berlin AI Club",
+  "description": "A student-led, vendor-neutral AI community at 42 Berlin.",
+  "url": "https://mysophia.tech/ai-club/",
+  "logo": "https://mysophia.tech/ai-club/assets/og-image.png",
+  "sameAs": [
+    "https://42berlin.de"
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Event",
+  "name": "Defensible AI Architecture",
+  "description": "A hands-on workshop on building secure, robust AI systems. We cover threat modeling, prompt injection defense, output validation, and operational security for AI products.",
+  "startDate": "2026-07-02T18:00:00",
+  "eventStatus": "https://schema.org/EventScheduled",
+  "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+  "location": {
+    "@type": "Place",
+    "name": "42 Berlin Campus, Kohlenquartier",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Berlin",
+      "addressCountry": "DE"
+    }
+  },
+  "organizer": {
+    "@type": "Organization",
+    "name": "42 Berlin AI Club",
+    "url": "https://mysophia.tech/ai-club/"
+  }
+}
+</script>
 </head>
 <body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
   <div class="gradient-orb orb-1" aria-hidden="true"></div>
   <div class="gradient-orb orb-2" aria-hidden="true"></div>
   <div class="gradient-orb orb-3" aria-hidden="true"></div>
   <canvas id="canvas-bg" aria-hidden="true"></canvas>
 
-  <header>
-    <nav>
+  <header role="banner">
+    <nav aria-label="Main">
       <a href="/ai-club/" class="logo">
         <div class="logo-icon" aria-hidden="true">
           <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -42,7 +87,7 @@
       </a>
       <button class="mobile-menu-toggle" aria-label="Toggle menu" aria-expanded="false">&#9776;</button>
       <ul class="nav-links">
-        <li><a href="/ai-club/">Home</a></li>
+        <li><a href="/ai-club/" aria-current="page">Home</a></li>
         <li><a href="/ai-club/become-member.html">Membership</a></li>
         <li><a href="/ai-club/become-partner.html">Partners</a></li>
         <li><a href="/ai-club/login.html">Member Login</a></li>
@@ -51,7 +96,7 @@
     </nav>
   </header>
 
-  <main>
+  <main id="main-content">
     <section class="hero">
       <div class="hero-content">
         <div class="revolve-ring" aria-hidden="true"></div>
@@ -205,6 +250,6 @@
     </div>
   </footer>
 
-  <script src="/ai-club/assets/ai-club.js?v=10"></script>
+  <script src="/ai-club/assets/ai-club.js?v=10" defer></script>
 </body>
 </html>
