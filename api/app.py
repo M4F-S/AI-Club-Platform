@@ -822,6 +822,7 @@ def delete_event_material(event_id, material_id):
 # ---------------------------------------------------------------------------
 
 @app.get("/events/<int:event_id>")
+@limiter.exempt
 def get_event(event_id):
     event = Event.query.get_or_404(event_id)
     if not event.is_public:
@@ -1165,12 +1166,14 @@ def get_post(slug):
 
 
 @app.get("/events")
+@limiter.exempt
 def list_events():
     events = Event.query.order_by(Event.event_date.desc()).all()
     return jsonify([e.to_dict() for e in events]), 200
 
 
 @app.get("/resources")
+@limiter.exempt
 def list_resources():
     resources = Resource.query.order_by(Resource.created_at.desc()).all()
     return jsonify([r.to_dict() for r in resources]), 200

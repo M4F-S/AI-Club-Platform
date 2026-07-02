@@ -3,7 +3,8 @@
 
   const API_URL = '/api';
 
-  async function api(path, options = {}, retries = 2) {
+  // Expose API immediately so inline scripts can use it
+  const api = async function(path, options = {}, retries = 2) {
     for (let attempt = 0; attempt <= retries; attempt++) {
       try {
         const res = await fetch(`${API_URL}${path}`, {
@@ -21,11 +22,10 @@
           console.error(`API error for ${path}:`, err);
           return { ok: false, status: 0, data: { error: 'Network error' } };
         }
-        // Wait before retry (exponential backoff)
         await new Promise(r => setTimeout(r, 300 * (attempt + 1)));
       }
     }
-  }
+  };
 
   async function requireAuth() {
     const { ok, data } = await api('/member/me');
@@ -131,5 +131,10 @@
     boot();
   }
 
+  // Expose API with a ready promise for inline scripts
   window.MemberAPI = { api, requireAuth, logout };
+  window.MemberAPIReady = Promise.resolve(window.MemberAPI);
+
+  // Also dispatch a custom event for pages that need to know when API is ready
+  window.dispatchEvent(new CustomEvent('memberapi-ready', { detail: window.MemberAPI }));
 })();

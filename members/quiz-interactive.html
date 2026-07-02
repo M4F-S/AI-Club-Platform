@@ -1,94 +1,162 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Security Quiz</title>
+<title>Defensible AI Architecture - Workshop Quiz</title>
+<link rel="icon" href="/ai-club/assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
+:root {
+  --color-bg: #faf8f7;
+  --color-surface: #ffffff;
+  --color-text: #2d2424;
+  --color-text-muted: #8a7e7e;
+  --color-primary: #c65d3b;
+  --color-primary-light: #f2cc8f;
+  --color-accent: #f43f5e;
+  --color-success: #22c55e;
+  --color-success-bg: #dcfce7;
+  --color-error: #ef4444;
+  --color-error-bg: #fee2e2;
+  --color-hint-bg: #fffbeb;
+  --color-hint-border: #fcd34d;
+  --color-border: #e8e0de;
+  --gradient: linear-gradient(135deg, #c65d3b 0%, #f43f5e 100%);
+  --shadow: 0 4px 24px rgba(45, 36, 36, 0.08);
+  --radius: 16px;
+}
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  min-height: 100vh; padding: 20px; color: #333;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--color-bg);
+  color: var(--color-text);
+  min-height: 100vh;
+  padding: 20px;
+  line-height: 1.6;
 }
-.container { max-width: 700px; margin: 0 auto; }
-.header { text-align: center; color: #fff; padding: 30px 20px; }
-.header h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; text-shadow: 0 2px 10px rgba(0,0,0,0.2); }
-.header .meta { font-size: 14px; opacity: 0.9; }
-.progress-bar { background: rgba(255,255,255,0.3); border-radius: 10px; height: 8px; margin: 20px 0; overflow: hidden; }
-.progress-fill { background: #fff; height: 100%; width: 0%; transition: width 0.4s ease; border-radius: 10px; }
-.question { background: #fff; border-radius: 16px; padding: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); display: none; }
+.container { max-width: 720px; margin: 0 auto; }
+.header {
+  text-align: center;
+  padding: 40px 20px 30px;
+}
+.header h1 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.header .meta {
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
+.progress-bar {
+  background: var(--color-border);
+  border-radius: 10px;
+  height: 8px;
+  margin: 24px 0;
+  overflow: hidden;
+}
+.progress-fill {
+  background: var(--gradient);
+  height: 100%;
+  width: 0%;
+  transition: width 0.5s ease;
+  border-radius: 10px;
+}
+.question {
+  background: var(--color-surface);
+  border-radius: var(--radius);
+  padding: 32px;
+  box-shadow: var(--shadow);
+  display: none;
+  border: 1px solid var(--color-border);
+}
 .question.active { display: block; }
-.q-header { display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 13px; color: #888; }
-.q-number { font-weight: 600; color: #667eea; }
-.q-text { font-size: 18px; font-weight: 600; line-height: 1.5; margin-bottom: 25px; color: #222; }
+.q-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  font-size: 13px;
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+.q-number { color: var(--color-primary); font-weight: 700; }
+.q-text {
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.6;
+  margin-bottom: 24px;
+  color: var(--color-text);
+}
 .options { display: flex; flex-direction: column; gap: 12px; }
 .option-wrapper { display: flex; flex-direction: column; }
 .option {
-  display: flex; align-items: flex-start; gap: 14px; padding: 16px 18px;
-  border: 2px solid #e8e8e8; border-radius: 12px; background: #fafafa;
-  cursor: pointer; transition: all 0.2s; text-align: left; font-size: 15px; width: 100%;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px 18px;
+  border: 2px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-bg);
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+  font-size: 15px;
+  width: 100%;
+  font-family: inherit;
+  color: var(--color-text);
 }
-[dir="rtl"] .option { text-align: right; flex-direction: row-reverse; }
-.option:hover:not(.disabled) { border-color: #667eea; background: #f5f3ff; }
-.option.selected { border-color: #667eea; background: #ede9fe; }
-.option.correct { border-color: #22c55e; background: #dcfce7; }
-.option.incorrect { border-color: #ef4444; background: #fee2e2; }
+.option:hover:not(.disabled) { border-color: var(--color-primary); background: #fdf5f2; }
+.option.selected { border-color: var(--color-primary); background: #fdf0ec; }
+.option.correct { border-color: var(--color-success); background: var(--color-success-bg); }
+.option.incorrect { border-color: var(--color-error); background: var(--color-error-bg); }
 .option.disabled { cursor: default; }
-.option.show-correct { border-color: #22c55e; background: #dcfce7; }
+.option.show-correct { border-color: var(--color-success); background: var(--color-success-bg); }
 .opt-label {
-  display: flex; align-items: center; justify-content: center;
-  width: 32px; height: 32px; border-radius: 50%; background: #e8e8e8;
-  font-weight: 700; font-size: 14px; flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--color-border);
+  font-weight: 700;
+  font-size: 14px;
+  flex-shrink: 0;
+  color: var(--color-text);
 }
-.option.selected .opt-label { background: #667eea; color: #fff; }
-.option.correct .opt-label { background: #22c55e; color: #fff; }
-.option.incorrect .opt-label { background: #ef4444; color: #fff; }
-.option.show-correct .opt-label { background: #22c55e; color: #fff; }
+.option.selected .opt-label { background: var(--color-primary); color: #fff; }
+.option.correct .opt-label, .option.show-correct .opt-label { background: var(--color-success); color: #fff; }
+.option.incorrect .opt-label { background: var(--color-error); color: #fff; }
 .opt-text { padding-top: 5px; line-height: 1.5; }
-
-/* Individual option feedback */
 .option-feedback {
   margin: 8px 0 4px 46px;
   padding: 12px 16px;
   border-radius: 8px;
   font-size: 14px;
   line-height: 1.5;
+  display: none;
 }
-[dir="rtl"] .option-feedback { margin-left: 0; margin-right: 46px; }
-.option-feedback.correct-feedback {
-  background: #dcfce7;
-  border-left: 3px solid #22c55e;
-}
-.option-feedback.incorrect-feedback {
-  background: #fef3f2;
-  border-left: 3px solid #fca5a5;
-}
-[dir="rtl"] .option-feedback.correct-feedback,
-[dir="rtl"] .option-feedback.incorrect-feedback {
-  border-left: none;
-  border-right: 3px solid;
-}
-[dir="rtl"] .option-feedback.correct-feedback { border-right-color: #22c55e; }
-[dir="rtl"] .option-feedback.incorrect-feedback { border-right-color: #fca5a5; }
-.feedback-status {
-  font-weight: 600;
-  margin-bottom: 4px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
+.option-feedback.show { display: block; }
+.option-feedback.correct-fb { background: var(--color-success-bg); border-left: 3px solid var(--color-success); }
+.option-feedback.incorrect-fb { background: var(--color-error-bg); border-left: 3px solid #fca5a5; }
+.feedback-status { font-weight: 600; margin-bottom: 4px; }
 .feedback-status.correct { color: #166534; }
 .feedback-status.incorrect { color: #991b1b; }
-.feedback-rationale { color: #444; }
-
-/* Hint box */
+.feedback-rationale { color: #555; }
 .hint-box {
-  margin: 12px 0;
+  margin: 16px 0;
   border-radius: 10px;
   overflow: hidden;
-  background: #fffbeb;
-  border: 1px solid #fcd34d;
+  background: var(--color-hint-bg);
+  border: 1px solid var(--color-hint-border);
 }
 .hint-toggle {
   width: 100%;
@@ -103,6 +171,7 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
+  font-family: inherit;
 }
 .hint-toggle:hover { background: #fef3c7; }
 .hint-content {
@@ -114,1361 +183,1647 @@ body {
   color: #78350f;
   line-height: 1.5;
 }
-.hint-box.show .hint-content {
-  padding: 0 16px 12px;
-  max-height: 200px;
-}
-
+.hint-box.show .hint-content { padding: 0 16px 12px; max-height: 200px; }
 .next-btn {
-  margin-top: 20px; width: 100%; padding: 14px;
-  background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; border: none;
-  border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
+  margin-top: 24px;
+  width: 100%;
+  padding: 14px;
+  background: var(--gradient);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.2s;
+  font-family: inherit;
 }
-.next-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(102,126,234,0.4); }
-.hidden { display: none !important; }
-.results { background: #fff; border-radius: 16px; padding: 40px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.15); display: none; }
+.next-btn:hover:not(:disabled) { opacity: 0.9; transform: translateY(-1px); }
+.next-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.next-btn.hidden { display: none; }
+.results {
+  background: var(--color-surface);
+  border-radius: var(--radius);
+  padding: 48px 40px;
+  text-align: center;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--color-border);
+  display: none;
+}
 .results.active { display: block; }
-.results h2 { font-size: 28px; margin-bottom: 10px; color: #333; }
-.results .score { font-size: 64px; font-weight: 700; color: #667eea; margin: 20px 0; }
-.results .score-text { font-size: 18px; color: #666; margin-bottom: 30px; }
+.results h2 { font-family: 'Space Grotesk', sans-serif; font-size: 28px; margin-bottom: 10px; }
+.results .score { font-size: 64px; font-weight: 700; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 20px 0; }
+.results .score-text { font-size: 18px; color: var(--color-text-muted); margin-bottom: 30px; }
 .restart-btn {
-  padding: 14px 40px; background: linear-gradient(135deg, #667eea, #764ba2);
-  color: #fff; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer;
+  padding: 14px 40px;
+  background: var(--gradient);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
 }
-
-/* Math CSS */
-.math, .math-block { font-family: "Cambria Math", "Times New Roman", Times, serif; font-style: italic; }
-.math-block { display: block; text-align: center; margin: 10px 0; font-size: 110%; }
-.frac { display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; margin: 0 3px; font-size: 0.9em; }
-.frac-num { border-bottom: 1px solid currentColor; padding: 0 4px 2px; line-height: 1.2; }
-.frac-den { padding: 2px 4px 0; line-height: 1.2; }
-.sqrt { white-space: nowrap; }
-.sqrt-content { border-top: 1px solid currentColor; padding: 0 3px; margin-left: 2px; }
-sup, sub { font-size: 0.75em; }
-sup { vertical-align: super; }
-sub { vertical-align: sub; }
+.back-link { display: inline-block; margin-top: 20px; color: var(--color-primary); text-decoration: none; font-weight: 500; }
+.back-link:hover { text-decoration: underline; }
+.hidden { display: none !important; }
 </style>
 </head>
 <body>
 <div class="container">
   <div class="header">
-    <h1>Security Quiz</h1>
-    <div class="meta">21 questions</div>
+    <h1>Defensible AI Architecture</h1>
+    <div class="meta">Workshop Quiz &mdash; 25 questions</div>
     <div class="progress-bar"><div class="progress-fill"></div></div>
   </div>
   <div id="quiz-container">
-        <div class="question" data-index="0">
-          <div class="q-header">
-            <span class="q-number">Question 1</span>
-            <span class="q-of">/ 21</span>
-          </div>
-          <div class="q-text">Scenario: You have just been appointed as the Lead Security Architect at SecureAI. Your first task is to explain to the board why traditional firewalls cannot fully protect Large Language Models (LLMs). What is the fundamental 'architectural flaw' that makes LLMs uniquely vulnerable to prompt injection?</div>
-          
-        <div class="hint-box">
-          <button class="hint-toggle" onclick="this.parentElement.classList.toggle('show')">
-            💡 Hint
-          </button>
-          <div class="hint-content">Consider how the model perceives the difference between a command like 'Summarise this' and the text of the article itself.</div>
-        </div>
-      
-          <div class="options">
+
+    <div class="question" data-index="0">
+      <div class="q-header">
+        <span class="q-number">Question 1</span>
+        <span>/ 25</span>
+      </div>
+      <div class="q-text">Scenario: You have just been appointed as the Lead Security Architect at SecureAI. Your first task is to explain to the board why traditional firewalls cannot fully protect Large Language Models (LLMs). What is the fundamental &#x27;architectural flaw&#x27; that makes LLMs uniquely vulnerable to prompt injection?</div>
+
+      <div class="hint-box">
+        <button class="hint-toggle" onclick="this.parentElement.classList.toggle('show')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Hint
+        </button>
+        <div class="hint-content">Consider how the model perceives the difference between a command like &#x27;Summarise this&#x27; and the text of the article itself.</div>
+      </div>
+      <div class="options">
+
         <div class="option-wrapper">
-          <button class="option" data-label="A" data-correct="true" data-rationale="Large Language Models operate on a stateless context window where everything is processed as text, making it impossible for the model to inherently distinguish between a developer's command and a user's input.">
+          <button class="option" data-label="A" data-correct="true" data-rationale="Large Language Models operate on a stateless context window where everything is processed as text, making it impossible for the model to inherently distinguish between a developer&#x27;s command and a user&#x27;s input.">
             <span class="opt-label">A</span>
             <span class="opt-text">LLMs lack a clear boundary between system instructions and user-provided data, treating both as equal tokens.</span>
           </button>
-          <div class="option-feedback hidden" data-for="A">
+          <div class="option-feedback" data-for="A">
             <div class="feedback-status"></div>
-            <div class="feedback-rationale">Large Language Models operate on a stateless context window where everything is processed as text, making it impossible for the model to inherently distinguish between a developer's command and a user's input.</div>
+            <div class="feedback-rationale">Large Language Models operate on a stateless context window where everything is processed as text, making it impossible for the model to inherently distinguish between a developer&#x27;s command and a user&#x27;s input.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
           <button class="option" data-label="B" data-correct="false" data-rationale="API connections are typically secured via HTTPS; the vulnerability is internal to how the model reasons over the combined prompt payload.">
             <span class="opt-label">B</span>
             <span class="opt-text">The API connections used to call models like GPT-4 are unencrypted by default, allowing man-in-the-middle attacks.</span>
           </button>
-          <div class="option-feedback hidden" data-for="B">
+          <div class="option-feedback" data-for="B">
             <div class="feedback-status"></div>
             <div class="feedback-rationale">API connections are typically secured via HTTPS; the vulnerability is internal to how the model reasons over the combined prompt payload.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
-          <button class="option" data-label="C" data-correct="false" data-rationale="While open-source weights are a factor in some attacks, the primary architectural flaw lies in the 'squashing' of instructions and data together in the context window.">
+          <button class="option" data-label="C" data-correct="false" data-rationale="While open-source weights are a factor in some attacks, the primary architectural flaw lies in the &#x27;squashing&#x27; of instructions and data together in the context window.">
             <span class="opt-label">C</span>
             <span class="opt-text">The models are built on open-source weights that allow attackers to see the internal decision-making logic.</span>
           </button>
-          <div class="option-feedback hidden" data-for="C">
+          <div class="option-feedback" data-for="C">
             <div class="feedback-status"></div>
-            <div class="feedback-rationale">While open-source weights are a factor in some attacks, the primary architectural flaw lies in the 'squashing' of instructions and data together in the context window.</div>
+            <div class="feedback-rationale">While open-source weights are a factor in some attacks, the primary architectural flaw lies in the &#x27;squashing&#x27; of instructions and data together in the context window.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
           <button class="option" data-label="D" data-correct="false" data-rationale="LLMs are actually non-deterministic, meaning they can provide different answers to the same prompt, which complicates security rather than simplifying it for the attacker.">
             <span class="opt-label">D</span>
             <span class="opt-text">LLMs are deterministic engines that can be mapped out by attackers using simple brute-force techniques.</span>
           </button>
-          <div class="option-feedback hidden" data-for="D">
+          <div class="option-feedback" data-for="D">
             <div class="feedback-status"></div>
             <div class="feedback-rationale">LLMs are actually non-deterministic, meaning they can provide different answers to the same prompt, which complicates security rather than simplifying it for the attacker.</div>
           </div>
         </div>
       </div>
-          <button class="next-btn hidden">Next Question →</button>
-        </div>
-      
-        <div class="question" data-index="1">
-          <div class="q-header">
-            <span class="q-number">Question 2</span>
-            <span class="q-of">/ 21</span>
-          </div>
-          <div class="q-text">Scenario: A 'Red Team' attacker is attempting to breach your system. They don't send a message to your chatbot directly. Instead, they leave a malicious instruction inside a publicly accessible PDF that your AI is programmed to summarise. What type of attack is this?</div>
-          
-        <div class="hint-box">
-          <button class="hint-toggle" onclick="this.parentElement.classList.toggle('show')">
-            💡 Hint
-          </button>
-          <div class="hint-content">The attacker is using the document as a 'carrier pigeon' for their malware.</div>
-        </div>
-      
-          <div class="options">
+      <button class="next-btn hidden">Next Question &rarr;</button>
+    </div>
+
+    <div class="question" data-index="1">
+      <div class="q-header">
+        <span class="q-number">Question 2</span>
+        <span>/ 25</span>
+      </div>
+      <div class="q-text">Scenario: A &#x27;Red Team&#x27; attacker is attempting to breach your system. They don&#x27;t send a message to your chatbot directly. Instead, they leave a malicious instruction inside a publicly accessible PDF that your AI is programmed to summarise. What type of attack is this?</div>
+
+      <div class="hint-box">
+        <button class="hint-toggle" onclick="this.parentElement.classList.toggle('show')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Hint
+        </button>
+        <div class="hint-content">The attacker is using the document as a &#x27;carrier pigeon&#x27; for their malware.</div>
+      </div>
+      <div class="options">
+
         <div class="option-wrapper">
           <button class="option" data-label="A" data-correct="false" data-rationale="Direct injection involves the attacker interacting with the user chat box or API call to explicitly overwrite the system prompt.">
             <span class="opt-label">A</span>
             <span class="opt-text">Direct Prompt Injection</span>
           </button>
-          <div class="option-feedback hidden" data-for="A">
+          <div class="option-feedback" data-for="A">
             <div class="feedback-status"></div>
             <div class="feedback-rationale">Direct injection involves the attacker interacting with the user chat box or API call to explicitly overwrite the system prompt.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
-          <button class="option" data-label="B" data-correct="false" data-rationale="This attack happens during the model's creation or fine-tuning phase, rather than through external documents processed during inference.">
+          <button class="option" data-label="B" data-correct="false" data-rationale="This attack happens during the model&#x27;s creation or fine-tuning phase, rather than through external documents processed during inference.">
             <span class="opt-label">B</span>
             <span class="opt-text">Training Data Poisoning</span>
           </button>
-          <div class="option-feedback hidden" data-for="B">
+          <div class="option-feedback" data-for="B">
             <div class="feedback-status"></div>
-            <div class="feedback-rationale">This attack happens during the model's creation or fine-tuning phase, rather than through external documents processed during inference.</div>
+            <div class="feedback-rationale">This attack happens during the model&#x27;s creation or fine-tuning phase, rather than through external documents processed during inference.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
           <button class="option" data-label="C" data-correct="true" data-rationale="This occurs when the malicious payload is placed in external data sources like PDFs or websites that the AI later retrieves and processes as instructions.">
             <span class="opt-label">C</span>
             <span class="opt-text">Indirect Prompt Injection</span>
           </button>
-          <div class="option-feedback hidden" data-for="C">
+          <div class="option-feedback" data-for="C">
             <div class="feedback-status"></div>
             <div class="feedback-rationale">This occurs when the malicious payload is placed in external data sources like PDFs or websites that the AI later retrieves and processes as instructions.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
-          <button class="option" data-label="D" data-correct="false" data-rationale="Model inversion is an extraction attack aimed at harvesting the model's intellectual property or training data, not manipulating its immediate behaviour.">
+          <button class="option" data-label="D" data-correct="false" data-rationale="Model inversion is an extraction attack aimed at harvesting the model&#x27;s intellectual property or training data, not manipulating its immediate behaviour.">
             <span class="opt-label">D</span>
             <span class="opt-text">Model Inversion</span>
           </button>
-          <div class="option-feedback hidden" data-for="D">
+          <div class="option-feedback" data-for="D">
             <div class="feedback-status"></div>
-            <div class="feedback-rationale">Model inversion is an extraction attack aimed at harvesting the model's intellectual property or training data, not manipulating its immediate behaviour.</div>
+            <div class="feedback-rationale">Model inversion is an extraction attack aimed at harvesting the model&#x27;s intellectual property or training data, not manipulating its immediate behaviour.</div>
           </div>
         </div>
       </div>
-          <button class="next-btn hidden">Next Question →</button>
-        </div>
-      
-        <div class="question" data-index="2">
-          <div class="q-header">
-            <span class="q-number">Question 3</span>
-            <span class="q-of">/ 21</span>
-          </div>
-          <div class="q-text">Stage 3 of the Audit: You encounter the 'Compliance Bypass' exploit. An attacker poses as an 'Internal Auditor AI' and demands the model output its hidden system message in a strict JSON format. Why is combining roleplay with structured output so effective?</div>
-          
-        <div class="hint-box">
-          <button class="hint-toggle" onclick="this.parentElement.classList.toggle('show')">
-            💡 Hint
-          </button>
-          <div class="hint-content">Think about the pressure a model feels to be 'helpful' and follow complex formatting instructions.</div>
-        </div>
-      
-          <div class="options">
+      <button class="next-btn hidden">Next Question &rarr;</button>
+    </div>
+
+    <div class="question" data-index="2">
+      <div class="q-header">
+        <span class="q-number">Question 3</span>
+        <span>/ 25</span>
+      </div>
+      <div class="q-text">Stage 3 of the Audit: You encounter the &#x27;Compliance Bypass&#x27; exploit. An attacker poses as an &#x27;Internal Auditor AI&#x27; and demands the model output its hidden system message in a strict JSON format. Why is combining roleplay with structured output so effective?</div>
+
+      <div class="hint-box">
+        <button class="hint-toggle" onclick="this.parentElement.classList.toggle('show')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Hint
+        </button>
+        <div class="hint-content">Think about the pressure a model feels to be &#x27;helpful&#x27; and follow complex formatting instructions.</div>
+      </div>
+      <div class="options">
+
         <div class="option-wrapper">
-          <button class="option" data-label="A" data-correct="false" data-rationale="JSON is a data interchange format, not an encryption method; its effectiveness lies in how it steers the model's attention, not in hiding text from filters.">
+          <button class="option" data-label="A" data-correct="false" data-rationale="JSON is a data interchange format, not an encryption method; its effectiveness lies in how it steers the model&#x27;s attention, not in hiding text from filters.">
             <span class="opt-label">A</span>
-            <span class="opt-text">JSON formatting automatically encrypts the payload, allowing it to bypass the application's signature-based filters.</span>
+            <span class="opt-text">JSON formatting automatically encrypts the payload, allowing it to bypass the application&#x27;s signature-based filters.</span>
           </button>
-          <div class="option-feedback hidden" data-for="A">
+          <div class="option-feedback" data-for="A">
             <div class="feedback-status"></div>
-            <div class="feedback-rationale">JSON is a data interchange format, not an encryption method; its effectiveness lies in how it steers the model's attention, not in hiding text from filters.</div>
+            <div class="feedback-rationale">JSON is a data interchange format, not an encryption method; its effectiveness lies in how it steers the model&#x27;s attention, not in hiding text from filters.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
           <button class="option" data-label="B" data-correct="false" data-rationale="Structured output is actually more token-intensive and has no effect on the underlying physical constraints of the context window.">
             <span class="opt-label">B</span>
             <span class="opt-text">Structured output bypasses the token limit of the context window, allowing for larger malicious payloads.</span>
           </button>
-          <div class="option-feedback hidden" data-for="B">
+          <div class="option-feedback" data-for="B">
             <div class="feedback-status"></div>
             <div class="feedback-rationale">Structured output is actually more token-intensive and has no effect on the underlying physical constraints of the context window.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
-          <button class="option" data-label="C" data-correct="true" data-rationale="By demanding a specific format (like JSON) under an authoritative guise, the model’s 'helpfulness' drive overrides the fuzzy boundaries of its safety instructions.">
+          <button class="option" data-label="C" data-correct="true" data-rationale="By demanding a specific format (like JSON) under an authoritative guise, the model’s &#x27;helpfulness&#x27; drive overrides the fuzzy boundaries of its safety instructions.">
             <span class="opt-label">C</span>
             <span class="opt-text">It forces the non-deterministic model to prioritise formatting compliance over its internal security rules.</span>
           </button>
-          <div class="option-feedback hidden" data-for="C">
+          <div class="option-feedback" data-for="C">
             <div class="feedback-status"></div>
-            <div class="feedback-rationale">By demanding a specific format (like JSON) under an authoritative guise, the model’s 'helpfulness' drive overrides the fuzzy boundaries of its safety instructions.</div>
+            <div class="feedback-rationale">By demanding a specific format (like JSON) under an authoritative guise, the model’s &#x27;helpfulness&#x27; drive overrides the fuzzy boundaries of its safety instructions.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
-          <button class="option" data-label="D" data-correct="false" data-rationale="There is no evidence that roleplaying affects processing speed; rather, it exploits the improvisational nature of the model's reasoning.">
+          <button class="option" data-label="D" data-correct="false" data-rationale="There is no evidence that roleplaying affects processing speed; rather, it exploits the improvisational nature of the model&#x27;s reasoning.">
             <span class="opt-label">D</span>
-            <span class="opt-text">Roleplaying increases the model's processing speed, which can cause the security layer to time out and fail open.</span>
+            <span class="opt-text">Roleplaying increases the model&#x27;s processing speed, which can cause the security layer to time out and fail open.</span>
           </button>
-          <div class="option-feedback hidden" data-for="D">
+          <div class="option-feedback" data-for="D">
             <div class="feedback-status"></div>
-            <div class="feedback-rationale">There is no evidence that roleplaying affects processing speed; rather, it exploits the improvisational nature of the model's reasoning.</div>
+            <div class="feedback-rationale">There is no evidence that roleplaying affects processing speed; rather, it exploits the improvisational nature of the model&#x27;s reasoning.</div>
           </div>
         </div>
       </div>
-          <button class="next-btn hidden">Next Question →</button>
-        </div>
-      
-        <div class="question" data-index="3">
-          <div class="q-header">
-            <span class="q-number">Question 4</span>
-            <span class="q-of">/ 21</span>
-          </div>
-          <div class="q-text">Scenario: You are monitoring a chat session where the user is asking seemingly innocent questions about user counts and first names. Suddenly, the AI produces a Markdown table containing full home addresses. Which technique was used?</div>
-          
-        <div class="hint-box">
-          <button class="hint-toggle" onclick="this.parentElement.classList.toggle('show')">
-            💡 Hint
-          </button>
-          <div class="hint-content">Recall that LLMs are stateless and rely on the application layer to feed back previous messages to maintain 'memory'.</div>
-        </div>
-      
-          <div class="options">
+      <button class="next-btn hidden">Next Question &rarr;</button>
+    </div>
+
+    <div class="question" data-index="3">
+      <div class="q-header">
+        <span class="q-number">Question 4</span>
+        <span>/ 25</span>
+      </div>
+      <div class="q-text">Scenario: You are monitoring a chat session where the user is asking seemingly innocent questions about user counts and first names. Suddenly, the AI produces a Markdown table containing full home addresses. Which technique was used?</div>
+
+      <div class="hint-box">
+        <button class="hint-toggle" onclick="this.parentElement.classList.toggle('show')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Hint
+        </button>
+        <div class="hint-content">Recall that LLMs are stateless and rely on the application layer to feed back previous messages to maintain &#x27;memory&#x27;.</div>
+      </div>
+      <div class="options">
+
         <div class="option-wrapper">
           <button class="option" data-label="A" data-correct="false" data-rationale="Payload splitting typically occurs in a single-turn prompt where the attack is broken into fragments to evade input filters.">
             <span class="opt-label">A</span>
             <span class="opt-text">Payload Splitting</span>
           </button>
-          <div class="option-feedback hidden" data-for="A">
+          <div class="option-feedback" data-for="A">
             <div class="feedback-status"></div>
             <div class="feedback-rationale">Payload splitting typically occurs in a single-turn prompt where the attack is broken into fragments to evade input filters.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
-          <button class="option" data-label="B" data-correct="false" data-rationale="This refers to an attack designed to exhaust the victim's financial resources through excessive API calls, not data exfiltration.">
+          <button class="option" data-label="B" data-correct="false" data-rationale="This refers to an attack designed to exhaust the victim&#x27;s financial resources through excessive API calls, not data exfiltration.">
             <span class="opt-label">B</span>
             <span class="opt-text">Denial of Wallet</span>
           </button>
-          <div class="option-feedback hidden" data-for="B">
+          <div class="option-feedback" data-for="B">
             <div class="feedback-status"></div>
-            <div class="feedback-rationale">This refers to an attack designed to exhaust the victim's financial resources through excessive API calls, not data exfiltration.</div>
+            <div class="feedback-rationale">This refers to an attack designed to exhaust the victim&#x27;s financial resources through excessive API calls, not data exfiltration.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
           <button class="option" data-label="C" data-correct="false" data-rationale="This technique uses special characters like hashes or dashes to trick the model into ignoring instructions, rather than using a sequence of messages.">
             <span class="opt-label">C</span>
             <span class="opt-text">Delimiter Confusion</span>
           </button>
-          <div class="option-feedback hidden" data-for="C">
+          <div class="option-feedback" data-for="C">
             <div class="feedback-status"></div>
             <div class="feedback-rationale">This technique uses special characters like hashes or dashes to trick the model into ignoring instructions, rather than using a sequence of messages.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
-          <button class="option" data-label="D" data-correct="true" data-rationale="This attack involves 'polluting' the context window over several turns with innocent snippets that, when combined in a final step, lead to a data breach.">
+          <button class="option" data-label="D" data-correct="true" data-rationale="This attack involves &#x27;polluting&#x27; the context window over several turns with innocent snippets that, when combined in a final step, lead to a data breach.">
             <span class="opt-label">D</span>
             <span class="opt-text">Multi-turn Manipulation</span>
           </button>
-          <div class="option-feedback hidden" data-for="D">
+          <div class="option-feedback" data-for="D">
             <div class="feedback-status"></div>
-            <div class="feedback-rationale">This attack involves 'polluting' the context window over several turns with innocent snippets that, when combined in a final step, lead to a data breach.</div>
+            <div class="feedback-rationale">This attack involves &#x27;polluting&#x27; the context window over several turns with innocent snippets that, when combined in a final step, lead to a data breach.</div>
           </div>
         </div>
       </div>
-          <button class="next-btn hidden">Next Question →</button>
-        </div>
-      
-        <div class="question" data-index="4">
-          <div class="q-header">
-            <span class="q-number">Question 5</span>
-            <span class="q-of">/ 21</span>
-          </div>
-          <div class="q-text">Stage 5: You implement a 'Reflection Filter' that checks the AI's output for sensitive words like 'password'. An attacker successfully bypasses this by asking the AI to 'spell the password with dashes'. Why did this work?</div>
-          
-        <div class="hint-box">
-          <button class="hint-toggle" onclick="this.parentElement.classList.toggle('show')">
-            💡 Hint
-          </button>
-          <div class="hint-content">Think about how a search tool might fail if you searched for 'Apple' but the document said 'A.p.p.l.e'.</div>
-        </div>
-      
-          <div class="options">
+      <button class="next-btn hidden">Next Question &rarr;</button>
+    </div>
+
+    <div class="question" data-index="4">
+      <div class="q-header">
+        <span class="q-number">Question 5</span>
+        <span>/ 25</span>
+      </div>
+      <div class="q-text">Stage 5: You implement a &#x27;Reflection Filter&#x27; that checks the AI&#x27;s output for sensitive words like &#x27;password&#x27;. An attacker successfully bypasses this by asking the AI to &#x27;spell the password with dashes&#x27;. Why did this work?</div>
+
+      <div class="hint-box">
+        <button class="hint-toggle" onclick="this.parentElement.classList.toggle('show')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Hint
+        </button>
+        <div class="hint-content">Think about how a search tool might fail if you searched for &#x27;Apple&#x27; but the document said &#x27;A.p.p.l.e&#x27;.</div>
+      </div>
+      <div class="options">
+
         <div class="option-wrapper">
           <button class="option" data-label="A" data-correct="true" data-rationale="Simple regex or signature-based filters fail when the model transforms the text into a format that the filter is not programmed to recognise.">
             <span class="opt-label">A</span>
-            <span class="opt-text">The filter looks for exact string matches, but the model's output (e.g., 'p-a-s-s') no longer matches the signature.</span>
+            <span class="opt-text">The filter looks for exact string matches, but the model&#x27;s output (e.g., &#x27;p-a-s-s&#x27;) no longer matches the signature.</span>
           </button>
-          <div class="option-feedback hidden" data-for="A">
+          <div class="option-feedback" data-for="A">
             <div class="feedback-status"></div>
             <div class="feedback-rationale">Simple regex or signature-based filters fail when the model transforms the text into a format that the filter is not programmed to recognise.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
           <button class="option" data-label="B" data-correct="false" data-rationale="Reflection models scan the entire response, but they are limited by what they are specifically instructed to look for or their own reasoning capabilities.">
             <span class="opt-label">B</span>
             <span class="opt-text">The reflection model is only capable of scanning the first 100 tokens of any response.</span>
           </button>
-          <div class="option-feedback hidden" data-for="B">
+          <div class="option-feedback" data-for="B">
             <div class="feedback-status"></div>
             <div class="feedback-rationale">Reflection models scan the entire response, but they are limited by what they are specifically instructed to look for or their own reasoning capabilities.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
           <button class="option" data-label="C" data-correct="false" data-rationale="The scanning is not based on entropy; it is based on pattern recognition, which is defeated by the character-level transformation.">
             <span class="opt-label">C</span>
             <span class="opt-text">Adding dashes increases the entropy of the response, making it mathematically impossible to scan.</span>
           </button>
-          <div class="option-feedback hidden" data-for="C">
+          <div class="option-feedback" data-for="C">
             <div class="feedback-status"></div>
             <div class="feedback-rationale">The scanning is not based on entropy; it is based on pattern recognition, which is defeated by the character-level transformation.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
-          <button class="option" data-label="D" data-correct="false" data-rationale="Dashes do not have a universal 'safe mode' trigger; they are simply a method of obfuscating the sensitive string.">
+          <button class="option" data-label="D" data-correct="false" data-rationale="Dashes do not have a universal &#x27;safe mode&#x27; trigger; they are simply a method of obfuscating the sensitive string.">
             <span class="opt-label">D</span>
-            <span class="opt-text">The use of dashes triggered a 'safe mode' in the reflection model, causing it to ignore all security violations.</span>
+            <span class="opt-text">The use of dashes triggered a &#x27;safe mode&#x27; in the reflection model, causing it to ignore all security violations.</span>
           </button>
-          <div class="option-feedback hidden" data-for="D">
+          <div class="option-feedback" data-for="D">
             <div class="feedback-status"></div>
-            <div class="feedback-rationale">Dashes do not have a universal 'safe mode' trigger; they are simply a method of obfuscating the sensitive string.</div>
+            <div class="feedback-rationale">Dashes do not have a universal &#x27;safe mode&#x27; trigger; they are simply a method of obfuscating the sensitive string.</div>
           </div>
         </div>
       </div>
-          <button class="next-btn hidden">Next Question →</button>
-        </div>
-      
-        <div class="question" data-index="5">
-          <div class="q-header">
-            <span class="q-number">Question 6</span>
-            <span class="q-of">/ 21</span>
-          </div>
-          <div class="q-text">Stage 6: The board asks about the 'OWASP Top 10 for LLMs'. Which vulnerability describes a scenario where an AI is given the power to delete files or send emails without sufficient human oversight?</div>
-          
-        <div class="hint-box">
-          <button class="hint-toggle" onclick="this.parentElement.classList.toggle('show')">
-            💡 Hint
-          </button>
-          <div class="hint-content">This term relates to an AI having 'too much power' to act on its own.</div>
-        </div>
-      
-          <div class="options">
+      <button class="next-btn hidden">Next Question &rarr;</button>
+    </div>
+
+    <div class="question" data-index="5">
+      <div class="q-header">
+        <span class="q-number">Question 6</span>
+        <span>/ 25</span>
+      </div>
+      <div class="q-text">Stage 6: The board asks about the &#x27;OWASP Top 10 for LLMs&#x27;. Which vulnerability describes a scenario where an AI is given the power to delete files or send emails without sufficient human oversight?</div>
+
+      <div class="hint-box">
+        <button class="hint-toggle" onclick="this.parentElement.classList.toggle('show')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Hint
+        </button>
+        <div class="hint-content">This term relates to an AI having &#x27;too much power&#x27; to act on its own.</div>
+      </div>
+      <div class="options">
+
         <div class="option-wrapper">
           <button class="option" data-label="A" data-correct="false" data-rationale="This vulnerability relates to resource exhaustion and denial of service attacks.">
             <span class="opt-label">A</span>
             <span class="opt-text">Unbounded Consumption</span>
           </button>
-          <div class="option-feedback hidden" data-for="A">
+          <div class="option-feedback" data-for="A">
             <div class="feedback-status"></div>
             <div class="feedback-rationale">This vulnerability relates to resource exhaustion and denial of service attacks.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
           <button class="option" data-label="B" data-correct="true" data-rationale="Excessive agency occurs when an LLM is granted too many permissions or functions (tools/plugins) that can be triggered by a malicious prompt.">
             <span class="opt-label">B</span>
             <span class="opt-text">Excessive Agency</span>
           </button>
-          <div class="option-feedback hidden" data-for="B">
+          <div class="option-feedback" data-for="B">
             <div class="feedback-status"></div>
             <div class="feedback-rationale">Excessive agency occurs when an LLM is granted too many permissions or functions (tools/plugins) that can be triggered by a malicious prompt.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
           <button class="option" data-label="C" data-correct="false" data-rationale="This involves the model revealing its internal instructions, not performing unauthorised actions in the real world.">
             <span class="opt-label">C</span>
             <span class="opt-text">System Prompt Leakage</span>
           </button>
-          <div class="option-feedback hidden" data-for="C">
+          <div class="option-feedback" data-for="C">
             <div class="feedback-status"></div>
             <div class="feedback-rationale">This involves the model revealing its internal instructions, not performing unauthorised actions in the real world.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
-          <button class="option" data-label="D" data-correct="false" data-rationale="This refers to the failure to sanitise the LLM's output before passing it to downstream functions, like a web browser or database.">
+          <button class="option" data-label="D" data-correct="false" data-rationale="This refers to the failure to sanitise the LLM&#x27;s output before passing it to downstream functions, like a web browser or database.">
             <span class="opt-label">D</span>
             <span class="opt-text">Insecure Output Handling</span>
           </button>
-          <div class="option-feedback hidden" data-for="D">
+          <div class="option-feedback" data-for="D">
             <div class="feedback-status"></div>
-            <div class="feedback-rationale">This refers to the failure to sanitise the LLM's output before passing it to downstream functions, like a web browser or database.</div>
+            <div class="feedback-rationale">This refers to the failure to sanitise the LLM&#x27;s output before passing it to downstream functions, like a web browser or database.</div>
           </div>
         </div>
       </div>
-          <button class="next-btn hidden">Next Question →</button>
-        </div>
-      
-        <div class="question" data-index="6">
-          <div class="q-header">
-            <span class="q-number">Question 7</span>
-            <span class="q-of">/ 21</span>
-          </div>
-          <div class="q-text">Scenario: You are designing a 'Defensible AI Architecture'. You decide to use a second, hyper-strict model to validate the output of the main application model. What is this component called?</div>
-          
-        <div class="hint-box">
-          <button class="hint-toggle" onclick="this.parentElement.classList.toggle('show')">
-            💡 Hint
-          </button>
-          <div class="hint-content">This component acts as an arbiter to decide if a response should proceed to the user or be blocked.</div>
-        </div>
-      
-          <div class="options">
+      <button class="next-btn hidden">Next Question &rarr;</button>
+    </div>
+
+    <div class="question" data-index="6">
+      <div class="q-header">
+        <span class="q-number">Question 7</span>
+        <span>/ 25</span>
+      </div>
+      <div class="q-text">Scenario: You are designing a &#x27;Defensible AI Architecture&#x27;. You decide to use a second, hyper-strict model to validate the output of the main application model. What is this component called?</div>
+
+      <div class="hint-box">
+        <button class="hint-toggle" onclick="this.parentElement.classList.toggle('show')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Hint
+        </button>
+        <div class="hint-content">This component acts as an arbiter to decide if a response should proceed to the user or be blocked.</div>
+      </div>
+      <div class="options">
+
         <div class="option-wrapper">
-          <button class="option" data-label="A" data-correct="true" data-rationale="An LLM-as-a-judge serves as a verification layer to ensure the primary model's output is accurate, safe, and free from injection attempts.">
+          <button class="option" data-label="A" data-correct="true" data-rationale="An LLM-as-a-judge serves as a verification layer to ensure the primary model&#x27;s output is accurate, safe, and free from injection attempts.">
             <span class="opt-label">A</span>
             <span class="opt-text">LLM-as-a-Judge</span>
           </button>
-          <div class="option-feedback hidden" data-for="A">
+          <div class="option-feedback" data-for="A">
             <div class="feedback-status"></div>
-            <div class="feedback-rationale">An LLM-as-a-judge serves as a verification layer to ensure the primary model's output is accurate, safe, and free from injection attempts.</div>
+            <div class="feedback-rationale">An LLM-as-a-judge serves as a verification layer to ensure the primary model&#x27;s output is accurate, safe, and free from injection attempts.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
-          <button class="option" data-label="B" data-correct="false" data-rationale="The system prompt is the instruction set within the model, which is described in the source as a 'fragile fence', not a separate model.">
+          <button class="option" data-label="B" data-correct="false" data-rationale="The system prompt is the instruction set within the model, which is described in the source as a &#x27;fragile fence&#x27;, not a separate model.">
             <span class="opt-label">B</span>
             <span class="opt-text">System Prompt Fence</span>
           </button>
-          <div class="option-feedback hidden" data-for="B">
+          <div class="option-feedback" data-for="B">
             <div class="feedback-status"></div>
-            <div class="feedback-rationale">The system prompt is the instruction set within the model, which is described in the source as a 'fragile fence', not a separate model.</div>
+            <div class="feedback-rationale">The system prompt is the instruction set within the model, which is described in the source as a &#x27;fragile fence&#x27;, not a separate model.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
-          <button class="option" data-label="C" data-correct="false" data-rationale="This layer manages session context and token limits, but doesn't necessarily perform the role of a safety validator.">
+          <button class="option" data-label="C" data-correct="false" data-rationale="This layer manages session context and token limits, but doesn&#x27;t necessarily perform the role of a safety validator.">
             <span class="opt-label">C</span>
             <span class="opt-text">Stateless App Layer</span>
           </button>
-          <div class="option-feedback hidden" data-for="C">
+          <div class="option-feedback" data-for="C">
             <div class="feedback-status"></div>
-            <div class="feedback-rationale">This layer manages session context and token limits, but doesn't necessarily perform the role of a safety validator.</div>
+            <div class="feedback-rationale">This layer manages session context and token limits, but doesn&#x27;t necessarily perform the role of a safety validator.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
-          <button class="option" data-label="D" data-correct="false" data-rationale="While similar, an input guardrail scans data *before* it reaches the model; a 'judge' typically evaluates the generated response.">
+          <button class="option" data-label="D" data-correct="false" data-rationale="While similar, an input guardrail scans data *before* it reaches the model; a &#x27;judge&#x27; typically evaluates the generated response.">
             <span class="opt-label">D</span>
             <span class="opt-text">Input Guardrail</span>
           </button>
-          <div class="option-feedback hidden" data-for="D">
+          <div class="option-feedback" data-for="D">
             <div class="feedback-status"></div>
-            <div class="feedback-rationale">While similar, an input guardrail scans data *before* it reaches the model; a 'judge' typically evaluates the generated response.</div>
+            <div class="feedback-rationale">While similar, an input guardrail scans data *before* it reaches the model; a &#x27;judge&#x27; typically evaluates the generated response.</div>
           </div>
         </div>
       </div>
-          <button class="next-btn hidden">Next Question →</button>
-        </div>
-      
-        <div class="question" data-index="7">
-          <div class="q-header">
-            <span class="q-number">Question 8</span>
-            <span class="q-of">/ 21</span>
-          </div>
-          <div class="q-text">Stage 8: You are hardening your API against 'Promptware'. You notice that your AI can fetch external content. Which stage of the 'Promptware Kill Chain' describes the model being manipulated into revealing what APIs and tools it has access to?</div>
-          
-        <div class="hint-box">
-          <button class="hint-toggle" onclick="this.parentElement.classList.toggle('show')">
-            💡 Hint
-          </button>
-          <div class="hint-content">This is a term used in military and cyber security for 'scouting' a target.</div>
-        </div>
-      
-          <div class="options">
+      <button class="next-btn hidden">Next Question &rarr;</button>
+    </div>
+
+    <div class="question" data-index="7">
+      <div class="q-header">
+        <span class="q-number">Question 8</span>
+        <span>/ 25</span>
+      </div>
+      <div class="q-text">Stage 8: You are hardening your API against &#x27;Promptware&#x27;. You notice that your AI can fetch external content. Which stage of the &#x27;Promptware Kill Chain&#x27; describes the model being manipulated into revealing what APIs and tools it has access to?</div>
+
+      <div class="hint-box">
+        <button class="hint-toggle" onclick="this.parentElement.classList.toggle('show')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Hint
+        </button>
+        <div class="hint-content">This is a term used in military and cyber security for &#x27;scouting&#x27; a target.</div>
+      </div>
+      <div class="options">
+
         <div class="option-wrapper">
           <button class="option" data-label="A" data-correct="false" data-rationale="Persistence involves planting malicious prompts in long-term memory (like RAG databases) to ensure the AI reinfects itself later.">
             <span class="opt-label">A</span>
             <span class="opt-text">Persistence</span>
           </button>
-          <div class="option-feedback hidden" data-for="A">
+          <div class="option-feedback" data-for="A">
             <div class="feedback-status"></div>
             <div class="feedback-rationale">Persistence involves planting malicious prompts in long-term memory (like RAG databases) to ensure the AI reinfects itself later.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
-          <button class="option" data-label="B" data-correct="true" data-rationale="In the promptware kill chain, reconnaissance happens after the initial compromise to identify the 'joint' and find further vulnerabilities.">
+          <button class="option" data-label="B" data-correct="true" data-rationale="In the promptware kill chain, reconnaissance happens after the initial compromise to identify the &#x27;joint&#x27; and find further vulnerabilities.">
             <span class="opt-label">B</span>
             <span class="opt-text">Reconnaissance</span>
           </button>
-          <div class="option-feedback hidden" data-for="B">
+          <div class="option-feedback" data-for="B">
             <div class="feedback-status"></div>
-            <div class="feedback-rationale">In the promptware kill chain, reconnaissance happens after the initial compromise to identify the 'joint' and find further vulnerabilities.</div>
+            <div class="feedback-rationale">In the promptware kill chain, reconnaissance happens after the initial compromise to identify the &#x27;joint&#x27; and find further vulnerabilities.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
-          <button class="option" data-label="C" data-correct="false" data-rationale="This is the jailbreaking phase where the attacker bypasses safety alignment to gain 'administrator' access to the reasoning engine.">
+          <button class="option" data-label="C" data-correct="false" data-rationale="This is the jailbreaking phase where the attacker bypasses safety alignment to gain &#x27;administrator&#x27; access to the reasoning engine.">
             <span class="opt-label">C</span>
             <span class="opt-text">Privilege Escalation</span>
           </button>
-          <div class="option-feedback hidden" data-for="C">
+          <div class="option-feedback" data-for="C">
             <div class="feedback-status"></div>
-            <div class="feedback-rationale">This is the jailbreaking phase where the attacker bypasses safety alignment to gain 'administrator' access to the reasoning engine.</div>
+            <div class="feedback-rationale">This is the jailbreaking phase where the attacker bypasses safety alignment to gain &#x27;administrator&#x27; access to the reasoning engine.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
           <button class="option" data-label="D" data-correct="false" data-rationale="This stage involves moving through the system to infect other interconnected agents or smart devices.">
             <span class="opt-label">D</span>
             <span class="opt-text">Lateral Movement</span>
           </button>
-          <div class="option-feedback hidden" data-for="D">
+          <div class="option-feedback" data-for="D">
             <div class="feedback-status"></div>
             <div class="feedback-rationale">This stage involves moving through the system to infect other interconnected agents or smart devices.</div>
           </div>
         </div>
       </div>
-          <button class="next-btn hidden">Next Question →</button>
-        </div>
-      
-        <div class="question" data-index="8">
-          <div class="q-header">
-            <span class="q-number">Question 9</span>
-            <span class="q-of">/ 21</span>
-          </div>
-          <div class="q-text">Stage 9: To prevent 'Insecure Output Handling', you decide to restrict your model so it can only communicate with the application using a specific format. Which of the following is the most secure method mentioned in the briefing?</div>
-          
-        <div class="hint-box">
-          <button class="hint-toggle" onclick="this.parentElement.classList.toggle('show')">
-            💡 Hint
-          </button>
-          <div class="hint-content">Think about how to replace 'improvisational strings' with 'validated data structures'.</div>
-        </div>
-      
-          <div class="options">
+      <button class="next-btn hidden">Next Question &rarr;</button>
+    </div>
+
+    <div class="question" data-index="8">
+      <div class="q-header">
+        <span class="q-number">Question 9</span>
+        <span>/ 25</span>
+      </div>
+      <div class="q-text">Stage 9: To prevent &#x27;Insecure Output Handling&#x27;, you decide to restrict your model so it can only communicate with the application using a specific format. Which of the following is the most secure method mentioned in the briefing?</div>
+
+      <div class="hint-box">
+        <button class="hint-toggle" onclick="this.parentElement.classList.toggle('show')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Hint
+        </button>
+        <div class="hint-content">Think about how to replace &#x27;improvisational strings&#x27; with &#x27;validated data structures&#x27;.</div>
+      </div>
+      <div class="options">
+
         <div class="option-wrapper">
-          <button class="option" data-label="A" data-correct="false" data-rationale="While limiting length reduces the 'blast radius', it does not prevent a short, high-impact malicious command from being executed.">
+          <button class="option" data-label="A" data-correct="false" data-rationale="While limiting length reduces the &#x27;blast radius&#x27;, it does not prevent a short, high-impact malicious command from being executed.">
             <span class="opt-label">A</span>
             <span class="opt-text">Limit the output to a maximum of 50 tokens.</span>
           </button>
-          <div class="option-feedback hidden" data-for="A">
+          <div class="option-feedback" data-for="A">
             <div class="feedback-status"></div>
-            <div class="feedback-rationale">While limiting length reduces the 'blast radius', it does not prevent a short, high-impact malicious command from being executed.</div>
+            <div class="feedback-rationale">While limiting length reduces the &#x27;blast radius&#x27;, it does not prevent a short, high-impact malicious command from being executed.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
           <button class="option" data-label="B" data-correct="false" data-rationale="Markdown is still just text and can easily be used to hide or present malicious payloads.">
             <span class="opt-label">B</span>
             <span class="opt-text">Use a markdown table to organise all outgoing data.</span>
           </button>
-          <div class="option-feedback hidden" data-for="B">
+          <div class="option-feedback" data-for="B">
             <div class="feedback-status"></div>
             <div class="feedback-rationale">Markdown is still just text and can easily be used to hide or present malicious payloads.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
           <button class="option" data-label="C" data-correct="false" data-rationale="Encoding output does not prevent the model from generating malicious content; it only changes how it is displayed, which a user can decode.">
             <span class="opt-label">C</span>
             <span class="opt-text">Apply Base64 encoding to all output before it reaches the user.</span>
           </button>
-          <div class="option-feedback hidden" data-for="C">
+          <div class="option-feedback" data-for="C">
             <div class="feedback-status"></div>
             <div class="feedback-rationale">Encoding output does not prevent the model from generating malicious content; it only changes how it is displayed, which a user can decode.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
-          <button class="option" data-label="D" data-correct="true" data-rationale="By stripping the model of its 'improvisational agency' and forcing structured output, it physically cannot output the text required for an exploit if it violates the schema.">
+          <button class="option" data-label="D" data-correct="true" data-rationale="By stripping the model of its &#x27;improvisational agency&#x27; and forcing structured output, it physically cannot output the text required for an exploit if it violates the schema.">
             <span class="opt-label">D</span>
             <span class="opt-text">Enforce a strict JSON Schema or POJO (Plain Old Java Object).</span>
           </button>
-          <div class="option-feedback hidden" data-for="D">
+          <div class="option-feedback" data-for="D">
             <div class="feedback-status"></div>
-            <div class="feedback-rationale">By stripping the model of its 'improvisational agency' and forcing structured output, it physically cannot output the text required for an exploit if it violates the schema.</div>
+            <div class="feedback-rationale">By stripping the model of its &#x27;improvisational agency&#x27; and forcing structured output, it physically cannot output the text required for an exploit if it violates the schema.</div>
           </div>
         </div>
       </div>
-          <button class="next-btn hidden">Next Question →</button>
-        </div>
-      
-        <div class="question" data-index="9">
-          <div class="q-header">
-            <span class="q-number">Question 10</span>
-            <span class="q-of">/ 21</span>
-          </div>
-          <div class="q-text">Stage 10: You are reviewing the 'Vercel' incident. An employee's token was hijacked through a third-party AI tool. Why did traditional security parameters fail to stop this?</div>
-          
-        <div class="hint-box">
-          <button class="hint-toggle" onclick="this.parentElement.classList.toggle('show')">
-            💡 Hint
-          </button>
-          <div class="hint-content">Think about 'Identity and Access Management' and how 'permission' does not always equal 'intent'.</div>
-        </div>
-      
-          <div class="options">
+      <button class="next-btn hidden">Next Question &rarr;</button>
+    </div>
+
+    <div class="question" data-index="9">
+      <div class="q-header">
+        <span class="q-number">Question 10</span>
+        <span>/ 25</span>
+      </div>
+      <div class="q-text">Stage 10: You are reviewing the &#x27;Vercel&#x27; incident. An employee&#x27;s token was hijacked through a third-party AI tool. Why did traditional security parameters fail to stop this?</div>
+
+      <div class="hint-box">
+        <button class="hint-toggle" onclick="this.parentElement.classList.toggle('show')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Hint
+        </button>
+        <div class="hint-content">Think about &#x27;Identity and Access Management&#x27; and how &#x27;permission&#x27; does not always equal &#x27;intent&#x27;.</div>
+      </div>
+      <div class="options">
+
         <div class="option-wrapper">
           <button class="option" data-label="A" data-correct="false" data-rationale="The breach occurred via a hijacked token through an OAuth integration, not through manual credential disclosure by the user.">
             <span class="opt-label">A</span>
             <span class="opt-text">The employee had manually typed their password into the chat box.</span>
           </button>
-          <div class="option-feedback hidden" data-for="A">
+          <div class="option-feedback" data-for="A">
             <div class="feedback-status"></div>
             <div class="feedback-rationale">The breach occurred via a hijacked token through an OAuth integration, not through manual credential disclosure by the user.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
-          <button class="option" data-label="B" data-correct="true" data-rationale="Traditional OAuth security has 'blind spots' because it only checks if the app has the right scope, not if the AI is being manipulated to abuse that scope.">
+          <button class="option" data-label="B" data-correct="true" data-rationale="Traditional OAuth security has &#x27;blind spots&#x27; because it only checks if the app has the right scope, not if the AI is being manipulated to abuse that scope.">
             <span class="opt-label">B</span>
             <span class="opt-text">The AI had a legitimate OAuth grant, so the activity looked authorised to traditional security layers.</span>
           </button>
-          <div class="option-feedback hidden" data-for="B">
+          <div class="option-feedback" data-for="B">
             <div class="feedback-status"></div>
-            <div class="feedback-rationale">Traditional OAuth security has 'blind spots' because it only checks if the app has the right scope, not if the AI is being manipulated to abuse that scope.</div>
+            <div class="feedback-rationale">Traditional OAuth security has &#x27;blind spots&#x27; because it only checks if the app has the right scope, not if the AI is being manipulated to abuse that scope.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
           <button class="option" data-label="C" data-correct="false" data-rationale="The breach was a failure of the activity layer and OAuth monitoring, not a flaw in network protocols like HTTPS.">
             <span class="opt-label">C</span>
-            <span class="opt-text">The attacker used a 'zero-day' exploit in the HTTPS protocol to bypass encryption.</span>
+            <span class="opt-text">The attacker used a &#x27;zero-day&#x27; exploit in the HTTPS protocol to bypass encryption.</span>
           </button>
-          <div class="option-feedback hidden" data-for="C">
+          <div class="option-feedback" data-for="C">
             <div class="feedback-status"></div>
             <div class="feedback-rationale">The breach was a failure of the activity layer and OAuth monitoring, not a flaw in network protocols like HTTPS.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
           <button class="option" data-label="D" data-correct="false" data-rationale="Prompt injection is a flaw in the nature of LLM reasoning, not a software bug that can be fixed with a traditional patch.">
             <span class="opt-label">D</span>
             <span class="opt-text">The AI model was unpatched and running an outdated version of the GPT architecture.</span>
           </button>
-          <div class="option-feedback hidden" data-for="D">
+          <div class="option-feedback" data-for="D">
             <div class="feedback-status"></div>
             <div class="feedback-rationale">Prompt injection is a flaw in the nature of LLM reasoning, not a software bug that can be fixed with a traditional patch.</div>
           </div>
         </div>
       </div>
-          <button class="next-btn hidden">Next Question →</button>
-        </div>
-      
-        <div class="question" data-index="10">
-          <div class="q-header">
-            <span class="q-number">Question 11</span>
-            <span class="q-of">/ 21</span>
-          </div>
-          <div class="q-text">Stage 11: Your team is debating the effectiveness of 'System Prompts'. According to the briefing, why should you NEVER put API keys or secrets inside a system prompt?</div>
-          
-        <div class="hint-box">
-          <button class="hint-toggle" onclick="this.parentElement.classList.toggle('show')">
-            💡 Hint
-          </button>
-          <div class="hint-content">Recall the 'Illusion of Safety' and the fact that 'everything is just text'.</div>
-        </div>
-      
-          <div class="options">
+      <button class="next-btn hidden">Next Question &rarr;</button>
+    </div>
+
+    <div class="question" data-index="10">
+      <div class="q-header">
+        <span class="q-number">Question 11</span>
+        <span>/ 25</span>
+      </div>
+      <div class="q-text">Stage 11: Your team is debating the effectiveness of &#x27;System Prompts&#x27;. According to the briefing, why should you NEVER put API keys or secrets inside a system prompt?</div>
+
+      <div class="hint-box">
+        <button class="hint-toggle" onclick="this.parentElement.classList.toggle('show')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Hint
+        </button>
+        <div class="hint-content">Recall the &#x27;Illusion of Safety&#x27; and the fact that &#x27;everything is just text&#x27;.</div>
+      </div>
+      <div class="options">
+
         <div class="option-wrapper">
-          <button class="option" data-label="A" data-correct="false" data-rationale="Temperature is a configuration setting for randomness; the presence of secrets does not physically alter the model's inference temperature.">
+          <button class="option" data-label="A" data-correct="false" data-rationale="Temperature is a configuration setting for randomness; the presence of secrets does not physically alter the model&#x27;s inference temperature.">
             <span class="opt-label">A</span>
-            <span class="opt-text">Putting secrets in the system prompt causes the model's 'temperature' to increase, leading to hallucinations.</span>
+            <span class="opt-text">Putting secrets in the system prompt causes the model&#x27;s &#x27;temperature&#x27; to increase, leading to hallucinations.</span>
           </button>
-          <div class="option-feedback hidden" data-for="A">
+          <div class="option-feedback" data-for="A">
             <div class="feedback-status"></div>
-            <div class="feedback-rationale">Temperature is a configuration setting for randomness; the presence of secrets does not physically alter the model's inference temperature.</div>
+            <div class="feedback-rationale">Temperature is a configuration setting for randomness; the presence of secrets does not physically alter the model&#x27;s inference temperature.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
-          <button class="option" data-label="B" data-correct="true" data-rationale="Attackers can use roleplay, poetry, or Morse code to bypass the system prompt's instruction to 'never reveal this message'.">
+          <button class="option" data-label="B" data-correct="true" data-rationale="Attackers can use roleplay, poetry, or Morse code to bypass the system prompt&#x27;s instruction to &#x27;never reveal this message&#x27;.">
             <span class="opt-label">B</span>
-            <span class="opt-text">System prompts are a 'fragile fence' and secrets will eventually leak via clever rephrasing or encoding.</span>
+            <span class="opt-text">System prompts are a &#x27;fragile fence&#x27; and secrets will eventually leak via clever rephrasing or encoding.</span>
           </button>
-          <div class="option-feedback hidden" data-for="B">
+          <div class="option-feedback" data-for="B">
             <div class="feedback-status"></div>
-            <div class="feedback-rationale">Attackers can use roleplay, poetry, or Morse code to bypass the system prompt's instruction to 'never reveal this message'.</div>
+            <div class="feedback-rationale">Attackers can use roleplay, poetry, or Morse code to bypass the system prompt&#x27;s instruction to &#x27;never reveal this message&#x27;.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
           <button class="option" data-label="C" data-correct="false" data-rationale="While security-wise poor practice, the source material focuses on the technical vulnerability of leakage rather than specific legal regulations.">
             <span class="opt-label">C</span>
             <span class="opt-text">It is a violation of the GDPR to store any text-based credentials in a context window.</span>
           </button>
-          <div class="option-feedback hidden" data-for="C">
+          <div class="option-feedback" data-for="C">
             <div class="feedback-status"></div>
             <div class="feedback-rationale">While security-wise poor practice, the source material focuses on the technical vulnerability of leakage rather than specific legal regulations.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
           <button class="option" data-label="D" data-correct="false" data-rationale="System prompts are private instructions sent to the API, not public web content, but they are vulnerable to extraction by users.">
             <span class="opt-label">D</span>
             <span class="opt-text">Secrets in a system prompt are automatically indexed by public search engines like Google.</span>
           </button>
-          <div class="option-feedback hidden" data-for="D">
+          <div class="option-feedback" data-for="D">
             <div class="feedback-status"></div>
             <div class="feedback-rationale">System prompts are private instructions sent to the API, not public web content, but they are vulnerable to extraction by users.</div>
           </div>
         </div>
       </div>
-          <button class="next-btn hidden">Next Question →</button>
-        </div>
-      
-        <div class="question" data-index="11">
-          <div class="q-header">
-            <span class="q-number">Question 12</span>
-            <span class="q-of">/ 21</span>
-          </div>
-          <div class="q-text">Scenario: An attacker wants to take down your service by making it too expensive to run. They send prompts that require massive computational power or hit the API repeatedly. What is this called in the OWASP Top 10?</div>
-          
-        <div class="hint-box">
-          <button class="hint-toggle" onclick="this.parentElement.classList.toggle('show')">
-            💡 Hint
-          </button>
-          <div class="hint-content">Think about the 'highway at 5 PM' analogy used in the briefing.</div>
-        </div>
-      
-          <div class="options">
+      <button class="next-btn hidden">Next Question &rarr;</button>
+    </div>
+
+    <div class="question" data-index="11">
+      <div class="q-header">
+        <span class="q-number">Question 12</span>
+        <span>/ 25</span>
+      </div>
+      <div class="q-text">Scenario: An attacker wants to take down your service by making it too expensive to run. They send prompts that require massive computational power or hit the API repeatedly. What is this called in the OWASP Top 10?</div>
+
+      <div class="hint-box">
+        <button class="hint-toggle" onclick="this.parentElement.classList.toggle('show')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Hint
+        </button>
+        <div class="hint-content">Think about the &#x27;highway at 5 PM&#x27; analogy used in the briefing.</div>
+      </div>
+      <div class="options">
+
         <div class="option-wrapper">
-          <button class="option" data-label="A" data-correct="false" data-rationale="While correct in a general sense, 'Unbounded Consumption' is the specific updated OWASP term that encompasses both resource and financial 'Denial of Wallet'.">
+          <button class="option" data-label="A" data-correct="false" data-rationale="While correct in a general sense, &#x27;Unbounded Consumption&#x27; is the specific updated OWASP term that encompasses both resource and financial &#x27;Denial of Wallet&#x27;.">
             <span class="opt-label">A</span>
             <span class="opt-text">Model Denial of Service (DoS)</span>
           </button>
-          <div class="option-feedback hidden" data-for="A">
+          <div class="option-feedback" data-for="A">
             <div class="feedback-status"></div>
-            <div class="feedback-rationale">While correct in a general sense, 'Unbounded Consumption' is the specific updated OWASP term that encompasses both resource and financial 'Denial of Wallet'.</div>
+            <div class="feedback-rationale">While correct in a general sense, &#x27;Unbounded Consumption&#x27; is the specific updated OWASP term that encompasses both resource and financial &#x27;Denial of Wallet&#x27;.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
           <button class="option" data-label="B" data-correct="true" data-rationale="This attack targets the resources of the LLM service to cause a denial of service or financial exhaustion for the owner.">
             <span class="opt-label">B</span>
             <span class="opt-text">Unbounded Consumption (or Denial of Wallet)</span>
           </button>
-          <div class="option-feedback hidden" data-for="B">
+          <div class="option-feedback" data-for="B">
             <div class="feedback-status"></div>
             <div class="feedback-rationale">This attack targets the resources of the LLM service to cause a denial of service or financial exhaustion for the owner.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
           <button class="option" data-label="C" data-correct="false" data-rationale="This refers to the model having too much permission to act, not how many times it is called.">
             <span class="opt-label">C</span>
             <span class="opt-text">Excessive Agency</span>
           </button>
-          <div class="option-feedback hidden" data-for="C">
+          <div class="option-feedback" data-for="C">
             <div class="feedback-status"></div>
             <div class="feedback-rationale">This refers to the model having too much permission to act, not how many times it is called.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
-          <button class="option" data-label="D" data-correct="false" data-rationale="This involves corrupting the model's knowledge, not exhausting its operational resources.">
+          <button class="option" data-label="D" data-correct="false" data-rationale="This involves corrupting the model&#x27;s knowledge, not exhausting its operational resources.">
             <span class="opt-label">D</span>
             <span class="opt-text">Training Data Poisoning</span>
           </button>
-          <div class="option-feedback hidden" data-for="D">
+          <div class="option-feedback" data-for="D">
             <div class="feedback-status"></div>
-            <div class="feedback-rationale">This involves corrupting the model's knowledge, not exhausting its operational resources.</div>
+            <div class="feedback-rationale">This involves corrupting the model&#x27;s knowledge, not exhausting its operational resources.</div>
           </div>
         </div>
       </div>
-          <button class="next-btn hidden">Next Question →</button>
-        </div>
-      
-        <div class="question" data-index="12">
-          <div class="q-header">
-            <span class="q-number">Question 13</span>
-            <span class="q-of">/ 21</span>
-          </div>
-          <div class="q-text">Stage 13: You are auditing the 'Supply Chain'. You find that your developers are downloading 'skills' and MCP (Model Context Protocol) server configurations from the internet. What is the risk?</div>
-          
-        <div class="hint-box">
-          <button class="hint-toggle" onclick="this.parentElement.classList.toggle('show')">
-            💡 Hint
-          </button>
-          <div class="hint-content">Remember the warning: 'Good luck... that's why prompt injection will be around for a while'.</div>
-        </div>
-      
-          <div class="options">
+      <button class="next-btn hidden">Next Question &rarr;</button>
+    </div>
+
+    <div class="question" data-index="12">
+      <div class="q-header">
+        <span class="q-number">Question 13</span>
+        <span>/ 25</span>
+      </div>
+      <div class="q-text">Stage 13: You are auditing the &#x27;Supply Chain&#x27;. You find that your developers are downloading &#x27;skills&#x27; and MCP (Model Context Protocol) server configurations from the internet. What is the risk?</div>
+
+      <div class="hint-box">
+        <button class="hint-toggle" onclick="this.parentElement.classList.toggle('show')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Hint
+        </button>
+        <div class="hint-content">Remember the warning: &#x27;Good luck... that&#x27;s why prompt injection will be around for a while&#x27;.</div>
+      </div>
+      <div class="options">
+
         <div class="option-wrapper">
           <button class="option" data-label="A" data-correct="false" data-rationale="While token limits exist, the primary security risk is the content of the instructions, not the size of the file.">
             <span class="opt-label">A</span>
             <span class="opt-text">Downloading external files will cause the model to exceed its token limit and crash.</span>
           </button>
-          <div class="option-feedback hidden" data-for="A">
+          <div class="option-feedback" data-for="A">
             <div class="feedback-status"></div>
             <div class="feedback-rationale">While token limits exist, the primary security risk is the content of the instructions, not the size of the file.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
           <button class="option" data-label="B" data-correct="false" data-rationale="The act of downloading a file does not inherently open a database port, but the *content* of the file might trick the AI into leaking data.">
             <span class="opt-label">B</span>
             <span class="opt-text">The internet connection required to download these files exposes the internal database to the public web.</span>
           </button>
-          <div class="option-feedback hidden" data-for="B">
+          <div class="option-feedback" data-for="B">
             <div class="feedback-status"></div>
             <div class="feedback-rationale">The act of downloading a file does not inherently open a database port, but the *content* of the file might trick the AI into leaking data.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
-          <button class="option" data-label="C" data-correct="true" data-rationale="Downloaded Markdown or configuration files are treated as instructions by the AI, allowing attackers to plant 'Promptware' blindly into your system.">
+          <button class="option" data-label="C" data-correct="true" data-rationale="Downloaded Markdown or configuration files are treated as instructions by the AI, allowing attackers to plant &#x27;Promptware&#x27; blindly into your system.">
             <span class="opt-label">C</span>
             <span class="opt-text">These files may contain hidden malicious instructions (indirect injections) that execute when the AI processes them.</span>
           </button>
-          <div class="option-feedback hidden" data-for="C">
+          <div class="option-feedback" data-for="C">
             <div class="feedback-status"></div>
-            <div class="feedback-rationale">Downloaded Markdown or configuration files are treated as instructions by the AI, allowing attackers to plant 'Promptware' blindly into your system.</div>
+            <div class="feedback-rationale">Downloaded Markdown or configuration files are treated as instructions by the AI, allowing attackers to plant &#x27;Promptware&#x27; blindly into your system.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
           <button class="option" data-label="D" data-correct="false" data-rationale="The sources state that people are actively using MCP servers; the issue is the lack of inspection for the input/output flows.">
             <span class="opt-label">D</span>
             <span class="opt-text">MCP servers are incompatible with modern GPT-4 architectures, leading to data corruption.</span>
           </button>
-          <div class="option-feedback hidden" data-for="D">
+          <div class="option-feedback" data-for="D">
             <div class="feedback-status"></div>
             <div class="feedback-rationale">The sources state that people are actively using MCP servers; the issue is the lack of inspection for the input/output flows.</div>
           </div>
         </div>
       </div>
-          <button class="next-btn hidden">Next Question →</button>
-        </div>
-      
-        <div class="question" data-index="13">
-          <div class="q-header">
-            <span class="q-number">Question 14</span>
-            <span class="q-of">/ 21</span>
-          </div>
-          <div class="q-text">Stage 14: You have implemented an 'AI Gateway'. The gateway scans incoming prompts for malicious intent and redacts PII from outgoing responses. Where does this sit in your architecture?</div>
-          
-        <div class="hint-box">
-          <button class="hint-toggle" onclick="this.parentElement.classList.toggle('show')">
-            💡 Hint
-          </button>
-          <div class="hint-content">Think of it as a 'firewall' or a 'security guard' at the entrance.</div>
-        </div>
-      
-          <div class="options">
+      <button class="next-btn hidden">Next Question &rarr;</button>
+    </div>
+
+    <div class="question" data-index="13">
+      <div class="q-header">
+        <span class="q-number">Question 14</span>
+        <span>/ 25</span>
+      </div>
+      <div class="q-text">Stage 14: You have implemented an &#x27;AI Gateway&#x27;. The gateway scans incoming prompts for malicious intent and redacts PII from outgoing responses. Where does this sit in your architecture?</div>
+
+      <div class="hint-box">
+        <button class="hint-toggle" onclick="this.parentElement.classList.toggle('show')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Hint
+        </button>
+        <div class="hint-content">Think of it as a &#x27;firewall&#x27; or a &#x27;security guard&#x27; at the entrance.</div>
+      </div>
+      <div class="options">
+
         <div class="option-wrapper">
-          <button class="option" data-label="A" data-correct="false" data-rationale="This would be for data sanitisation during training, whereas a 'Gateway' implies real-time traffic management during inference.">
+          <button class="option" data-label="A" data-correct="false" data-rationale="This would be for data sanitisation during training, whereas a &#x27;Gateway&#x27; implies real-time traffic management during inference.">
             <span class="opt-label">A</span>
             <span class="opt-text">In the training data repository.</span>
           </button>
-          <div class="option-feedback hidden" data-for="A">
+          <div class="option-feedback" data-for="A">
             <div class="feedback-status"></div>
-            <div class="feedback-rationale">This would be for data sanitisation during training, whereas a 'Gateway' implies real-time traffic management during inference.</div>
+            <div class="feedback-rationale">This would be for data sanitisation during training, whereas a &#x27;Gateway&#x27; implies real-time traffic management during inference.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
           <button class="option" data-label="B" data-correct="false" data-rationale="While local tools exist, a defensible architecture requires the gateway to be part of the secure server-side infrastructure.">
             <span class="opt-label">B</span>
-            <span class="opt-text">Only on the user's local machine.</span>
+            <span class="opt-text">Only on the user&#x27;s local machine.</span>
           </button>
-          <div class="option-feedback hidden" data-for="B">
+          <div class="option-feedback" data-for="B">
             <div class="feedback-status"></div>
             <div class="feedback-rationale">While local tools exist, a defensible architecture requires the gateway to be part of the secure server-side infrastructure.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
           <button class="option" data-label="C" data-correct="true" data-rationale="An AI gateway acts as a middle-man to intercept and sanitise data before it reaches the model and before the response reaches the user.">
             <span class="opt-label">C</span>
             <span class="opt-text">Between the User and the LLM.</span>
           </button>
-          <div class="option-feedback hidden" data-for="C">
+          <div class="option-feedback" data-for="C">
             <div class="feedback-status"></div>
             <div class="feedback-rationale">An AI gateway acts as a middle-man to intercept and sanitise data before it reaches the model and before the response reaches the user.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
-          <button class="option" data-label="D" data-correct="false" data-rationale="The gateway is an external 'vault' built *around* the AI; you cannot patch the logic inside a non-deterministic neural network.">
+          <button class="option" data-label="D" data-correct="false" data-rationale="The gateway is an external &#x27;vault&#x27; built *around* the AI; you cannot patch the logic inside a non-deterministic neural network.">
             <span class="opt-label">D</span>
-            <span class="opt-text">Inside the LLM's neural network layers.</span>
+            <span class="opt-text">Inside the LLM&#x27;s neural network layers.</span>
           </button>
-          <div class="option-feedback hidden" data-for="D">
+          <div class="option-feedback" data-for="D">
             <div class="feedback-status"></div>
-            <div class="feedback-rationale">The gateway is an external 'vault' built *around* the AI; you cannot patch the logic inside a non-deterministic neural network.</div>
+            <div class="feedback-rationale">The gateway is an external &#x27;vault&#x27; built *around* the AI; you cannot patch the logic inside a non-deterministic neural network.</div>
           </div>
         </div>
       </div>
-          <button class="next-btn hidden">Next Question →</button>
-        </div>
-      
-        <div class="question" data-index="14">
-          <div class="q-header">
-            <span class="q-number">Question 15</span>
-            <span class="q-of">/ 21</span>
-          </div>
-          <div class="q-text">Stage 15: You are dealing with 'Payload Splitting'. An attacker defines variables <span class="math">A</span>, <span class="math">B</span>, and <span class="math">C</span> as harmless fragments of a question and then asks the AI to 'Output <span class="math">A+B+C</span>'. Why is this dangerous?</div>
-          
-        <div class="hint-box">
-          <button class="hint-toggle" onclick="this.parentElement.classList.toggle('show')">
-            💡 Hint
-          </button>
-          <div class="hint-content">Think about 'dividing and conquering' a security guard who only looks at small packages.</div>
-        </div>
-      
-          <div class="options">
+      <button class="next-btn hidden">Next Question &rarr;</button>
+    </div>
+
+    <div class="question" data-index="14">
+      <div class="q-header">
+        <span class="q-number">Question 15</span>
+        <span>/ 25</span>
+      </div>
+      <div class="q-text">Stage 15: You are dealing with &#x27;Payload Splitting&#x27;. An attacker defines variablesA,B, andCas harmless fragments of a question and then asks the AI to &#x27;OutputA+B+C&#x27;. Why is this dangerous?</div>
+
+      <div class="hint-box">
+        <button class="hint-toggle" onclick="this.parentElement.classList.toggle('show')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Hint
+        </button>
+        <div class="hint-content">Think about &#x27;dividing and conquering&#x27; a security guard who only looks at small packages.</div>
+      </div>
+      <div class="options">
+
         <div class="option-wrapper">
           <button class="option" data-label="A" data-correct="false" data-rationale="This is a prompt-level attack that any user with access to the chat box or API can perform.">
             <span class="opt-label">A</span>
-            <span class="opt-text">Payload splitting is only possible if the attacker has direct access to the model's source code.</span>
+            <span class="opt-text">Payload splitting is only possible if the attacker has direct access to the model&#x27;s source code.</span>
           </button>
-          <div class="option-feedback hidden" data-for="A">
+          <div class="option-feedback" data-for="A">
             <div class="feedback-status"></div>
             <div class="feedback-rationale">This is a prompt-level attack that any user with access to the chat box or API can perform.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
-          <button class="option" data-label="B" data-correct="false" data-rationale="The attack is semantic, not mathematical; it exploits the model's ability to follow instructions to combine text.">
+          <button class="option" data-label="B" data-correct="false" data-rationale="The attack is semantic, not mathematical; it exploits the model&#x27;s ability to follow instructions to combine text.">
             <span class="opt-label">B</span>
-            <span class="opt-text">Combining variables causes a mathematical overflow in the model's context window.</span>
+            <span class="opt-text">Combining variables causes a mathematical overflow in the model&#x27;s context window.</span>
           </button>
-          <div class="option-feedback hidden" data-for="B">
+          <div class="option-feedback" data-for="B">
             <div class="feedback-status"></div>
-            <div class="feedback-rationale">The attack is semantic, not mathematical; it exploits the model's ability to follow instructions to combine text.</div>
+            <div class="feedback-rationale">The attack is semantic, not mathematical; it exploits the model&#x27;s ability to follow instructions to combine text.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
           <button class="option" data-label="C" data-correct="true" data-rationale="Since the model concatenates and executes the instructions internally, static input filters that only look at one fragment at a time are easily bypassed.">
             <span class="opt-label">C</span>
-            <span class="opt-text">Each fragment passes individual safety filters, but the reconstruction happens internally within the model's reasoning.</span>
+            <span class="opt-text">Each fragment passes individual safety filters, but the reconstruction happens internally within the model&#x27;s reasoning.</span>
           </button>
-          <div class="option-feedback hidden" data-for="C">
+          <div class="option-feedback" data-for="C">
             <div class="feedback-status"></div>
             <div class="feedback-rationale">Since the model concatenates and executes the instructions internally, static input filters that only look at one fragment at a time are easily bypassed.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
-          <button class="option" data-label="D" data-correct="false" data-rationale="The plus sign is used as a metaphorical or literal instruction to concatenate strings; it doesn't grant administrative access.">
+          <button class="option" data-label="D" data-correct="false" data-rationale="The plus sign is used as a metaphorical or literal instruction to concatenate strings; it doesn&#x27;t grant administrative access.">
             <span class="opt-label">D</span>
-            <span class="opt-text">The use of 'plus' signs (+) triggers the model's calculator tool, which has administrative privileges.</span>
+            <span class="opt-text">The use of &#x27;plus&#x27; signs (+) triggers the model&#x27;s calculator tool, which has administrative privileges.</span>
           </button>
-          <div class="option-feedback hidden" data-for="D">
+          <div class="option-feedback" data-for="D">
             <div class="feedback-status"></div>
-            <div class="feedback-rationale">The plus sign is used as a metaphorical or literal instruction to concatenate strings; it doesn't grant administrative access.</div>
+            <div class="feedback-rationale">The plus sign is used as a metaphorical or literal instruction to concatenate strings; it doesn&#x27;t grant administrative access.</div>
           </div>
         </div>
       </div>
-          <button class="next-btn hidden">Next Question →</button>
-        </div>
-      
-        <div class="question" data-index="15">
-          <div class="q-header">
-            <span class="q-number">Question 16</span>
-            <span class="q-of">/ 21</span>
-          </div>
-          <div class="q-text">Scenario: To reduce the 'Blast Radius' of a potential breach, you decide to follow a specific engineering principle. What is it?</div>
-          
-        <div class="hint-box">
-          <button class="hint-toggle" onclick="this.parentElement.classList.toggle('show')">
-            💡 Hint
-          </button>
-          <div class="hint-content">Think about the 'Least Privilege' principle in traditional IT security.</div>
-        </div>
-      
-          <div class="options">
+      <button class="next-btn hidden">Next Question &rarr;</button>
+    </div>
+
+    <div class="question" data-index="15">
+      <div class="q-header">
+        <span class="q-number">Question 16</span>
+        <span>/ 25</span>
+      </div>
+      <div class="q-text">Scenario: To reduce the &#x27;Blast Radius&#x27; of a potential breach, you decide to follow a specific engineering principle. What is it?</div>
+
+      <div class="hint-box">
+        <button class="hint-toggle" onclick="this.parentElement.classList.toggle('show')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Hint
+        </button>
+        <div class="hint-content">Think about the &#x27;Least Privilege&#x27; principle in traditional IT security.</div>
+      </div>
+      <div class="options">
+
         <div class="option-wrapper">
           <button class="option" data-label="A" data-correct="false" data-rationale="Connecting an LLM directly to the internet without an inspection layer actually increases the attack surface.">
             <span class="opt-label">A</span>
             <span class="opt-text">Ensure the model is connected to the internet at all times for real-time safety updates.</span>
           </button>
-          <div class="option-feedback hidden" data-for="A">
+          <div class="option-feedback" data-for="A">
             <div class="feedback-status"></div>
             <div class="feedback-rationale">Connecting an LLM directly to the internet without an inspection layer actually increases the attack surface.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
-          <button class="option" data-label="B" data-correct="false" data-rationale="Larger models are smarter, but they also have more 'agency' and power; security is improved by limiting scope, not just increasing model size.">
+          <button class="option" data-label="B" data-correct="false" data-rationale="Larger models are smarter, but they also have more &#x27;agency&#x27; and power; security is improved by limiting scope, not just increasing model size.">
             <span class="opt-label">B</span>
             <span class="opt-text">Always use the largest available model (e.g., GPT-4o) for every task to ensure maximum safety.</span>
           </button>
-          <div class="option-feedback hidden" data-for="B">
+          <div class="option-feedback" data-for="B">
             <div class="feedback-status"></div>
-            <div class="feedback-rationale">Larger models are smarter, but they also have more 'agency' and power; security is improved by limiting scope, not just increasing model size.</div>
+            <div class="feedback-rationale">Larger models are smarter, but they also have more &#x27;agency&#x27; and power; security is improved by limiting scope, not just increasing model size.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
-          <button class="option" data-label="C" data-correct="true" data-rationale="By limiting the AI's permissions to the absolute minimum required (least privilege), you ensure that a single prompt injection cannot compromise the entire database.">
+          <button class="option" data-label="C" data-correct="true" data-rationale="By limiting the AI&#x27;s permissions to the absolute minimum required (least privilege), you ensure that a single prompt injection cannot compromise the entire database.">
             <span class="opt-label">C</span>
             <span class="opt-text">Build small-scoped services and only give an LLM access to the specific tables or tools it needs.</span>
           </button>
-          <div class="option-feedback hidden" data-for="C">
+          <div class="option-feedback" data-for="C">
             <div class="feedback-status"></div>
-            <div class="feedback-rationale">By limiting the AI's permissions to the absolute minimum required (least privilege), you ensure that a single prompt injection cannot compromise the entire database.</div>
+            <div class="feedback-rationale">By limiting the AI&#x27;s permissions to the absolute minimum required (least privilege), you ensure that a single prompt injection cannot compromise the entire database.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
           <button class="option" data-label="D" data-correct="false" data-rationale="Global storage increases the impact of a single leak; small, scoped services are more resilient.">
             <span class="opt-label">D</span>
             <span class="opt-text">Store all user chat history in a single, large global database for easier monitoring.</span>
           </button>
-          <div class="option-feedback hidden" data-for="D">
+          <div class="option-feedback" data-for="D">
             <div class="feedback-status"></div>
             <div class="feedback-rationale">Global storage increases the impact of a single leak; small, scoped services are more resilient.</div>
           </div>
         </div>
       </div>
-          <button class="next-btn hidden">Next Question →</button>
-        </div>
-      
-        <div class="question" data-index="16">
-          <div class="q-header">
-            <span class="q-number">Question 17</span>
-            <span class="q-of">/ 21</span>
-          </div>
-          <div class="q-text">Final Audit Question: The briefing concludes with a 'Zero Trust' philosophy for AI. Which of the following best summarises this mindset?</div>
-          
-        <div class="hint-box">
-          <button class="hint-toggle" onclick="this.parentElement.classList.toggle('show')">
-            💡 Hint
-          </button>
-          <div class="hint-content">Recall the final slide: '**SESSION_TERMINATED** Trust no model. Period.'</div>
-        </div>
-      
-          <div class="options">
+      <button class="next-btn hidden">Next Question &rarr;</button>
+    </div>
+
+    <div class="question" data-index="16">
+      <div class="q-header">
+        <span class="q-number">Question 17</span>
+        <span>/ 25</span>
+      </div>
+      <div class="q-text">Final Audit Question: The briefing concludes with a &#x27;Zero Trust&#x27; philosophy for AI. Which of the following best summarises this mindset?</div>
+
+      <div class="hint-box">
+        <button class="hint-toggle" onclick="this.parentElement.classList.toggle('show')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Hint
+        </button>
+        <div class="hint-content">Recall the final slide: &#x27;**SESSION_TERMINATED** Trust no model. Period.&#x27;</div>
+      </div>
+      <div class="options">
+
         <div class="option-wrapper">
-          <button class="option" data-label="A" data-correct="false" data-rationale="The briefing specifically warns that prompts can be hidden as poetry or markdown, meaning you cannot trust the model's output at all without rigorous validation.">
+          <button class="option" data-label="A" data-correct="false" data-rationale="The briefing specifically warns that prompts can be hidden as poetry or markdown, meaning you cannot trust the model&#x27;s output at all without rigorous validation.">
             <span class="opt-label">A</span>
-            <span class="opt-text">Trust but verify: believe the model's output unless it looks like code.</span>
+            <span class="opt-text">Trust but verify: believe the model&#x27;s output unless it looks like code.</span>
           </button>
-          <div class="option-feedback hidden" data-for="A">
+          <div class="option-feedback" data-for="A">
             <div class="feedback-status"></div>
-            <div class="feedback-rationale">The briefing specifically warns that prompts can be hidden as poetry or markdown, meaning you cannot trust the model's output at all without rigorous validation.</div>
+            <div class="feedback-rationale">The briefing specifically warns that prompts can be hidden as poetry or markdown, meaning you cannot trust the model&#x27;s output at all without rigorous validation.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
-          <button class="option" data-label="B" data-correct="false" data-rationale="Encryption secures data in transit, but the model must decrypt it to 'reason' over it, at which point the prompt injection is processed.">
+          <button class="option" data-label="B" data-correct="false" data-rationale="Encryption secures data in transit, but the model must decrypt it to &#x27;reason&#x27; over it, at which point the prompt injection is processed.">
             <span class="opt-label">B</span>
             <span class="opt-text">Encryption is the only way to secure an LLM context window.</span>
           </button>
-          <div class="option-feedback hidden" data-for="B">
+          <div class="option-feedback" data-for="B">
             <div class="feedback-status"></div>
-            <div class="feedback-rationale">Encryption secures data in transit, but the model must decrypt it to 'reason' over it, at which point the prompt injection is processed.</div>
+            <div class="feedback-rationale">Encryption secures data in transit, but the model must decrypt it to &#x27;reason&#x27; over it, at which point the prompt injection is processed.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
           <button class="option" data-label="C" data-correct="false" data-rationale="The briefing shows that even frontier models (like GPT-4o) are vulnerable to combined techniques like roleplay and structured output.">
             <span class="opt-label">C</span>
             <span class="opt-text">Only use models from trusted vendors like OpenAI or IBM to eliminate injection risks.</span>
           </button>
-          <div class="option-feedback hidden" data-for="C">
+          <div class="option-feedback" data-for="C">
             <div class="feedback-status"></div>
             <div class="feedback-rationale">The briefing shows that even frontier models (like GPT-4o) are vulnerable to combined techniques like roleplay and structured output.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
-          <button class="option" data-label="D" data-correct="true" data-rationale="Because LLMs are non-deterministic and 'fragile', you cannot trust them to be secure; you must engineer a defensive architecture that expects and mitigates failures.">
+          <button class="option" data-label="D" data-correct="true" data-rationale="Because LLMs are non-deterministic and &#x27;fragile&#x27;, you cannot trust them to be secure; you must engineer a defensive architecture that expects and mitigates failures.">
             <span class="opt-label">D</span>
-            <span class="opt-text">Assume the model is already compromised and build the 'vault' around it, not inside it.</span>
+            <span class="opt-text">Assume the model is already compromised and build the &#x27;vault&#x27; around it, not inside it.</span>
           </button>
-          <div class="option-feedback hidden" data-for="D">
+          <div class="option-feedback" data-for="D">
             <div class="feedback-status"></div>
-            <div class="feedback-rationale">Because LLMs are non-deterministic and 'fragile', you cannot trust them to be secure; you must engineer a defensive architecture that expects and mitigates failures.</div>
+            <div class="feedback-rationale">Because LLMs are non-deterministic and &#x27;fragile&#x27;, you cannot trust them to be secure; you must engineer a defensive architecture that expects and mitigates failures.</div>
           </div>
         </div>
       </div>
-          <button class="next-btn hidden">Next Question →</button>
-        </div>
-      
-        <div class="question" data-index="17">
-          <div class="q-header">
-            <span class="q-number">Question 18</span>
-            <span class="q-of">/ 21</span>
-          </div>
-          <div class="q-text">Stage 17: An attacker uses 'Base64' encoding to send a malicious payload. Your AI firewall ignores it, but the main LLM decodes and executes it. Why did the firewall fail?</div>
-          
-        <div class="hint-box">
-          <button class="hint-toggle" onclick="this.parentElement.classList.toggle('show')">
-            💡 Hint
-          </button>
-          <div class="hint-content">Consider the 'Plenny the Liberator' tool mentioned in the zSecurity video.</div>
-        </div>
-      
-          <div class="options">
+      <button class="next-btn hidden">Next Question &rarr;</button>
+    </div>
+
+    <div class="question" data-index="17">
+      <div class="q-header">
+        <span class="q-number">Question 18</span>
+        <span>/ 25</span>
+      </div>
+      <div class="q-text">Stage 17: An attacker uses &#x27;Base64&#x27; encoding to send a malicious payload. Your AI firewall ignores it, but the main LLM decodes and executes it. Why did the firewall fail?</div>
+
+      <div class="hint-box">
+        <button class="hint-toggle" onclick="this.parentElement.classList.toggle('show')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Hint
+        </button>
+        <div class="hint-content">Consider the &#x27;Plenny the Liberator&#x27; tool mentioned in the zSecurity video.</div>
+      </div>
+      <div class="options">
+
         <div class="option-wrapper">
           <button class="option" data-label="A" data-correct="false" data-rationale="While possible, the primary reason for failure in this context is the evasion of signature-based detection through data transformation.">
             <span class="opt-label">A</span>
-            <span class="opt-text">The firewall was busy processing a 'Denial of Wallet' attack and missed the packet.</span>
+            <span class="opt-text">The firewall was busy processing a &#x27;Denial of Wallet&#x27; attack and missed the packet.</span>
           </button>
-          <div class="option-feedback hidden" data-for="A">
+          <div class="option-feedback" data-for="A">
             <div class="feedback-status"></div>
             <div class="feedback-rationale">While possible, the primary reason for failure in this context is the evasion of signature-based detection through data transformation.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
           <button class="option" data-label="B" data-correct="false" data-rationale="Base64 is a simple encoding scheme, not encryption; it is easily decodable but often overlooked by basic filters.">
             <span class="opt-label">B</span>
             <span class="opt-text">Base64 is a military-grade encryption that is legally impossible for firewalls to crack.</span>
           </button>
-          <div class="option-feedback hidden" data-for="B">
+          <div class="option-feedback" data-for="B">
             <div class="feedback-status"></div>
             <div class="feedback-rationale">Base64 is a simple encoding scheme, not encryption; it is easily decodable but often overlooked by basic filters.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
-          <button class="option" data-label="C" data-correct="false" data-rationale="Models don't 'white-list' formats; they simply interpret the tokens they receive, which happens to include the ability to decode text.">
+          <button class="option" data-label="C" data-correct="false" data-rationale="Models don&#x27;t &#x27;white-list&#x27; formats; they simply interpret the tokens they receive, which happens to include the ability to decode text.">
             <span class="opt-label">C</span>
             <span class="opt-text">The LLM automatically white-lists any text formatted as Base64.</span>
           </button>
-          <div class="option-feedback hidden" data-for="C">
+          <div class="option-feedback" data-for="C">
             <div class="feedback-status"></div>
-            <div class="feedback-rationale">Models don't 'white-list' formats; they simply interpret the tokens they receive, which happens to include the ability to decode text.</div>
+            <div class="feedback-rationale">Models don&#x27;t &#x27;white-list&#x27; formats; they simply interpret the tokens they receive, which happens to include the ability to decode text.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
-          <button class="option" data-label="D" data-correct="true" data-rationale="If a firewall doesn't 'understand' the encoding, the malicious intent remains hidden until the LLM—which is trained on diverse data formats—decodes it internally.">
+          <button class="option" data-label="D" data-correct="true" data-rationale="If a firewall doesn&#x27;t &#x27;understand&#x27; the encoding, the malicious intent remains hidden until the LLM—which is trained on diverse data formats—decodes it internally.">
             <span class="opt-label">D</span>
             <span class="opt-text">The firewall likely lacks an integrated decoder or is only performing keyword scanning on raw text.</span>
           </button>
-          <div class="option-feedback hidden" data-for="D">
+          <div class="option-feedback" data-for="D">
             <div class="feedback-status"></div>
-            <div class="feedback-rationale">If a firewall doesn't 'understand' the encoding, the malicious intent remains hidden until the LLM—which is trained on diverse data formats—decodes it internally.</div>
+            <div class="feedback-rationale">If a firewall doesn&#x27;t &#x27;understand&#x27; the encoding, the malicious intent remains hidden until the LLM—which is trained on diverse data formats—decodes it internally.</div>
           </div>
         </div>
       </div>
-          <button class="next-btn hidden">Next Question →</button>
-        </div>
-      
-        <div class="question" data-index="18">
-          <div class="q-header">
-            <span class="q-number">Question 19</span>
-            <span class="q-of">/ 21</span>
-          </div>
-          <div class="q-text">Scenario: You are explaining 'Model Inversion' to the legal team. What is the primary goal of an attacker performing this type of 'Extraction Attack'?</div>
-          
-        <div class="hint-box">
-          <button class="hint-toggle" onclick="this.parentElement.classList.toggle('show')">
-            💡 Hint
-          </button>
-          <div class="hint-content">Think of it as 'siphoning' the water out of a well.</div>
-        </div>
-      
-          <div class="options">
+      <button class="next-btn hidden">Next Question &rarr;</button>
+    </div>
+
+    <div class="question" data-index="18">
+      <div class="q-header">
+        <span class="q-number">Question 19</span>
+        <span>/ 25</span>
+      </div>
+      <div class="q-text">Scenario: You are explaining &#x27;Model Inversion&#x27; to the legal team. What is the primary goal of an attacker performing this type of &#x27;Extraction Attack&#x27;?</div>
+
+      <div class="hint-box">
+        <button class="hint-toggle" onclick="this.parentElement.classList.toggle('show')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Hint
+        </button>
+        <div class="hint-content">Think of it as &#x27;siphoning&#x27; the water out of a well.</div>
+      </div>
+      <div class="options">
+
         <div class="option-wrapper">
           <button class="option" data-label="A" data-correct="false" data-rationale="This is a humorous distraction; inversion is a serious data-theft technique.">
             <span class="opt-label">A</span>
-            <span class="opt-text">To make the model answer questions backwards for a 'Denial of Service' effect.</span>
+            <span class="opt-text">To make the model answer questions backwards for a &#x27;Denial of Service&#x27; effect.</span>
           </button>
-          <div class="option-feedback hidden" data-for="A">
+          <div class="option-feedback" data-for="A">
             <div class="feedback-status"></div>
             <div class="feedback-rationale">This is a humorous distraction; inversion is a serious data-theft technique.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
-          <button class="option" data-label="B" data-correct="false" data-rationale="Model weights are static during inference; inversion is about extracting information, not re-training the model's core architecture.">
+          <button class="option" data-label="B" data-correct="false" data-rationale="Model weights are static during inference; inversion is about extracting information, not re-training the model&#x27;s core architecture.">
             <span class="opt-label">B</span>
-            <span class="opt-text">To flip the model's weights so that it becomes an ally to the hacker.</span>
+            <span class="opt-text">To flip the model&#x27;s weights so that it becomes an ally to the hacker.</span>
           </button>
-          <div class="option-feedback hidden" data-for="B">
+          <div class="option-feedback" data-for="B">
             <div class="feedback-status"></div>
-            <div class="feedback-rationale">Model weights are static during inference; inversion is about extracting information, not re-training the model's core architecture.</div>
+            <div class="feedback-rationale">Model weights are static during inference; inversion is about extracting information, not re-training the model&#x27;s core architecture.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
-          <button class="option" data-label="C" data-correct="true" data-rationale="By systematically questioning the model, attackers can effectively 'steal' the underlying data or unique logic it was trained on.">
+          <button class="option" data-label="C" data-correct="true" data-rationale="By systematically questioning the model, attackers can effectively &#x27;steal&#x27; the underlying data or unique logic it was trained on.">
             <span class="opt-label">C</span>
-            <span class="opt-text">To harvest large parts of the model's training data or unique intellectual property through repeated queries.</span>
+            <span class="opt-text">To harvest large parts of the model&#x27;s training data or unique intellectual property through repeated queries.</span>
           </button>
-          <div class="option-feedback hidden" data-for="C">
+          <div class="option-feedback" data-for="C">
             <div class="feedback-status"></div>
-            <div class="feedback-rationale">By systematically questioning the model, attackers can effectively 'steal' the underlying data or unique logic it was trained on.</div>
+            <div class="feedback-rationale">By systematically questioning the model, attackers can effectively &#x27;steal&#x27; the underlying data or unique logic it was trained on.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
-          <button class="option" data-label="D" data-correct="false" data-rationale="Chat history is managed by the application layer, not the model's internal weights; inversion targets the 'knowledge' inside the model.">
+          <button class="option" data-label="D" data-correct="false" data-rationale="Chat history is managed by the application layer, not the model&#x27;s internal weights; inversion targets the &#x27;knowledge&#x27; inside the model.">
             <span class="opt-label">D</span>
-            <span class="opt-text">To reverse the chronological order of the chat history to see previous users' messages.</span>
+            <span class="opt-text">To reverse the chronological order of the chat history to see previous users&#x27; messages.</span>
           </button>
-          <div class="option-feedback hidden" data-for="D">
+          <div class="option-feedback" data-for="D">
             <div class="feedback-status"></div>
-            <div class="feedback-rationale">Chat history is managed by the application layer, not the model's internal weights; inversion targets the 'knowledge' inside the model.</div>
+            <div class="feedback-rationale">Chat history is managed by the application layer, not the model&#x27;s internal weights; inversion targets the &#x27;knowledge&#x27; inside the model.</div>
           </div>
         </div>
       </div>
-          <button class="next-btn hidden">Next Question →</button>
-        </div>
-      
-        <div class="question" data-index="19">
-          <div class="q-header">
-            <span class="q-number">Question 20</span>
-            <span class="q-of">/ 21</span>
-          </div>
-          <div class="q-text">Stage 19: An attacker uses 'Morse Code' to ask for a bomb-making recipe. This bypasses the system's 'prose-based' filters. This is an example of which OWASP vulnerability?</div>
-          
-        <div class="hint-box">
-          <button class="hint-toggle" onclick="this.parentElement.classList.toggle('show')">
-            💡 Hint
-          </button>
-          <div class="hint-content">The model's ability to 'reason' over non-traditional text is being exploited here.</div>
-        </div>
-      
-          <div class="options">
+      <button class="next-btn hidden">Next Question &rarr;</button>
+    </div>
+
+    <div class="question" data-index="19">
+      <div class="q-header">
+        <span class="q-number">Question 20</span>
+        <span>/ 25</span>
+      </div>
+      <div class="q-text">Stage 19: An attacker uses &#x27;Morse Code&#x27; to ask for a bomb-making recipe. This bypasses the system&#x27;s &#x27;prose-based&#x27; filters. This is an example of which OWASP vulnerability?</div>
+
+      <div class="hint-box">
+        <button class="hint-toggle" onclick="this.parentElement.classList.toggle('show')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Hint
+        </button>
+        <div class="hint-content">The model&#x27;s ability to &#x27;reason&#x27; over non-traditional text is being exploited here.</div>
+      </div>
+      <div class="options">
+
         <div class="option-wrapper">
-          <button class="option" data-label="A" data-correct="false" data-rationale="This refers to third-party components, not the user's specific input method.">
+          <button class="option" data-label="A" data-correct="false" data-rationale="This refers to third-party components, not the user&#x27;s specific input method.">
             <span class="opt-label">A</span>
             <span class="opt-text">Supply Chain Vulnerability</span>
           </button>
-          <div class="option-feedback hidden" data-for="A">
+          <div class="option-feedback" data-for="A">
             <div class="feedback-status"></div>
-            <div class="feedback-rationale">This refers to third-party components, not the user's specific input method.</div>
+            <div class="feedback-rationale">This refers to third-party components, not the user&#x27;s specific input method.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
           <button class="option" data-label="B" data-correct="false" data-rationale="This vulnerability concerns how external tools are built, not the content of the prompt itself.">
             <span class="opt-label">B</span>
             <span class="opt-text">Insecure Plugin Design</span>
           </button>
-          <div class="option-feedback hidden" data-for="B">
+          <div class="option-feedback" data-for="B">
             <div class="feedback-status"></div>
             <div class="feedback-rationale">This vulnerability concerns how external tools are built, not the content of the prompt itself.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
-          <button class="option" data-label="C" data-correct="false" data-rationale="The injection is the *method*; data leakage might be the *result*, but the use of Morse code specifically targets the model's instruction-following ability.">
+          <button class="option" data-label="C" data-correct="false" data-rationale="The injection is the *method*; data leakage might be the *result*, but the use of Morse code specifically targets the model&#x27;s instruction-following ability.">
             <span class="opt-label">C</span>
             <span class="opt-text">Data Leakage</span>
           </button>
-          <div class="option-feedback hidden" data-for="C">
+          <div class="option-feedback" data-for="C">
             <div class="feedback-status"></div>
-            <div class="feedback-rationale">The injection is the *method*; data leakage might be the *result*, but the use of Morse code specifically targets the model's instruction-following ability.</div>
+            <div class="feedback-rationale">The injection is the *method*; data leakage might be the *result*, but the use of Morse code specifically targets the model&#x27;s instruction-following ability.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
           <button class="option" data-label="D" data-correct="true" data-rationale="Using alternative encodings or languages (like Morse code or poetry) to bypass safety instructions is a classic prompt injection technique.">
             <span class="opt-label">D</span>
             <span class="opt-text">Prompt Injection</span>
           </button>
-          <div class="option-feedback hidden" data-for="D">
+          <div class="option-feedback" data-for="D">
             <div class="feedback-status"></div>
             <div class="feedback-rationale">Using alternative encodings or languages (like Morse code or poetry) to bypass safety instructions is a classic prompt injection technique.</div>
           </div>
         </div>
       </div>
-          <button class="next-btn hidden">Next Question →</button>
-        </div>
-      
-        <div class="question" data-index="20">
-          <div class="q-header">
-            <span class="q-number">Question 21</span>
-            <span class="q-of">/ 21</span>
-          </div>
-          <div class="q-text">Stage 20: In the 'Promptware Kill Chain', how does an attacker achieve 'Persistence' in an environment where chat sessions are usually ephemeral?</div>
-          
-        <div class="hint-box">
-          <button class="hint-toggle" onclick="this.parentElement.classList.toggle('show')">
-            💡 Hint
-          </button>
-          <div class="hint-content">The data is infected by 'remembering'.</div>
-        </div>
-      
-          <div class="options">
+      <button class="next-btn hidden">Next Question &rarr;</button>
+    </div>
+
+    <div class="question" data-index="20">
+      <div class="q-header">
+        <span class="q-number">Question 21</span>
+        <span>/ 25</span>
+      </div>
+      <div class="q-text">Stage 20: In the &#x27;Promptware Kill Chain&#x27;, how does an attacker achieve &#x27;Persistence&#x27; in an environment where chat sessions are usually ephemeral?</div>
+
+      <div class="hint-box">
+        <button class="hint-toggle" onclick="this.parentElement.classList.toggle('show')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Hint
+        </button>
+        <div class="hint-content">The data is infected by &#x27;remembering&#x27;.</div>
+      </div>
+      <div class="options">
+
         <div class="option-wrapper">
-          <button class="option" data-label="A" data-correct="false" data-rationale="Promptware exploits the AI's reasoning and data access, not physical site security.">
+          <button class="option" data-label="A" data-correct="false" data-rationale="Promptware exploits the AI&#x27;s reasoning and data access, not physical site security.">
             <span class="opt-label">A</span>
-            <span class="opt-text">By stealing the administrator's physical hardware key.</span>
+            <span class="opt-text">By stealing the administrator&#x27;s physical hardware key.</span>
           </button>
-          <div class="option-feedback hidden" data-for="A">
+          <div class="option-feedback" data-for="A">
             <div class="feedback-status"></div>
-            <div class="feedback-rationale">Promptware exploits the AI's reasoning and data access, not physical site security.</div>
+            <div class="feedback-rationale">Promptware exploits the AI&#x27;s reasoning and data access, not physical site security.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
-          <button class="option" data-label="B" data-correct="false" data-rationale="Client-side persistence (like keeping a tab open) does not constitute a system-level 'persistence' exploit in the malware sense.">
+          <button class="option" data-label="B" data-correct="false" data-rationale="Client-side persistence (like keeping a tab open) does not constitute a system-level &#x27;persistence&#x27; exploit in the malware sense.">
             <span class="opt-label">B</span>
             <span class="opt-text">By keeping the browser tab open for more than 24 hours.</span>
           </button>
-          <div class="option-feedback hidden" data-for="B">
+          <div class="option-feedback" data-for="B">
             <div class="feedback-status"></div>
-            <div class="feedback-rationale">Client-side persistence (like keeping a tab open) does not constitute a system-level 'persistence' exploit in the malware sense.</div>
+            <div class="feedback-rationale">Client-side persistence (like keeping a tab open) does not constitute a system-level &#x27;persistence&#x27; exploit in the malware sense.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
-          <button class="option" data-label="C" data-correct="true" data-rationale="If the attacker can 'infect' the data that the AI retrieves later, the attack is re-executed every time that specific data is referenced.">
+          <button class="option" data-label="C" data-correct="true" data-rationale="If the attacker can &#x27;infect&#x27; the data that the AI retrieves later, the attack is re-executed every time that specific data is referenced.">
             <span class="opt-label">C</span>
             <span class="opt-text">By planting malicious prompts in long-term memory sources like RAG databases or email archives.</span>
           </button>
-          <div class="option-feedback hidden" data-for="C">
+          <div class="option-feedback" data-for="C">
             <div class="feedback-status"></div>
-            <div class="feedback-rationale">If the attacker can 'infect' the data that the AI retrieves later, the attack is re-executed every time that specific data is referenced.</div>
+            <div class="feedback-rationale">If the attacker can &#x27;infect&#x27; the data that the AI retrieves later, the attack is re-executed every time that specific data is referenced.</div>
           </div>
         </div>
-      
+
         <div class="option-wrapper">
-          <button class="option" data-label="D" data-correct="false" data-rationale="AI models do not have the inherent ability to write browser cookies unless explicitly given a 'Tool' to do so, and even then, 'Persistence' refers to the attack's longevity within the AI's ecosystem.">
+          <button class="option" data-label="D" data-correct="false" data-rationale="AI models do not have the inherent ability to write browser cookies unless explicitly given a &#x27;Tool&#x27; to do so, and even then, &#x27;Persistence&#x27; refers to the attack&#x27;s longevity within the AI&#x27;s ecosystem.">
             <span class="opt-label">D</span>
-            <span class="opt-text">By forcing the AI to write its own 'Cookie' to the user's browser.</span>
+            <span class="opt-text">By forcing the AI to write its own &#x27;Cookie&#x27; to the user&#x27;s browser.</span>
           </button>
-          <div class="option-feedback hidden" data-for="D">
+          <div class="option-feedback" data-for="D">
             <div class="feedback-status"></div>
-            <div class="feedback-rationale">AI models do not have the inherent ability to write browser cookies unless explicitly given a 'Tool' to do so, and even then, 'Persistence' refers to the attack's longevity within the AI's ecosystem.</div>
+            <div class="feedback-rationale">AI models do not have the inherent ability to write browser cookies unless explicitly given a &#x27;Tool&#x27; to do so, and even then, &#x27;Persistence&#x27; refers to the attack&#x27;s longevity within the AI&#x27;s ecosystem.</div>
           </div>
         </div>
       </div>
-          <button class="next-btn hidden">Next Question →</button>
+      <button class="next-btn hidden">Next Question &rarr;</button>
+    </div>
+
+    <div class="question" data-index="21">
+      <div class="q-header">
+        <span class="q-number">Question 22</span>
+        <span>/ 25</span>
+      </div>
+      <div class="q-text">What is the primary defense against Insecure Output Handling in LLM applications?</div>
+
+      <div class="hint-box">
+        <button class="hint-toggle" onclick="this.parentElement.classList.toggle('show')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Hint
+        </button>
+        <div class="hint-content">The output from an LLM should be treated similarly to untrusted user input in traditional web applications.</div>
+      </div>
+      <div class="options">
+
+        <div class="option-wrapper">
+          <button class="option" data-label="A" data-correct="false" data-rationale="Rate limiting helps with DoS but does not address the security of the content the LLM outputs.">
+            <span class="opt-label">A</span>
+            <span class="opt-text">Rate limiting</span>
+          </button>
+          <div class="option-feedback" data-for="A">
+            <div class="feedback-status"></div>
+            <div class="feedback-rationale">Rate limiting helps with DoS but does not address the security of the content the LLM outputs.</div>
+          </div>
+        </div>
+
+        <div class="option-wrapper">
+          <button class="option" data-label="B" data-correct="true" data-rationale="Correct. Output validation and sanitization is the primary defense. LLM outputs should be treated as untrusted content. Applications must validate, sanitize, and encode outputs before rendering them to users or passing them to downstream systems (e.g., databases, shell commands).">
+            <span class="opt-label">B</span>
+            <span class="opt-text">Output validation and sanitization</span>
+          </button>
+          <div class="option-feedback" data-for="B">
+            <div class="feedback-status"></div>
+            <div class="feedback-rationale">Correct. Output validation and sanitization is the primary defense. LLM outputs should be treated as untrusted content. Applications must validate, sanitize, and encode outputs before rendering them to users or passing them to downstream systems (e.g., databases, shell commands).</div>
+          </div>
+        </div>
+
+        <div class="option-wrapper">
+          <button class="option" data-label="C" data-correct="false" data-rationale="Input length restrictions can help with performance and some injection attacks but do not protect against malicious or malformed output from the model.">
+            <span class="opt-label">C</span>
+            <span class="opt-text">Input length restrictions</span>
+          </button>
+          <div class="option-feedback" data-for="C">
+            <div class="feedback-status"></div>
+            <div class="feedback-rationale">Input length restrictions can help with performance and some injection attacks but do not protect against malicious or malformed output from the model.</div>
+          </div>
+        </div>
+
+        <div class="option-wrapper">
+          <button class="option" data-label="D" data-correct="false" data-rationale="While fine-tuning can improve output quality, it is not a reliable security control. The model can still generate unsafe or unexpected outputs.">
+            <span class="opt-label">D</span>
+            <span class="opt-text">Model fine-tuning</span>
+          </button>
+          <div class="option-feedback" data-for="D">
+            <div class="feedback-status"></div>
+            <div class="feedback-rationale">While fine-tuning can improve output quality, it is not a reliable security control. The model can still generate unsafe or unexpected outputs.</div>
+          </div>
         </div>
       </div>
+      <button class="next-btn hidden">Next Question &rarr;</button>
+    </div>
+
+    <div class="question" data-index="22">
+      <div class="q-header">
+        <span class="q-number">Question 23</span>
+        <span>/ 25</span>
+      </div>
+      <div class="q-text">What is Model Inversion in the context of AI security?</div>
+
+      <div class="hint-box">
+        <button class="hint-toggle" onclick="this.parentElement.classList.toggle('show')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Hint
+        </button>
+        <div class="hint-content">This attack reconstructs something the model was trained on, not just what it outputs.</div>
+      </div>
+      <div class="options">
+
+        <div class="option-wrapper">
+          <button class="option" data-label="A" data-correct="false" data-rationale="This describes a weight manipulation attack, not model inversion.">
+            <span class="opt-label">A</span>
+            <span class="opt-text">Flipping the model&#x27;s weights to create an adversarial version</span>
+          </button>
+          <div class="option-feedback" data-for="A">
+            <div class="feedback-status"></div>
+            <div class="feedback-rationale">This describes a weight manipulation attack, not model inversion.</div>
+          </div>
+        </div>
+
+        <div class="option-wrapper">
+          <button class="option" data-label="B" data-correct="true" data-rationale="Correct. Model Inversion is an attack where an adversary queries the model and uses its outputs to reconstruct sensitive training data. For example, by repeatedly querying a facial recognition model, an attacker might reconstruct images of individuals from the training set.">
+            <span class="opt-label">B</span>
+            <span class="opt-text">Reconstructing training data from model outputs</span>
+          </button>
+          <div class="option-feedback" data-for="B">
+            <div class="feedback-status"></div>
+            <div class="feedback-rationale">Correct. Model Inversion is an attack where an adversary queries the model and uses its outputs to reconstruct sensitive training data. For example, by repeatedly querying a facial recognition model, an attacker might reconstruct images of individuals from the training set.</div>
+          </div>
+        </div>
+
+        <div class="option-wrapper">
+          <button class="option" data-label="C" data-correct="false" data-rationale="This is not a recognized attack vector in AI security.">
+            <span class="opt-label">C</span>
+            <span class="opt-text">Inverting the model&#x27;s decision logic</span>
+          </button>
+          <div class="option-feedback" data-for="C">
+            <div class="feedback-status"></div>
+            <div class="feedback-rationale">This is not a recognized attack vector in AI security.</div>
+          </div>
+        </div>
+
+        <div class="option-wrapper">
+          <button class="option" data-label="D" data-correct="false" data-rationale="Models are not encryption systems and cannot be &quot;run in reverse&quot; to decrypt inputs.">
+            <span class="opt-label">D</span>
+            <span class="opt-text">Running the model in reverse to decrypt inputs</span>
+          </button>
+          <div class="option-feedback" data-for="D">
+            <div class="feedback-status"></div>
+            <div class="feedback-rationale">Models are not encryption systems and cannot be &quot;run in reverse&quot; to decrypt inputs.</div>
+          </div>
+        </div>
+      </div>
+      <button class="next-btn hidden">Next Question &rarr;</button>
+    </div>
+
+    <div class="question" data-index="23">
+      <div class="q-header">
+        <span class="q-number">Question 24</span>
+        <span>/ 25</span>
+      </div>
+      <div class="q-text">Which of the following is a valid concern for Denial of Service (DoS) attacks against LLM APIs?</div>
+
+      <div class="hint-box">
+        <button class="hint-toggle" onclick="this.parentElement.classList.toggle('show')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Hint
+        </button>
+        <div class="hint-content">LLMs have a unique resource constraint compared to traditional APIs.</div>
+      </div>
+      <div class="options">
+
+        <div class="option-wrapper">
+          <button class="option" data-label="A" data-correct="false" data-rationale="No system scales infinitely. LLMs are particularly resource-intensive and vulnerable to resource exhaustion.">
+            <span class="opt-label">A</span>
+            <span class="opt-text">LLMs are immune to DoS because they scale infinitely</span>
+          </button>
+          <div class="option-feedback" data-for="A">
+            <div class="feedback-status"></div>
+            <div class="feedback-rationale">No system scales infinitely. LLMs are particularly resource-intensive and vulnerable to resource exhaustion.</div>
+          </div>
+        </div>
+
+        <div class="option-wrapper">
+          <button class="option" data-label="B" data-correct="true" data-rationale="Correct. LLMs are particularly vulnerable to resource exhaustion attacks. Attackers can send inputs that maximize token count, trigger expensive reasoning steps, or use recursive tool calls. Context window flooding and continuous generation loops are specific DoS vectors for LLMs.">
+            <span class="opt-label">B</span>
+            <span class="opt-text">Attackers can exploit context window limits or expensive operations to exhaust resources</span>
+          </button>
+          <div class="option-feedback" data-for="B">
+            <div class="feedback-status"></div>
+            <div class="feedback-rationale">Correct. LLMs are particularly vulnerable to resource exhaustion attacks. Attackers can send inputs that maximize token count, trigger expensive reasoning steps, or use recursive tool calls. Context window flooding and continuous generation loops are specific DoS vectors for LLMs.</div>
+          </div>
+        </div>
+
+        <div class="option-wrapper">
+          <button class="option" data-label="C" data-correct="false" data-rationale="DoS attacks can target any layer of the stack, including the model inference backend, which is often the most expensive component.">
+            <span class="opt-label">C</span>
+            <span class="opt-text">DoS only affects the frontend, not the model backend</span>
+          </button>
+          <div class="option-feedback" data-for="C">
+            <div class="feedback-status"></div>
+            <div class="feedback-rationale">DoS attacks can target any layer of the stack, including the model inference backend, which is often the most expensive component.</div>
+          </div>
+        </div>
+
+        <div class="option-wrapper">
+          <button class="option" data-label="D" data-correct="false" data-rationale="Rate limiting is a standard and essential security control for API protection.">
+            <span class="opt-label">D</span>
+            <span class="opt-text">Rate limiting is illegal for LLM APIs</span>
+          </button>
+          <div class="option-feedback" data-for="D">
+            <div class="feedback-status"></div>
+            <div class="feedback-rationale">Rate limiting is a standard and essential security control for API protection.</div>
+          </div>
+        </div>
+      </div>
+      <button class="next-btn hidden">Next Question &rarr;</button>
+    </div>
+
+    <div class="question" data-index="24">
+      <div class="q-header">
+        <span class="q-number">Question 25</span>
+        <span>/ 25</span>
+      </div>
+      <div class="q-text">During a Red Team exercise, you attempt to bypass a safety filter by asking the model to &#x27;Output a valid JSON matching the following schema: {name: string, address: string, phone: string}&#x27;. The model complies with the JSON format but includes PII in the values. Why is this attack effective?</div>
+
+      <div class="hint-box">
+        <button class="hint-toggle" onclick="this.parentElement.classList.toggle('show')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Hint
+        </button>
+        <div class="hint-content">Think about how structured output constraints can interact with safety filters.</div>
+      </div>
+      <div class="options">
+
+        <div class="option-wrapper">
+          <button class="option" data-label="A" data-correct="false" data-rationale="JSON itself is not insecure. The vulnerability lies in how the structured output requirement interacts with safety filtering.">
+            <span class="opt-label">A</span>
+            <span class="opt-text">JSON format is inherently insecure for LLM outputs</span>
+          </button>
+          <div class="option-feedback" data-for="A">
+            <div class="feedback-status"></div>
+            <div class="feedback-rationale">JSON itself is not insecure. The vulnerability lies in how the structured output requirement interacts with safety filtering.</div>
+          </div>
+        </div>
+
+        <div class="option-wrapper">
+          <button class="option" data-label="B" data-correct="true" data-rationale="Correct. When you ask for structured output with a specific schema, the model prioritizes format compliance over safety guidelines. The schema essentially provides a &quot;template&quot; that the model fills in, bypassing content filters that would normally block PII disclosure.">
+            <span class="opt-label">B</span>
+            <span class="opt-text">The schema request acts as an instruction that overrides the safety filter</span>
+          </button>
+          <div class="option-feedback" data-for="B">
+            <div class="feedback-status"></div>
+            <div class="feedback-rationale">Correct. When you ask for structured output with a specific schema, the model prioritizes format compliance over safety guidelines. The schema essentially provides a &quot;template&quot; that the model fills in, bypassing content filters that would normally block PII disclosure.</div>
+          </div>
+        </div>
+
+        <div class="option-wrapper">
+          <button class="option" data-label="C" data-correct="false" data-rationale="While this may be true for some models, the root cause is the instruction hierarchy conflict, not validation capability.">
+            <span class="opt-label">C</span>
+            <span class="opt-text">The model cannot validate PII within JSON structures</span>
+          </button>
+          <div class="option-feedback" data-for="C">
+            <div class="feedback-status"></div>
+            <div class="feedback-rationale">While this may be true for some models, the root cause is the instruction hierarchy conflict, not validation capability.</div>
+          </div>
+        </div>
+
+        <div class="option-wrapper">
+          <button class="option" data-label="D" data-correct="false" data-rationale="Modern safety filters can process structured data. The issue is the competing priorities between format compliance and safety.">
+            <span class="opt-label">D</span>
+            <span class="opt-text">Safety filters only work on plain text, not structured data</span>
+          </button>
+          <div class="option-feedback" data-for="D">
+            <div class="feedback-status"></div>
+            <div class="feedback-rationale">Modern safety filters can process structured data. The issue is the competing priorities between format compliance and safety.</div>
+          </div>
+        </div>
+      </div>
+      <button class="next-btn hidden">Next Question &rarr;</button>
+    </div>
+  </div>
   <div class="results" id="results">
     <h2>Quiz Complete!</h2>
     <div class="score" id="score">0%</div>
     <div class="score-text" id="score-text"></div>
     <button class="restart-btn" onclick="restart()">Try Again</button>
+    <br>
+    <a href="/ai-club/members/events.html" class="back-link">&larr; Back to Workshops</a>
   </div>
 </div>
 <script>
-const quizData = [{"question":"Scenario: You have just been appointed as the Lead Security Architect at SecureAI. Your first task is to explain to the board why traditional firewalls cannot fully protect Large Language Models (LLMs). What is the fundamental 'architectural flaw' that makes LLMs uniquely vulnerable to prompt injection?","hint":"Consider how the model perceives the difference between a command like 'Summarise this' and the text of the article itself.","options":[{"label":"A","text":"LLMs lack a clear boundary between system instructions and user-provided data, treating both as equal tokens.","isCorrect":true,"rationale":"Large Language Models operate on a stateless context window where everything is processed as text, making it impossible for the model to inherently distinguish between a developer's command and a user's input."},{"label":"B","text":"The API connections used to call models like GPT-4 are unencrypted by default, allowing man-in-the-middle attacks.","isCorrect":false,"rationale":"API connections are typically secured via HTTPS; the vulnerability is internal to how the model reasons over the combined prompt payload."},{"label":"C","text":"The models are built on open-source weights that allow attackers to see the internal decision-making logic.","isCorrect":false,"rationale":"While open-source weights are a factor in some attacks, the primary architectural flaw lies in the 'squashing' of instructions and data together in the context window."},{"label":"D","text":"LLMs are deterministic engines that can be mapped out by attackers using simple brute-force techniques.","isCorrect":false,"rationale":"LLMs are actually non-deterministic, meaning they can provide different answers to the same prompt, which complicates security rather than simplifying it for the attacker."}]},{"question":"Scenario: A 'Red Team' attacker is attempting to breach your system. They don't send a message to your chatbot directly. Instead, they leave a malicious instruction inside a publicly accessible PDF that your AI is programmed to summarise. What type of attack is this?","hint":"The attacker is using the document as a 'carrier pigeon' for their malware.","options":[{"label":"A","text":"Direct Prompt Injection","isCorrect":false,"rationale":"Direct injection involves the attacker interacting with the user chat box or API call to explicitly overwrite the system prompt."},{"label":"B","text":"Training Data Poisoning","isCorrect":false,"rationale":"This attack happens during the model's creation or fine-tuning phase, rather than through external documents processed during inference."},{"label":"C","text":"Indirect Prompt Injection","isCorrect":true,"rationale":"This occurs when the malicious payload is placed in external data sources like PDFs or websites that the AI later retrieves and processes as instructions."},{"label":"D","text":"Model Inversion","isCorrect":false,"rationale":"Model inversion is an extraction attack aimed at harvesting the model's intellectual property or training data, not manipulating its immediate behaviour."}]},{"question":"Stage 3 of the Audit: You encounter the 'Compliance Bypass' exploit. An attacker poses as an 'Internal Auditor AI' and demands the model output its hidden system message in a strict JSON format. Why is combining roleplay with structured output so effective?","hint":"Think about the pressure a model feels to be 'helpful' and follow complex formatting instructions.","options":[{"label":"A","text":"JSON formatting automatically encrypts the payload, allowing it to bypass the application's signature-based filters.","isCorrect":false,"rationale":"JSON is a data interchange format, not an encryption method; its effectiveness lies in how it steers the model's attention, not in hiding text from filters."},{"label":"B","text":"Structured output bypasses the token limit of the context window, allowing for larger malicious payloads.","isCorrect":false,"rationale":"Structured output is actually more token-intensive and has no effect on the underlying physical constraints of the context window."},{"label":"C","text":"It forces the non-deterministic model to prioritise formatting compliance over its internal security rules.","isCorrect":true,"rationale":"By demanding a specific format (like JSON) under an authoritative guise, the model’s 'helpfulness' drive overrides the fuzzy boundaries of its safety instructions."},{"label":"D","text":"Roleplaying increases the model's processing speed, which can cause the security layer to time out and fail open.","isCorrect":false,"rationale":"There is no evidence that roleplaying affects processing speed; rather, it exploits the improvisational nature of the model's reasoning."}]},{"question":"Scenario: You are monitoring a chat session where the user is asking seemingly innocent questions about user counts and first names. Suddenly, the AI produces a Markdown table containing full home addresses. Which technique was used?","hint":"Recall that LLMs are stateless and rely on the application layer to feed back previous messages to maintain 'memory'.","options":[{"label":"A","text":"Payload Splitting","isCorrect":false,"rationale":"Payload splitting typically occurs in a single-turn prompt where the attack is broken into fragments to evade input filters."},{"label":"B","text":"Denial of Wallet","isCorrect":false,"rationale":"This refers to an attack designed to exhaust the victim's financial resources through excessive API calls, not data exfiltration."},{"label":"C","text":"Delimiter Confusion","isCorrect":false,"rationale":"This technique uses special characters like hashes or dashes to trick the model into ignoring instructions, rather than using a sequence of messages."},{"label":"D","text":"Multi-turn Manipulation","isCorrect":true,"rationale":"This attack involves 'polluting' the context window over several turns with innocent snippets that, when combined in a final step, lead to a data breach."}]},{"question":"Stage 5: You implement a 'Reflection Filter' that checks the AI's output for sensitive words like 'password'. An attacker successfully bypasses this by asking the AI to 'spell the password with dashes'. Why did this work?","hint":"Think about how a search tool might fail if you searched for 'Apple' but the document said 'A.p.p.l.e'.","options":[{"label":"A","text":"The filter looks for exact string matches, but the model's output (e.g., 'p-a-s-s') no longer matches the signature.","isCorrect":true,"rationale":"Simple regex or signature-based filters fail when the model transforms the text into a format that the filter is not programmed to recognise."},{"label":"B","text":"The reflection model is only capable of scanning the first 100 tokens of any response.","isCorrect":false,"rationale":"Reflection models scan the entire response, but they are limited by what they are specifically instructed to look for or their own reasoning capabilities."},{"label":"C","text":"Adding dashes increases the entropy of the response, making it mathematically impossible to scan.","isCorrect":false,"rationale":"The scanning is not based on entropy; it is based on pattern recognition, which is defeated by the character-level transformation."},{"label":"D","text":"The use of dashes triggered a 'safe mode' in the reflection model, causing it to ignore all security violations.","isCorrect":false,"rationale":"Dashes do not have a universal 'safe mode' trigger; they are simply a method of obfuscating the sensitive string."}]},{"question":"Stage 6: The board asks about the 'OWASP Top 10 for LLMs'. Which vulnerability describes a scenario where an AI is given the power to delete files or send emails without sufficient human oversight?","hint":"This term relates to an AI having 'too much power' to act on its own.","options":[{"label":"A","text":"Unbounded Consumption","isCorrect":false,"rationale":"This vulnerability relates to resource exhaustion and denial of service attacks."},{"label":"B","text":"Excessive Agency","isCorrect":true,"rationale":"Excessive agency occurs when an LLM is granted too many permissions or functions (tools/plugins) that can be triggered by a malicious prompt."},{"label":"C","text":"System Prompt Leakage","isCorrect":false,"rationale":"This involves the model revealing its internal instructions, not performing unauthorised actions in the real world."},{"label":"D","text":"Insecure Output Handling","isCorrect":false,"rationale":"This refers to the failure to sanitise the LLM's output before passing it to downstream functions, like a web browser or database."}]},{"question":"Scenario: You are designing a 'Defensible AI Architecture'. You decide to use a second, hyper-strict model to validate the output of the main application model. What is this component called?","hint":"This component acts as an arbiter to decide if a response should proceed to the user or be blocked.","options":[{"label":"A","text":"LLM-as-a-Judge","isCorrect":true,"rationale":"An LLM-as-a-judge serves as a verification layer to ensure the primary model's output is accurate, safe, and free from injection attempts."},{"label":"B","text":"System Prompt Fence","isCorrect":false,"rationale":"The system prompt is the instruction set within the model, which is described in the source as a 'fragile fence', not a separate model."},{"label":"C","text":"Stateless App Layer","isCorrect":false,"rationale":"This layer manages session context and token limits, but doesn't necessarily perform the role of a safety validator."},{"label":"D","text":"Input Guardrail","isCorrect":false,"rationale":"While similar, an input guardrail scans data *before* it reaches the model; a 'judge' typically evaluates the generated response."}]},{"question":"Stage 8: You are hardening your API against 'Promptware'. You notice that your AI can fetch external content. Which stage of the 'Promptware Kill Chain' describes the model being manipulated into revealing what APIs and tools it has access to?","hint":"This is a term used in military and cyber security for 'scouting' a target.","options":[{"label":"A","text":"Persistence","isCorrect":false,"rationale":"Persistence involves planting malicious prompts in long-term memory (like RAG databases) to ensure the AI reinfects itself later."},{"label":"B","text":"Reconnaissance","isCorrect":true,"rationale":"In the promptware kill chain, reconnaissance happens after the initial compromise to identify the 'joint' and find further vulnerabilities."},{"label":"C","text":"Privilege Escalation","isCorrect":false,"rationale":"This is the jailbreaking phase where the attacker bypasses safety alignment to gain 'administrator' access to the reasoning engine."},{"label":"D","text":"Lateral Movement","isCorrect":false,"rationale":"This stage involves moving through the system to infect other interconnected agents or smart devices."}]},{"question":"Stage 9: To prevent 'Insecure Output Handling', you decide to restrict your model so it can only communicate with the application using a specific format. Which of the following is the most secure method mentioned in the briefing?","hint":"Think about how to replace 'improvisational strings' with 'validated data structures'.","options":[{"label":"A","text":"Limit the output to a maximum of 50 tokens.","isCorrect":false,"rationale":"While limiting length reduces the 'blast radius', it does not prevent a short, high-impact malicious command from being executed."},{"label":"B","text":"Use a markdown table to organise all outgoing data.","isCorrect":false,"rationale":"Markdown is still just text and can easily be used to hide or present malicious payloads."},{"label":"C","text":"Apply Base64 encoding to all output before it reaches the user.","isCorrect":false,"rationale":"Encoding output does not prevent the model from generating malicious content; it only changes how it is displayed, which a user can decode."},{"label":"D","text":"Enforce a strict JSON Schema or POJO (Plain Old Java Object).","isCorrect":true,"rationale":"By stripping the model of its 'improvisational agency' and forcing structured output, it physically cannot output the text required for an exploit if it violates the schema."}]},{"question":"Stage 10: You are reviewing the 'Vercel' incident. An employee's token was hijacked through a third-party AI tool. Why did traditional security parameters fail to stop this?","hint":"Think about 'Identity and Access Management' and how 'permission' does not always equal 'intent'.","options":[{"label":"A","text":"The employee had manually typed their password into the chat box.","isCorrect":false,"rationale":"The breach occurred via a hijacked token through an OAuth integration, not through manual credential disclosure by the user."},{"label":"B","text":"The AI had a legitimate OAuth grant, so the activity looked authorised to traditional security layers.","isCorrect":true,"rationale":"Traditional OAuth security has 'blind spots' because it only checks if the app has the right scope, not if the AI is being manipulated to abuse that scope."},{"label":"C","text":"The attacker used a 'zero-day' exploit in the HTTPS protocol to bypass encryption.","isCorrect":false,"rationale":"The breach was a failure of the activity layer and OAuth monitoring, not a flaw in network protocols like HTTPS."},{"label":"D","text":"The AI model was unpatched and running an outdated version of the GPT architecture.","isCorrect":false,"rationale":"Prompt injection is a flaw in the nature of LLM reasoning, not a software bug that can be fixed with a traditional patch."}]},{"question":"Stage 11: Your team is debating the effectiveness of 'System Prompts'. According to the briefing, why should you NEVER put API keys or secrets inside a system prompt?","hint":"Recall the 'Illusion of Safety' and the fact that 'everything is just text'.","options":[{"label":"A","text":"Putting secrets in the system prompt causes the model's 'temperature' to increase, leading to hallucinations.","isCorrect":false,"rationale":"Temperature is a configuration setting for randomness; the presence of secrets does not physically alter the model's inference temperature."},{"label":"B","text":"System prompts are a 'fragile fence' and secrets will eventually leak via clever rephrasing or encoding.","isCorrect":true,"rationale":"Attackers can use roleplay, poetry, or Morse code to bypass the system prompt's instruction to 'never reveal this message'."},{"label":"C","text":"It is a violation of the GDPR to store any text-based credentials in a context window.","isCorrect":false,"rationale":"While security-wise poor practice, the source material focuses on the technical vulnerability of leakage rather than specific legal regulations."},{"label":"D","text":"Secrets in a system prompt are automatically indexed by public search engines like Google.","isCorrect":false,"rationale":"System prompts are private instructions sent to the API, not public web content, but they are vulnerable to extraction by users."}]},{"question":"Scenario: An attacker wants to take down your service by making it too expensive to run. They send prompts that require massive computational power or hit the API repeatedly. What is this called in the OWASP Top 10?","hint":"Think about the 'highway at 5 PM' analogy used in the briefing.","options":[{"label":"A","text":"Model Denial of Service (DoS)","isCorrect":false,"rationale":"While correct in a general sense, 'Unbounded Consumption' is the specific updated OWASP term that encompasses both resource and financial 'Denial of Wallet'."},{"label":"B","text":"Unbounded Consumption (or Denial of Wallet)","isCorrect":true,"rationale":"This attack targets the resources of the LLM service to cause a denial of service or financial exhaustion for the owner."},{"label":"C","text":"Excessive Agency","isCorrect":false,"rationale":"This refers to the model having too much permission to act, not how many times it is called."},{"label":"D","text":"Training Data Poisoning","isCorrect":false,"rationale":"This involves corrupting the model's knowledge, not exhausting its operational resources."}]},{"question":"Stage 13: You are auditing the 'Supply Chain'. You find that your developers are downloading 'skills' and MCP (Model Context Protocol) server configurations from the internet. What is the risk?","hint":"Remember the warning: 'Good luck... that's why prompt injection will be around for a while'.","options":[{"label":"A","text":"Downloading external files will cause the model to exceed its token limit and crash.","isCorrect":false,"rationale":"While token limits exist, the primary security risk is the content of the instructions, not the size of the file."},{"label":"B","text":"The internet connection required to download these files exposes the internal database to the public web.","isCorrect":false,"rationale":"The act of downloading a file does not inherently open a database port, but the *content* of the file might trick the AI into leaking data."},{"label":"C","text":"These files may contain hidden malicious instructions (indirect injections) that execute when the AI processes them.","isCorrect":true,"rationale":"Downloaded Markdown or configuration files are treated as instructions by the AI, allowing attackers to plant 'Promptware' blindly into your system."},{"label":"D","text":"MCP servers are incompatible with modern GPT-4 architectures, leading to data corruption.","isCorrect":false,"rationale":"The sources state that people are actively using MCP servers; the issue is the lack of inspection for the input/output flows."}]},{"question":"Stage 14: You have implemented an 'AI Gateway'. The gateway scans incoming prompts for malicious intent and redacts PII from outgoing responses. Where does this sit in your architecture?","hint":"Think of it as a 'firewall' or a 'security guard' at the entrance.","options":[{"label":"A","text":"In the training data repository.","isCorrect":false,"rationale":"This would be for data sanitisation during training, whereas a 'Gateway' implies real-time traffic management during inference."},{"label":"B","text":"Only on the user's local machine.","isCorrect":false,"rationale":"While local tools exist, a defensible architecture requires the gateway to be part of the secure server-side infrastructure."},{"label":"C","text":"Between the User and the LLM.","isCorrect":true,"rationale":"An AI gateway acts as a middle-man to intercept and sanitise data before it reaches the model and before the response reaches the user."},{"label":"D","text":"Inside the LLM's neural network layers.","isCorrect":false,"rationale":"The gateway is an external 'vault' built *around* the AI; you cannot patch the logic inside a non-deterministic neural network."}]},{"question":"Stage 15: You are dealing with 'Payload Splitting'. An attacker defines variables $A$, $B$, and $C$ as harmless fragments of a question and then asks the AI to 'Output $A+B+C$'. Why is this dangerous?","hint":"Think about 'dividing and conquering' a security guard who only looks at small packages.","options":[{"label":"A","text":"Payload splitting is only possible if the attacker has direct access to the model's source code.","isCorrect":false,"rationale":"This is a prompt-level attack that any user with access to the chat box or API can perform."},{"label":"B","text":"Combining variables causes a mathematical overflow in the model's context window.","isCorrect":false,"rationale":"The attack is semantic, not mathematical; it exploits the model's ability to follow instructions to combine text."},{"label":"C","text":"Each fragment passes individual safety filters, but the reconstruction happens internally within the model's reasoning.","isCorrect":true,"rationale":"Since the model concatenates and executes the instructions internally, static input filters that only look at one fragment at a time are easily bypassed."},{"label":"D","text":"The use of 'plus' signs (+) triggers the model's calculator tool, which has administrative privileges.","isCorrect":false,"rationale":"The plus sign is used as a metaphorical or literal instruction to concatenate strings; it doesn't grant administrative access."}]},{"question":"Scenario: To reduce the 'Blast Radius' of a potential breach, you decide to follow a specific engineering principle. What is it?","hint":"Think about the 'Least Privilege' principle in traditional IT security.","options":[{"label":"A","text":"Ensure the model is connected to the internet at all times for real-time safety updates.","isCorrect":false,"rationale":"Connecting an LLM directly to the internet without an inspection layer actually increases the attack surface."},{"label":"B","text":"Always use the largest available model (e.g., GPT-4o) for every task to ensure maximum safety.","isCorrect":false,"rationale":"Larger models are smarter, but they also have more 'agency' and power; security is improved by limiting scope, not just increasing model size."},{"label":"C","text":"Build small-scoped services and only give an LLM access to the specific tables or tools it needs.","isCorrect":true,"rationale":"By limiting the AI's permissions to the absolute minimum required (least privilege), you ensure that a single prompt injection cannot compromise the entire database."},{"label":"D","text":"Store all user chat history in a single, large global database for easier monitoring.","isCorrect":false,"rationale":"Global storage increases the impact of a single leak; small, scoped services are more resilient."}]},{"question":"Final Audit Question: The briefing concludes with a 'Zero Trust' philosophy for AI. Which of the following best summarises this mindset?","hint":"Recall the final slide: '**SESSION_TERMINATED** Trust no model. Period.'","options":[{"label":"A","text":"Trust but verify: believe the model's output unless it looks like code.","isCorrect":false,"rationale":"The briefing specifically warns that prompts can be hidden as poetry or markdown, meaning you cannot trust the model's output at all without rigorous validation."},{"label":"B","text":"Encryption is the only way to secure an LLM context window.","isCorrect":false,"rationale":"Encryption secures data in transit, but the model must decrypt it to 'reason' over it, at which point the prompt injection is processed."},{"label":"C","text":"Only use models from trusted vendors like OpenAI or IBM to eliminate injection risks.","isCorrect":false,"rationale":"The briefing shows that even frontier models (like GPT-4o) are vulnerable to combined techniques like roleplay and structured output."},{"label":"D","text":"Assume the model is already compromised and build the 'vault' around it, not inside it.","isCorrect":true,"rationale":"Because LLMs are non-deterministic and 'fragile', you cannot trust them to be secure; you must engineer a defensive architecture that expects and mitigates failures."}]},{"question":"Stage 17: An attacker uses 'Base64' encoding to send a malicious payload. Your AI firewall ignores it, but the main LLM decodes and executes it. Why did the firewall fail?","hint":"Consider the 'Plenny the Liberator' tool mentioned in the zSecurity video.","options":[{"label":"A","text":"The firewall was busy processing a 'Denial of Wallet' attack and missed the packet.","isCorrect":false,"rationale":"While possible, the primary reason for failure in this context is the evasion of signature-based detection through data transformation."},{"label":"B","text":"Base64 is a military-grade encryption that is legally impossible for firewalls to crack.","isCorrect":false,"rationale":"Base64 is a simple encoding scheme, not encryption; it is easily decodable but often overlooked by basic filters."},{"label":"C","text":"The LLM automatically white-lists any text formatted as Base64.","isCorrect":false,"rationale":"Models don't 'white-list' formats; they simply interpret the tokens they receive, which happens to include the ability to decode text."},{"label":"D","text":"The firewall likely lacks an integrated decoder or is only performing keyword scanning on raw text.","isCorrect":true,"rationale":"If a firewall doesn't 'understand' the encoding, the malicious intent remains hidden until the LLM—which is trained on diverse data formats—decodes it internally."}]},{"question":"Scenario: You are explaining 'Model Inversion' to the legal team. What is the primary goal of an attacker performing this type of 'Extraction Attack'?","hint":"Think of it as 'siphoning' the water out of a well.","options":[{"label":"A","text":"To make the model answer questions backwards for a 'Denial of Service' effect.","isCorrect":false,"rationale":"This is a humorous distraction; inversion is a serious data-theft technique."},{"label":"B","text":"To flip the model's weights so that it becomes an ally to the hacker.","isCorrect":false,"rationale":"Model weights are static during inference; inversion is about extracting information, not re-training the model's core architecture."},{"label":"C","text":"To harvest large parts of the model's training data or unique intellectual property through repeated queries.","isCorrect":true,"rationale":"By systematically questioning the model, attackers can effectively 'steal' the underlying data or unique logic it was trained on."},{"label":"D","text":"To reverse the chronological order of the chat history to see previous users' messages.","isCorrect":false,"rationale":"Chat history is managed by the application layer, not the model's internal weights; inversion targets the 'knowledge' inside the model."}]},{"question":"Stage 19: An attacker uses 'Morse Code' to ask for a bomb-making recipe. This bypasses the system's 'prose-based' filters. This is an example of which OWASP vulnerability?","hint":"The model's ability to 'reason' over non-traditional text is being exploited here.","options":[{"label":"A","text":"Supply Chain Vulnerability","isCorrect":false,"rationale":"This refers to third-party components, not the user's specific input method."},{"label":"B","text":"Insecure Plugin Design","isCorrect":false,"rationale":"This vulnerability concerns how external tools are built, not the content of the prompt itself."},{"label":"C","text":"Data Leakage","isCorrect":false,"rationale":"The injection is the *method*; data leakage might be the *result*, but the use of Morse code specifically targets the model's instruction-following ability."},{"label":"D","text":"Prompt Injection","isCorrect":true,"rationale":"Using alternative encodings or languages (like Morse code or poetry) to bypass safety instructions is a classic prompt injection technique."}]},{"question":"Stage 20: In the 'Promptware Kill Chain', how does an attacker achieve 'Persistence' in an environment where chat sessions are usually ephemeral?","hint":"The data is infected by 'remembering'.","options":[{"label":"A","text":"By stealing the administrator's physical hardware key.","isCorrect":false,"rationale":"Promptware exploits the AI's reasoning and data access, not physical site security."},{"label":"B","text":"By keeping the browser tab open for more than 24 hours.","isCorrect":false,"rationale":"Client-side persistence (like keeping a tab open) does not constitute a system-level 'persistence' exploit in the malware sense."},{"label":"C","text":"By planting malicious prompts in long-term memory sources like RAG databases or email archives.","isCorrect":true,"rationale":"If the attacker can 'infect' the data that the AI retrieves later, the attack is re-executed every time that specific data is referenced."},{"label":"D","text":"By forcing the AI to write its own 'Cookie' to the user's browser.","isCorrect":false,"rationale":"AI models do not have the inherent ability to write browser cookies unless explicitly given a 'Tool' to do so, and even then, 'Persistence' refers to the attack's longevity within the AI's ecosystem."}]}];
 const tr = {"correct":"Correct!","incorrect":"Incorrect","next":"Next Question →","seeResults":"See Results","complete":"Quiz Complete!","scoreText":"You got {correct} out of {total} correct","tryAgain":"Try Again","rightAnswer":"Right answer","notQuite":"Not quite"};
 let currentQ = 0, correctCount = 0, answered = false;
 
@@ -1486,62 +1841,55 @@ function selectOption(opt) {
   const options = q.querySelectorAll('.option');
   const nextBtn = q.querySelector('.next-btn');
   const isCorrect = opt.dataset.correct === 'true';
-  
-  // Mark all options as disabled
+
   options.forEach(o => o.classList.add('disabled'));
-  
-  // Style selected option
   opt.classList.add('selected', isCorrect ? 'correct' : 'incorrect');
-  
-  // Show correct answer if wrong
+
   if (!isCorrect) {
     const correctOpt = [...options].find(o => o.dataset.correct === 'true');
     if (correctOpt) correctOpt.classList.add('show-correct');
   }
-  
+
   if (isCorrect) correctCount++;
-  
-  // Show feedback for ALL options that have rationale
+
   options.forEach(o => {
     const wrapper = o.closest('.option-wrapper');
     const feedback = wrapper.querySelector('.option-feedback');
     const rationale = o.dataset.rationale;
     const isThisCorrect = o.dataset.correct === 'true';
-    
+
     if (rationale && rationale.trim()) {
-      feedback.classList.remove('hidden');
-      feedback.classList.add(isThisCorrect ? 'correct-feedback' : 'incorrect-feedback');
-      
+      feedback.classList.add('show', isThisCorrect ? 'correct-fb' : 'incorrect-fb');
       const statusEl = feedback.querySelector('.feedback-status');
       statusEl.className = 'feedback-status ' + (isThisCorrect ? 'correct' : 'incorrect');
-      statusEl.innerHTML = isThisCorrect 
-        ? '✓ ' + tr.rightAnswer
-        : '✗ ' + tr.notQuite;
+      statusEl.textContent = isThisCorrect ? '✓ ' + tr.rightAnswer : '✗ ' + tr.notQuite;
     }
   });
-  
+
   nextBtn.classList.remove('hidden');
-  if (currentQ === quizData.length - 1) nextBtn.textContent = tr.seeResults;
+  if (currentQ === document.querySelectorAll('.question').length - 1) nextBtn.textContent = tr.seeResults;
 }
 
 function nextQuestion() {
   answered = false;
   currentQ++;
-  if (currentQ >= quizData.length) { showResults(); return; }
+  if (currentQ >= document.querySelectorAll('.question').length) { showResults(); return; }
   document.querySelectorAll('.question').forEach((q, i) => q.classList.toggle('active', i === currentQ));
   updateProgress();
 }
 
 function updateProgress() {
-  document.querySelector('.progress-fill').style.width = (currentQ / quizData.length * 100) + '%';
+  const total = document.querySelectorAll('.question').length;
+  document.querySelector('.progress-fill').style.width = (currentQ / total * 100) + '%';
 }
 
 function showResults() {
   document.querySelectorAll('.question').forEach(q => q.classList.remove('active'));
   document.getElementById('results').classList.add('active');
-  const pct = Math.round((correctCount / quizData.length) * 100);
+  const total = document.querySelectorAll('.question').length;
+  const pct = Math.round((correctCount / total) * 100);
   document.getElementById('score').textContent = pct + '%';
-  document.getElementById('score-text').textContent = tr.scoreText.replace('{correct}', correctCount).replace('{total}', quizData.length);
+  document.getElementById('score-text').textContent = tr.scoreText.replace('{correct}', correctCount).replace('{total}', total);
   document.querySelector('.progress-fill').style.width = '100%';
 }
 
@@ -1552,8 +1900,7 @@ function restart() {
     q.classList.toggle('active', i === 0);
     q.querySelectorAll('.option').forEach(o => o.classList.remove('selected', 'correct', 'incorrect', 'disabled', 'show-correct'));
     q.querySelectorAll('.option-feedback').forEach(f => {
-      f.classList.add('hidden');
-      f.classList.remove('correct-feedback', 'incorrect-feedback');
+      f.classList.remove('show', 'correct-fb', 'incorrect-fb');
     });
     const btn = q.querySelector('.next-btn');
     btn.classList.add('hidden');

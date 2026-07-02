@@ -44,34 +44,49 @@
 
       <h1 class="page-title animate-on-scroll">Workshops & Events</h1>
       <p class="page-subtitle animate-on-scroll">Workshops, talks, and meetups for club members.</p>
-      <div id="events-list" class="animate-on-scroll"><p>Loading...</p></div>
+      <div id="events-list"><p class="loading-text">Loading workshops...</p></div>
       <script>
-document.addEventListener("DOMContentLoaded", async () => {
-
-          (async () => {
-            const { api } = window.MemberAPI;
-            const res = await api('/events');
-            const list = document.getElementById('events-list');
-            if (!res.ok || !res.data.length) {
-              list.innerHTML = '<div class="card animate-on-scroll"><p>No workshops scheduled yet.</p></div>';
-              return;
-            }
-            list.innerHTML = res.data.map((e, i) => `
-              <div class="card animate-on-scroll stagger-${Math.min(i % 4 + 1, 4)}">
-                <h2><a href="event.html?id=${e.id}" style="text-decoration: none; color: inherit;">${escapeHtml(e.title)}</a></h2>
-                <p class="meta">${e.event_date ? new Date(e.event_date).toLocaleString() : 'Date TBD'} ${e.location ? '· ' + escapeHtml(e.location) : ''}</p>
-                <p>${escapeHtml(e.description || '')}</p>
-                <div style="margin-top: 12px;">
-                  <a href="event.html?id=${e.id}" class="btn btn-primary">View workshop →</a>
-                  ${e.link ? `<a href="${escapeHtml(e.link)}" target="_blank" rel="noopener" class="btn btn-secondary" style="margin-left: 8px;">RSVP</a>` : ''}
-                </div>
+      (function() {
+        function escapeHtml(t) { const d=document.createElement('div'); d.textContent=t; return d.innerHTML; }
+        
+        async function loadEvents() {
+          const list = document.getElementById('events-list');
+          if (!window.MemberAPI) {
+            list.innerHTML = '<div class="card"><p style="color:#e74c3c">Error: MemberAPI not loaded. Please refresh.</p></div>';
+            return;
+          }
+          const { api } = window.MemberAPI;
+          const res = await api('/events');
+          if (!res.ok) {
+            list.innerHTML = '<div class="card"><p style="color:#e74c3c">Failed to load workshops. <button onclick="loadEvents()" style="background:none;border:none;color:#ff6b8a;text-decoration:underline;cursor:pointer;">Retry</button></p></div>';
+            return;
+          }
+          if (!res.data || !res.data.length) {
+            list.innerHTML = '<div class="card"><p>No workshops scheduled yet.</p></div>';
+            return;
+          }
+          list.innerHTML = res.data.map((e, i) => `
+            <div class="card animate-on-scroll stagger-${Math.min(i % 4 + 1, 4)}">
+              <h2><a href="event.html?id=${e.id}" style="text-decoration: none; color: inherit;">${escapeHtml(e.title)}</a></h2>
+              <p class="meta">${e.event_date ? new Date(e.event_date).toLocaleString() : 'Date TBD'} ${e.location ? '· ' + escapeHtml(e.location) : ''}</p>
+              <p>${escapeHtml(e.description || '')}</p>
+              <div style="margin-top: 12px;">
+                <a href="event.html?id=${e.id}" class="btn btn-primary">View workshop →</a>
+                ${e.link ? `<a href="${escapeHtml(e.link)}" target="_blank" rel="noopener" class="btn btn-secondary" style="margin-left: 8px;">RSVP</a>` : ''}
               </div>
-            `).join('');
-          })();
-          function escapeHtml(t) { const d=document.createElement('div'); d.textContent=t; return d.innerHTML; }
-      
-});
-</script>
+            </div>
+          `).join('');
+          // Re-init scroll animations for new content
+          if (window.initScrollAnimations) window.initScrollAnimations();
+        }
+        
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', loadEvents);
+        } else {
+          loadEvents();
+        }
+      })();
+      </script>
     </main>
   </div>
 
