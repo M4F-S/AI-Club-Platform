@@ -11,7 +11,7 @@ from email.mime.text import MIMEText
 from functools import wraps
 
 import bcrypt
-from flask import Flask, jsonify, request, session
+from flask import Flask, jsonify, request, session, g
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from werkzeug.middleware.proxy_fix import ProxyFix
@@ -23,6 +23,7 @@ from models import (
     ContactMessage,
     Event,
     EventMaterial,
+    LoginAttempt,
     PartnerInquiry,
     QuizAttempt,
     QuizQuestion,
@@ -36,6 +37,7 @@ from models import (
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
+    app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB
     app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
 
     db.init_app(app)
@@ -58,6 +60,18 @@ def create_app():
         if not _origin_ok():
             return jsonify({"error": "Invalid origin"}), 403
         return None
+
+    @app.before_request
+    def limit_json_payload():
+        if request.content_type and 'application/json' in request.content_type:
+            if request.content_length and request.content_length > 1024 * 1024:
+                return jsonify({"error": "Request body too large (max 1MB)"}), 413
+
+    @app.before_request
+    def set_request_id():
+        request_id = request.headers.get('X-Request-ID') or str(uuid.uuid4())
+        request.request_id = request_id
+        g.request_id = request_id
 
     @app.errorhandler(429)
     def ratelimit_handler(e):
@@ -87,6 +101,16 @@ def create_app():
             "form-action 'self';"
         )
         response.headers["Content-Security-Policy"] = csp
+        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains; preload"
+        response.headers['X-Request-ID'] = getattr(request, 'request_id', str(uuid.uuid4()))
+        return response
+
+    @app.after_request
+    def set_cache_control(response):
+        if request.path.startswith('/admin/') or request.path.startswith('/member/'):
+            response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, private"
+            response.headers["Pragma"] = "no-cache"
+            response.headers["Expires"] = "0"
         return response
 
     return app
@@ -359,7 +383,7 @@ def partner():
 # ---------------------------------------------------------------------------
 
 @app.post("/admin/login")
-@limiter.limit("60 per hour")
+@limiter.limit("5 per minute")
 def admin_login():
     data = request.get_json(silent=True) or {}
     login = (data.get("email") or data.get("username") or data.get("intra_username") or "").strip().lower()
@@ -368,13 +392,29 @@ def admin_login():
     if not login or not password:
         return jsonify({"error": "Username/email and password are required."}), 400
 
+    ip_address = request.headers.get('X-Forwarded-For', request.remote_addr)
+    ok, msg = _check_account_lockout(ip_address)
+    if not ok:
+        _log_security_event("admin_login_locked", {"username": login})
+        return jsonify({"error": msg}), 429
+
     user = User.query.filter(
         (User.email == login) | (User.intra_username == login)
     ).first()
     if not user or not user.is_active or user.role not in ("member", "admin", "superadmin"):
+        db.session.add(LoginAttempt(ip_address=ip_address, username=login, success=False))
+        db.session.commit()
+        _log_security_event("admin_login_failed", {"username": login})
         return jsonify({"error": "Invalid email or password"}), 401
     if not _check_password(password, user.password_hash):
+        db.session.add(LoginAttempt(ip_address=ip_address, username=login, success=False))
+        db.session.commit()
+        _log_security_event("admin_login_failed", {"username": login})
         return jsonify({"error": "Invalid email or password"}), 401
+
+    db.session.add(LoginAttempt(ip_address=ip_address, username=login, success=True))
+    db.session.commit()
+    _log_security_event("admin_login_success", {"username": login, "user_id": user.id})
 
     session.permanent = True
     session["user_id"] = user.id
@@ -385,6 +425,7 @@ def admin_login():
 @app.post("/admin/logout")
 @_require_admin
 def admin_logout():
+    _log_security_event("admin_logout")
     session.clear()
     return jsonify({"message": "Logged out"}), 200
 
@@ -506,6 +547,7 @@ def promote_member():
 
     user.role = "admin"
     db.session.commit()
+    _log_security_event("promote_member", {"target_user_id": user.id, "target_email": user.email})
     return jsonify({"user": user.to_dict()}), 200
 
 
@@ -522,6 +564,7 @@ def demote_member():
 
     user.role = "member"
     db.session.commit()
+    _log_security_event("demote_member", {"target_user_id": user.id, "target_email": user.email})
     return jsonify({"user": user.to_dict()}), 200
 
 
@@ -544,6 +587,7 @@ def delete_member(user_id):
         db.session.delete(user)
         db.session.commit()
         app.logger.info("Admin %s deleted user %s (ID %d)", request.current_user.email, user.email, user.id)
+        _log_security_event("delete_member", {"target_user_id": user.id, "target_email": user.email})
         return jsonify({"message": "Member deleted successfully"}), 200
     except Exception as e:
         db.session.rollback()
@@ -1077,20 +1121,36 @@ def submit_quiz(event_id):
 # ---------------------------------------------------------------------------
 
 @app.post("/member/login")
-@limiter.limit("60 per hour")
+@limiter.limit("5 per minute")
 def member_login():
     data = request.get_json(silent=True) or {}
     login = (data.get("intra_username") or data.get("username") or data.get("email") or "").strip().lower()
     password = data.get("password") or ""
+
+    ip_address = request.headers.get('X-Forwarded-For', request.remote_addr)
+    ok, msg = _check_account_lockout(ip_address)
+    if not ok:
+        _log_security_event("member_login_locked", {"username": login})
+        return jsonify({"error": msg}), 429
 
     user = User.query.filter(
         (User.email == login) | (User.intra_username == login)
     ).first()
 
     if not user or not user.is_active or user.role not in ("member", "admin", "superadmin"):
+        db.session.add(LoginAttempt(ip_address=ip_address, username=login, success=False))
+        db.session.commit()
+        _log_security_event("member_login_failed", {"username": login})
         return jsonify({"error": "Invalid username or password"}), 401
     if not _check_password(password, user.password_hash):
+        db.session.add(LoginAttempt(ip_address=ip_address, username=login, success=False))
+        db.session.commit()
+        _log_security_event("member_login_failed", {"username": login})
         return jsonify({"error": "Invalid username or password"}), 401
+
+    db.session.add(LoginAttempt(ip_address=ip_address, username=login, success=True))
+    db.session.commit()
+    _log_security_event("member_login_success", {"username": login, "user_id": user.id})
 
     session.permanent = True
     session["user_id"] = user.id
@@ -1102,6 +1162,7 @@ def member_login():
 @_require_login
 @limiter.exempt
 def member_logout():
+    _log_security_event("member_logout")
     session.clear()
     return jsonify({"message": "Logged out"}), 200
 
@@ -1120,13 +1181,17 @@ def change_password():
     current = data.get("current_password") or ""
     new = data.get("new_password") or ""
 
+    if not re.search(r'[A-Z]', new) or not re.search(r'[a-z]', new) or not re.search(r'\d', new):
+        return jsonify({"error": "Password must contain at least one uppercase letter, one lowercase letter, and one digit."}), 400
     if len(new) < 8:
         return jsonify({"error": "New password must be at least 8 characters"}), 400
     if not _check_password(current, request.current_user.password_hash):
+        _log_security_event("change_password_failed", {"user_id": request.current_user.id})
         return jsonify({"error": "Current password is incorrect"}), 401
 
     request.current_user.password_hash = _hash_password(new)
     db.session.commit()
+    _log_security_event("change_password", {"user_id": request.current_user.id})
     return jsonify({"message": "Password updated"}), 200
 
 
@@ -1140,6 +1205,7 @@ def forgot_password():
         return jsonify({"error": "Please provide a valid email address."}), 400
 
     user = User.query.filter_by(email=email).first()
+    _log_security_event("forgot_password", {"email": email, "found": bool(user)})
     # Always return same message to prevent email enumeration
     if not user:
         return jsonify({"message": "If this email is registered, a reset link has been sent."}), 200
@@ -1170,7 +1236,12 @@ def reset_password():
     new_password = data.get("new_password") or ""
 
     if not token or len(new_password) < 8:
+        _log_security_event("reset_password_failed", {"reason": "invalid_token_or_short"})
         return jsonify({"error": "Invalid token or password too short (min 8 characters)."}), 400
+
+    if not re.search(r'[A-Z]', new_password) or not re.search(r'[a-z]', new_password) or not re.search(r'\d', new_password):
+        _log_security_event("reset_password_failed", {"reason": "complexity"})
+        return jsonify({"error": "Password must contain at least one uppercase letter, one lowercase letter, and one digit."}), 400
 
     token_hash = hashlib.sha256(token.encode()).hexdigest()
     user = User.query.filter(
@@ -1179,12 +1250,14 @@ def reset_password():
     ).first()
 
     if not user:
+        _log_security_event("reset_password_failed", {"reason": "invalid_token"})
         return jsonify({"error": "Invalid or expired reset token."}), 400
 
     user.password_hash = _hash_password(new_password)
     user.password_reset_token = None
     user.password_reset_expires_at = None
     db.session.commit()
+    _log_security_event("reset_password", {"user_id": user.id})
 
     return jsonify({"message": "Password reset successfully. You can now log in with your new password."}), 200
 

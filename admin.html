@@ -406,7 +406,7 @@
 
       const { ok, data } = await api(`/admin/applications?status=${currentStatus}`);
       if (!ok) {
-        list.innerHTML = `<div class="empty">Failed to load applications: ${data.error}</div>`;
+        list.innerHTML = `<div class="empty">Failed to load applications: ${escapeHtml(data.error)}</div>`;
         return;
       }
 
@@ -472,7 +472,7 @@
 
       const { ok, data } = await api('/admin/members');
       if (!ok) {
-        list.innerHTML = `<div class="empty">Failed to load members: ${data.error}</div>`;
+        list.innerHTML = `<div class="empty">Failed to load members: ${escapeHtml(data.error)}</div>`;
         return;
       }
 
@@ -536,7 +536,7 @@
 
       const { ok, data } = await api('/admin/partner-inquiries');
       if (!ok) {
-        list.innerHTML = `<div class="empty">Failed to load partner inquiries: ${data.error}</div>`;
+        list.innerHTML = `<div class="empty">Failed to load partner inquiries: ${escapeHtml(data.error)}</div>`;
         return;
       }
 
@@ -567,7 +567,7 @@
 
       const { ok, data } = await api('/admin/events');
       if (!ok) {
-        list.innerHTML = `<div class="empty">Failed to load events: ${data.error}</div>`;
+        list.innerHTML = `<div class="empty">Failed to load events: ${escapeHtml(data.error)}</div>`;
         return;
       }
 
