@@ -3,16 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23120a0d'/%3E%3Cpath d='M16 2 C13 6, 12 11, 14 15 C11 13, 7 14, 5 17 C4 19, 5 22, 8 23 C7 25, 8 27, 10 28 C12 29, 14 28, 15 26 C15 28, 16 30, 17 30 C18 30, 18 28, 18 26 C19 28, 21 29, 23 28 C25 27, 26 25, 25 23 C28 22, 29 19, 27 17 C25 14, 21 13, 18 15 C20 11, 19 6, 16 2 Z' fill='%23f43f5e'/%3E%3Cpath d='M16 6 C14 9, 13 13, 14 16 C12 15, 10 15, 9 17 C8 18, 9 20, 11 21 C10 22, 11 23, 12 24 C13 24, 14 23, 15 22 C15 24, 16 25, 17 25 C18 25, 18 24, 18 22 C19 23, 20 24, 21 24 C22 23, 23 22, 22 21 C24 20, 25 18, 24 17 C23 15, 21 15, 19 16 C20 13, 19 9, 16 6 Z' fill='%23f2cc8f'/%3E%3C/svg%3E">
   <title>Admin — 42 Berlin AI Club</title>
   <meta name="robots" content="noindex, nofollow">
   <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" as="style">
-  <link rel="preload" href="/assets/ai-club.css?v=11" as="style">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/assets/ai-club.css?v=11">
+  <link rel="stylesheet" href="/ai-club/assets/ai-club.css?v=11">
   <style>
     body {
       min-height: 100vh;
@@ -229,10 +226,9 @@
   </style>
 </head>
 <body>
-  <a href="#main-content" class="skip-link">Skip to main content</a>
-  <header role="banner">
-    <nav aria-label="Main">
-      <a href="/" class="logo">
+  <header>
+    <nav>
+      <a href="/ai-club/" class="logo">
         <div class="logo-icon" aria-hidden="true">
           <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
             <defs>
@@ -250,14 +246,14 @@
       </a>
       <button class="mobile-menu-toggle" aria-label="Toggle menu" aria-expanded="false">&#9776;</button>
       <ul class="nav-links">
-        <li><a href="/">Home</a></li>
-        <li><a href="/members/">Dashboard</a></li>
-        <li><a href="/">Public site</a></li>
+        <li><a href="/ai-club/">Home</a></li>
+        <li><a href="/ai-club/members/">Members</a></li>
+        <li><a href="/ai-club/admin.html" class="nav-cta">Admin</a></li>
       </ul>
     </nav>
   </header>
 
-  <main id="main-content">
+  <main>
     <div class="form-header">
       <h1>Admin <span class="text-gradient">panel</span></h1>
     </div>
@@ -305,11 +301,11 @@
     </div>
   </main>
 
-  <script src="/assets/ai-club.js?v=12" defer></script>
+  <script src="/ai-club/assets/ai-club.js?v=10"></script>
   <script>
     if (window.lucide) lucide.createIcons();
 
-    const API_URL = '/api';
+    const API_URL = '/ai-club/api';
     let currentStatus = 'pending';
 
     const loginCard = document.getElementById('login-card');
@@ -337,7 +333,7 @@
       const payload = identifier.includes('@')
         ? { email: identifier, password: e.target.password.value }
         : { username: identifier, password: e.target.password.value };
-      const { ok, data } = await api('/member/login', {
+      const { ok, data } = await api('/admin/login', {
         method: 'POST',
         body: JSON.stringify(payload)
       });
@@ -352,7 +348,7 @@
     });
 
     document.getElementById('logout-btn').addEventListener('click', async () => {
-      await api('/member/logout', { method: 'POST' });
+      await api('/admin/logout', { method: 'POST' });
       loginCard.style.display = 'block';
       adminPanel.style.display = 'none';
     });
@@ -631,40 +627,22 @@
               </div>
               <div id="materials-${event.id}"></div>
               <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border);">
-                <strong>Add Materials</strong>
-                <div style="margin-top: 12px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
-                  <!-- Upload Slides -->
-                  <div style="background: var(--color-bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px;">
-                    <div style="font-weight: 600; font-size: 0.9rem; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
-                      <span style="font-size: 1.2rem;">🎞️</span> Slides
-                    </div>
-                    <input type="file" id="upload-slide-${event.id}" accept="image/*" style="width: 100%; font-size: 0.85rem; margin-bottom: 8px;">
-                    <input type="text" id="upload-slide-title-${event.id}" placeholder="Title (optional)" style="width: 100%; margin-bottom: 8px; font-size: 0.85rem;">
-                    <input type="number" id="upload-slide-sort-${event.id}" value="0" placeholder="Order" style="width: 100%; margin-bottom: 8px; font-size: 0.85rem;">
-                    <button class="admin-btn admin-btn-primary" style="width: 100%; font-size: 0.85rem;" onclick="uploadSlide(${event.id})">Upload Slide</button>
-                  </div>
-                  <!-- Upload Quiz -->
-                  <div style="background: var(--color-bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px;">
-                    <div style="font-weight: 600; font-size: 0.9rem; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
-                      <span style="font-size: 1.2rem;">🎯</span> Quiz
-                    </div>
-                    <input type="file" id="upload-quiz-${event.id}" accept=".html,.json" style="width: 100%; font-size: 0.85rem; margin-bottom: 8px;">
-                    <input type="text" id="upload-quiz-title-${event.id}" placeholder="Quiz title" style="width: 100%; margin-bottom: 8px; font-size: 0.85rem;">
-                    <input type="number" id="upload-quiz-sort-${event.id}" value="0" placeholder="Order" style="width: 100%; margin-bottom: 8px; font-size: 0.85rem;">
-                    <button class="admin-btn admin-btn-primary" style="width: 100%; font-size: 0.85rem;" onclick="uploadQuiz(${event.id})">Upload Quiz</button>
-                  </div>
-                  <!-- Upload Files -->
-                  <div style="background: var(--color-bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px;">
-                    <div style="font-weight: 600; font-size: 0.9rem; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
-                      <span style="font-size: 1.2rem;">📄</span> Files
-                    </div>
-                    <input type="file" id="upload-file-${event.id}" style="width: 100%; font-size: 0.85rem; margin-bottom: 8px;">
-                    <input type="text" id="upload-file-title-${event.id}" placeholder="File title" style="width: 100%; margin-bottom: 8px; font-size: 0.85rem;">
-                    <input type="number" id="upload-file-sort-${event.id}" value="0" placeholder="Order" style="width: 100%; margin-bottom: 8px; font-size: 0.85rem;">
-                    <button class="admin-btn admin-btn-primary" style="width: 100%; font-size: 0.85rem;" onclick="uploadFile(${event.id})">Upload File</button>
-                  </div>
+                <strong>Upload Material</strong>
+                <div class="form-group" style="margin-top: 8px;">
+                  <input type="file" id="upload-file-${event.id}" style="margin-bottom: 8px; width: 100%;">
+                  <input type="text" id="upload-title-${event.id}" placeholder="Title" style="width: 100%; margin-bottom: 8px;">
+                  <select id="upload-type-${event.id}" style="width: 100%; margin-bottom: 8px;">
+                    <option value="slide">slide</option>
+                    <option value="pdf">pdf</option>
+                    <option value="quiz">quiz</option>
+                    <option value="file">file</option>
+                  </select>
+                  <input type="number" id="upload-sort-${event.id}" value="0" placeholder="Sort order" style="width: 100%; margin-bottom: 8px;">
+                  <button class="admin-btn admin-btn-primary" onclick="uploadMaterial(${event.id})">Upload</button>
                 </div>
-              </div>          </div>
+              </div>
+            </div>
+          </div>
         `).join('');
       }
 
@@ -810,10 +788,11 @@
       if (ok) loadPartners();
     }
 
-    async function uploadMaterial(eventId, fileType, fileInputId, titleInputId, sortInputId) {
-      const fileInput = document.getElementById(fileInputId);
-      const titleInput = document.getElementById(titleInputId);
-      const sortInput = document.getElementById(sortInputId);
+    async function uploadMaterial(eventId) {
+      const fileInput = document.getElementById('upload-file-' + eventId);
+      const titleInput = document.getElementById('upload-title-' + eventId);
+      const typeInput = document.getElementById('upload-type-' + eventId);
+      const sortInput = document.getElementById('upload-sort-' + eventId);
 
       if (!fileInput.files || !fileInput.files[0]) {
         adminAlert.className = 'alert show error';
@@ -824,7 +803,7 @@
       const formData = new FormData();
       formData.append('file', fileInput.files[0]);
       formData.append('title', titleInput.value || fileInput.files[0].name);
-      formData.append('file_type', fileType);
+      formData.append('file_type', typeInput.value || 'file');
       formData.append('sort_order', sortInput.value || 0);
       formData.append('is_revealed', 'false');
 
@@ -842,24 +821,6 @@
       }
     }
 
-    async function uploadSlide(eventId) {
-      await uploadMaterial(eventId, 'slide', 'upload-slide-' + eventId, 'upload-slide-title-' + eventId, 'upload-slide-sort-' + eventId);
-    }
-
-    async function uploadQuiz(eventId) {
-      await uploadMaterial(eventId, 'quiz', 'upload-quiz-' + eventId, 'upload-quiz-title-' + eventId, 'upload-quiz-sort-' + eventId);
-    }
-
-    async function uploadFile(eventId) {
-      // Auto-detect PDF vs generic file
-      const fileInput = document.getElementById('upload-file-' + eventId);
-      let fileType = 'file';
-      if (fileInput.files && fileInput.files[0]) {
-        const name = fileInput.files[0].name.toLowerCase();
-        if (name.endsWith('.pdf')) fileType = 'pdf';
-      }
-      await uploadMaterial(eventId, fileType, 'upload-file-' + eventId, 'upload-file-title-' + eventId, 'upload-file-sort-' + eventId);
-    }
     function escapeHtml(text) {
       const div = document.createElement('div');
       div.textContent = text;

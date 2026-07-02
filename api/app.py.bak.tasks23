@@ -134,17 +134,9 @@ def _send_email(subject: str, body: str, to: str) -> bool:
 
 
 def _origin_ok() -> bool:
-    """Basic CSRF check: exact hostname matching - no prefix attacks allowed."""
+    """Basic CSRF check: ensure request comes from the same origin."""
     origin = request.headers.get("Origin") or request.headers.get("Referer") or ""
-    if not origin:
-        return True
-    try:
-        from urllib.parse import urlparse
-        parsed = urlparse(origin)
-        allowed_hosts = {"mysophia.tech", "www.mysophia.tech", "42berlinaiclub.de", "www.42berlinaiclub.de"}
-        return parsed.hostname in allowed_hosts
-    except Exception:
-        return False
+    return origin.startswith("https://mysophia.tech") or origin.startswith("http://localhost")
 
 
 def _current_user() -> User | None:
@@ -169,7 +161,7 @@ def _require_admin(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         user = _current_user()
-        if not user or not user.is_active or user.role not in ("member", "admin", "superadmin"):
+        if not user or not user.is_active or user.role not in ("admin", "superadmin"):
             return jsonify({"error": "Admin access required"}), 403
         request.current_user = user
         return f(*args, **kwargs)
@@ -202,9 +194,9 @@ def health():
 def public_stats():
     return jsonify({
         "members": User.query.filter_by(is_active=True).count(),
-        "events": Event.query.filter_by(event_type="event").count(),
+        "events": Event.query.count(),
         "projects": Resource.query.count(),
-        "workshops": Event.query.filter_by(event_type="workshop").count(),
+        "workshops": BlogPost.query.count(),
     }), 200
 
 
@@ -252,7 +244,7 @@ def apply():
 
     _send_email(
         subject="New 42 Berlin AI Club member application",
-        body=f"Name: {name}\nIntra: {intra}\nEmail: {email}\nLevel: {level}\nMessage:\n{message}\n\nReview at https://42berlinaiclub.de/admin.html",
+        body=f"Name: {name}\nIntra: {intra}\nEmail: {email}\nLevel: {level}\nMessage:\n{message}\n\nReview at https://mysophia.tech/ai-club/admin.html",
         to=Config.ADMIN_EMAIL,
     )
 
@@ -332,10 +324,10 @@ def partner():
 # ---------------------------------------------------------------------------
 
 @app.post("/admin/login")
-@limiter.limit("60 per hour")
+@limiter.limit("5 per 15 minutes")
 def admin_login():
     data = request.get_json(silent=True) or {}
-    login = (data.get("email") or data.get("username") or data.get("intra_username") or "").strip().lower()
+    login = (data.get("email") or data.get("username") or "").strip().lower()
     password = data.get("password") or ""
 
     if not login or not password:
@@ -344,11 +336,12 @@ def admin_login():
     user = User.query.filter(
         (User.email == login) | (User.intra_username == login)
     ).first()
-    if not user or not user.is_active or user.role not in ("member", "admin", "superadmin"):
+    if not user or not user.is_active or user.role not in ("admin", "superadmin"):
         return jsonify({"error": "Invalid email or password"}), 401
     if not _check_password(password, user.password_hash):
         return jsonify({"error": "Invalid email or password"}), 401
 
+    session.clear()
     session.permanent = True
     session["user_id"] = user.id
     session["role"] = user.role
@@ -365,7 +358,7 @@ def admin_logout():
 @app.get("/admin/me")
 @_require_admin
 def admin_me():
-    return jsonify({"user": request.current_user.to_dict(include_email=False)}), 200
+    return jsonify({"user": request.current_user.to_dict()}), 200
 
 
 # ---------------------------------------------------------------------------
@@ -411,7 +404,7 @@ def approve_application():
 
     _send_email(
         subject="Your 42 Berlin AI Club membership is approved",
-        body=f"Hi {user.name},\n\nYour membership has been approved.\n\nLogin: https://42berlinaiclub.de/login.html\nUsername: {user.email or user.intra_username}\nTemporary password: {temp_password}\n\nPlease change your password after first login.",
+        body=f"Hi {user.name},\n\nYour membership has been approved.\n\nLogin: https://mysophia.tech/ai-club/login.html\nUsername: {user.email or user.intra_username}\nTemporary password: {temp_password}\n\nPlease change your password after first login.",
         to=user.email,
     )
 
@@ -965,7 +958,7 @@ def get_quiz(event_id):
 
 @app.post("/events/<int:event_id>/quiz/submit")
 @_require_login
-@limiter.limit("60 per hour")
+@limiter.limit("10 per hour")
 def submit_quiz(event_id):
     event = Event.query.get_or_404(event_id)
     data = request.get_json(silent=True) or {}
@@ -1015,10 +1008,10 @@ def submit_quiz(event_id):
 # ---------------------------------------------------------------------------
 
 @app.post("/member/login")
-@limiter.limit("60 per hour")
+@limiter.limit("5 per 15 minutes")
 def member_login():
     data = request.get_json(silent=True) or {}
-    login = (data.get("intra_username") or data.get("username") or data.get("email") or "").strip().lower()
+    login = (data.get("intra_username") or data.get("email") or "").strip().lower()
     password = data.get("password") or ""
 
     user = User.query.filter(
@@ -1030,6 +1023,7 @@ def member_login():
     if not _check_password(password, user.password_hash):
         return jsonify({"error": "Invalid username or password"}), 401
 
+    session.clear()
     session.permanent = True
     session["user_id"] = user.id
     session["role"] = user.role
@@ -1038,17 +1032,15 @@ def member_login():
 
 @app.post("/member/logout")
 @_require_login
-@limiter.exempt
 def member_logout():
     session.clear()
     return jsonify({"message": "Logged out"}), 200
 
 
 @app.get("/member/me")
-@limiter.exempt
 @_require_login
 def member_me():
-    return jsonify({"user": request.current_user.to_dict(include_email=False)}), 200
+    return jsonify({"user": request.current_user.to_dict()}), 200
 
 
 @app.post("/member/change-password")
@@ -1090,7 +1082,7 @@ def forgot_password():
     user.password_reset_expires_at = utcnow() + timedelta(hours=24)
     db.session.commit()
 
-    reset_url = f"https://42berlinaiclub.de/reset-password.html?token={raw_token}"
+    reset_url = f"https://mysophia.tech/ai-club/reset-password.html?token={raw_token}"
     _send_email(
         subject="42 Berlin AI Club — Password Reset Request",
         body=f"Hi {user.name},\n\nYou requested a password reset.\n\nClick the link below to set a new password:\n{reset_url}\n\nThis link expires in 24 hours.\n\nIf you didn't request this, ignore this email.",
