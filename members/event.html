@@ -296,7 +296,7 @@
           <div class="slide-thumbnails" id="slide-thumbnails">
             ${slides.map((s, i) => `
               <div class="slide-thumb ${i === 0 ? 'active' : ''}" data-index="${i}" data-id="${s.id}">
-                <img src="/api/events/${event.id}/materials/${s.id}/download" alt="Slide ${i+1}" loading="lazy">
+                <img src="/api/events/${event.id}/materials/${s.id}/view" alt="Slide ${i+1}" loading="lazy">
               </div>
             `).join('')}
           </div>
@@ -312,7 +312,7 @@
       [...pdfs, ...quizzes, ...other].forEach(m => {
         const icon = m.file_type === 'pdf' ? '📄' : m.file_type === 'quiz' ? '🎯' : '📎';
         const action = m.file_type === 'quiz'
-          ? `<a href="quiz.html?event=${event.id}" class="btn btn-primary">Take Quiz</a>`
+          ? `<a href="quiz-interactive.html?event=${event.id}" class="btn btn-primary">Take Quiz</a>`
           : `<a href="/api/events/${event.id}/materials/${m.id}/download" class="btn btn-primary" download>Download</a>`;
         html += `
           <div class="material-card">
@@ -342,7 +342,7 @@
         if (index >= slides.length) index = 0;
         currentSlide = index;
         const slide = slides[index];
-        slideImg.src = `/api/events/${event.id}/materials/${slide.id}/download`;
+        slideImg.src = `/api/events/${event.id}/materials/${slide.id}/view`;
         counter.textContent = `${index + 1} / ${slides.length}`;
         thumbs.forEach((t, i) => t.classList.toggle('active', i === index));
       }

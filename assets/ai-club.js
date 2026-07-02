@@ -218,20 +218,20 @@
 
     const dashboardLi = document.createElement('li');
     dashboardLi.className = 'nav-auth-item';
-    dashboardLi.innerHTML = '<a href="/ai-club/members/">Dashboard</a>';
+    dashboardLi.innerHTML = '<a href="/members/">Dashboard</a>';
     links.appendChild(dashboardLi);
 
     if (isAdmin) {
       const adminLi = document.createElement('li');
       adminLi.className = 'nav-auth-item';
-      adminLi.innerHTML = '<a href="/ai-club/admin.html" class="nav-cta">Admin</a>';
+      adminLi.innerHTML = '<a href="/admin.html" class="nav-cta">Admin</a>';
       links.appendChild(adminLi);
     }
 
     // Log out link for all logged-in users
     const logoutLi = document.createElement('li');
     logoutLi.className = 'nav-auth-item';
-    logoutLi.innerHTML = '<a href="#" onclick="event.preventDefault();fetch(`/ai-club/api/member/logout`,{method:`POST`,credentials:`same-origin`}).then(()=>window.location.href=`/ai-club/`);">Log out</a>';
+    logoutLi.innerHTML = '<a href="#" onclick="event.preventDefault();fetch(`/api/member/logout`,{method:`POST`,credentials:`same-origin`}).then(()=>window.location.href=`/`);">Log out</a>';
     links.appendChild(logoutLi);
   }
   // Scroll-triggered animations
