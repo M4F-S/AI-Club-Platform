@@ -112,7 +112,10 @@ def _is_valid_email(email: str) -> bool:
     return re.match(r"^[^@\s]+@[^@\s]+\.[^@\s]+$", email) is not None
 
 
-def _send_email(subject: str, body: str, to: str) -> bool:
+import threading
+
+def _send_email_sync(subject: str, body: str, to: str) -> bool:
+    """Send email synchronously using the correct protocol for the port."""
     cfg = Config()
     if not cfg.SMTP_HOST or not cfg.SMTP_USER or not cfg.SMTP_PASSWORD:
         app.logger.info("SMTP not configured; skipping email to %s", to)
@@ -123,14 +126,38 @@ def _send_email(subject: str, body: str, to: str) -> bool:
         msg["From"] = cfg.SMTP_USER
         msg["To"] = to
 
-        with smtplib.SMTP(cfg.SMTP_HOST, cfg.SMTP_PORT, timeout=10) as server:
-            server.starttls()
-            server.login(cfg.SMTP_USER, cfg.SMTP_PASSWORD)
-            server.sendmail(cfg.SMTP_USER, [to], msg.as_string())
+        # Use SMTP_SSL for port 465, SMTP+STARTTLS for port 587
+        if cfg.SMTP_PORT == 465:
+            with smtplib.SMTP_SSL(cfg.SMTP_HOST, cfg.SMTP_PORT, timeout=10) as server:
+                server.login(cfg.SMTP_USER, cfg.SMTP_PASSWORD)
+                server.sendmail(cfg.SMTP_USER, [to], msg.as_string())
+        else:
+            with smtplib.SMTP(cfg.SMTP_HOST, cfg.SMTP_PORT, timeout=10) as server:
+                server.starttls()
+                server.login(cfg.SMTP_USER, cfg.SMTP_PASSWORD)
+                server.sendmail(cfg.SMTP_USER, [to], msg.as_string())
+        app.logger.info("Email sent successfully to %s", to)
         return True
     except Exception as e:
-        app.logger.exception("Failed to send email: %s", e)
+        app.logger.exception("Failed to send email to %s: %s", to, e)
         return False
+
+def _send_email(subject: str, body: str, to: str) -> bool:
+    """Send email asynchronously in a background thread so API responses are fast."""
+    cfg = Config()
+    if not cfg.SMTP_HOST or not cfg.SMTP_USER or not cfg.SMTP_PASSWORD:
+        app.logger.info("SMTP not configured; skipping email to %s", to)
+        return False
+    # Fire-and-forget background thread for non-blocking email
+    thread = threading.Thread(
+        target=_send_email_sync,
+        args=(subject, body, to),
+        daemon=True,
+        name=f"email-{to}"
+    )
+    thread.start()
+    app.logger.info("Email queued for %s (sending in background)", to)
+    return True
 
 
 def _origin_ok() -> bool:
