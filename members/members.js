@@ -18,7 +18,7 @@
   async function requireAuth() {
     const { ok, data } = await api('/member/me');
     if (!ok) {
-      window.location.href = '/ai-club/login.html';
+      window.location.href = '/login.html';
       return null;
     }
     return data.user;
@@ -28,14 +28,14 @@
     const nav = document.querySelector('.member-nav');
     if (!nav) return;
 
-    const MEMBER_BASE = '/ai-club/members/';
+    const MEMBER_BASE = '/members/';
 
     const adminLink = user.role === 'superadmin' || user.role === 'admin'
-      ? `<li><a href="/ai-club/admin.html" class="${location.pathname.includes('/admin.html') ? 'active' : ''}"><i data-lucide="shield"></i> Admin</a></li>`
+      ? `<li><a href="/admin.html" class="${location.pathname.includes('/admin.html') ? 'active' : ''}"><i data-lucide="shield"></i> Admin</a></li>`
       : '';
 
     const path = location.pathname;
-    const isDashboard = path === '/ai-club/members/index.html' || path === '/ai-club/members/';
+    const isDashboard = path === '/members/index.html' || path === '/members/';
 
     nav.innerHTML = `
       <ul>
@@ -48,7 +48,7 @@
         ${adminLink}
       </ul>
       <div class="member-exit">
-        <a href="/ai-club/">
+        <a href="/">
           <i data-lucide="arrow-left"></i> Public site
         </a>
       </div>
@@ -74,7 +74,7 @@
 
   async function logout() {
     await api('/member/logout', { method: 'POST' });
-    window.location.href = '/ai-club/login.html';
+    window.location.href = '/login.html';
   }
 
   function initScrollAnimations() {

@@ -134,9 +134,17 @@ def _send_email(subject: str, body: str, to: str) -> bool:
 
 
 def _origin_ok() -> bool:
-    """Basic CSRF check: ensure request comes from the same origin."""
+    """Basic CSRF check: exact hostname matching - no prefix attacks allowed."""
     origin = request.headers.get("Origin") or request.headers.get("Referer") or ""
-    return origin.startswith("https://mysophia.tech") or origin.startswith("http://localhost")
+    if not origin:
+        return True
+    try:
+        from urllib.parse import urlparse
+        parsed = urlparse(origin)
+        allowed_hosts = {"mysophia.tech", "www.mysophia.tech", "42berlinaiclub.de", "www.42berlinaiclub.de"}
+        return parsed.hostname in allowed_hosts
+    except Exception:
+        return False
 
 
 def _current_user() -> User | None:
@@ -194,9 +202,9 @@ def health():
 def public_stats():
     return jsonify({
         "members": User.query.filter_by(is_active=True).count(),
-        "events": Event.query.count(),
+        "events": Event.query.filter_by(event_type="event").count(),
         "projects": Resource.query.count(),
-        "workshops": BlogPost.query.count(),
+        "workshops": Event.query.filter_by(event_type="workshop").count(),
     }), 200
 
 
@@ -244,7 +252,7 @@ def apply():
 
     _send_email(
         subject="New 42 Berlin AI Club member application",
-        body=f"Name: {name}\nIntra: {intra}\nEmail: {email}\nLevel: {level}\nMessage:\n{message}\n\nReview at https://mysophia.tech/ai-club/admin.html",
+        body=f"Name: {name}\nIntra: {intra}\nEmail: {email}\nLevel: {level}\nMessage:\n{message}\n\nReview at https://42berlinaiclub.de/admin.html",
         to=Config.ADMIN_EMAIL,
     )
 
@@ -357,7 +365,7 @@ def admin_logout():
 @app.get("/admin/me")
 @_require_admin
 def admin_me():
-    return jsonify({"user": request.current_user.to_dict()}), 200
+    return jsonify({"user": request.current_user.to_dict(include_email=False)}), 200
 
 
 # ---------------------------------------------------------------------------
@@ -403,7 +411,7 @@ def approve_application():
 
     _send_email(
         subject="Your 42 Berlin AI Club membership is approved",
-        body=f"Hi {user.name},\n\nYour membership has been approved.\n\nLogin: https://mysophia.tech/ai-club/login.html\nUsername: {user.email or user.intra_username}\nTemporary password: {temp_password}\n\nPlease change your password after first login.",
+        body=f"Hi {user.name},\n\nYour membership has been approved.\n\nLogin: https://42berlinaiclub.de/login.html\nUsername: {user.email or user.intra_username}\nTemporary password: {temp_password}\n\nPlease change your password after first login.",
         to=user.email,
     )
 
@@ -1040,7 +1048,7 @@ def member_logout():
 @limiter.exempt
 @_require_login
 def member_me():
-    return jsonify({"user": request.current_user.to_dict()}), 200
+    return jsonify({"user": request.current_user.to_dict(include_email=False)}), 200
 
 
 @app.post("/member/change-password")
@@ -1082,7 +1090,7 @@ def forgot_password():
     user.password_reset_expires_at = utcnow() + timedelta(hours=24)
     db.session.commit()
 
-    reset_url = f"https://mysophia.tech/ai-club/reset-password.html?token={raw_token}"
+    reset_url = f"https://42berlinaiclub.de/reset-password.html?token={raw_token}"
     _send_email(
         subject="42 Berlin AI Club — Password Reset Request",
         body=f"Hi {user.name},\n\nYou requested a password reset.\n\nClick the link below to set a new password:\n{reset_url}\n\nThis link expires in 24 hours.\n\nIf you didn't request this, ignore this email.",
