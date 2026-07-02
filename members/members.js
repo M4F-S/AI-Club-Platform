@@ -3,16 +3,28 @@
 
   const API_URL = '/api';
 
-  async function api(path, options = {}) {
-    const res = await fetch(`${API_URL}${path}`, {
-      ...options,
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(options.headers || {}),
-      },
-    });
-    return { ok: res.ok, status: res.status, data: await res.json().catch(() => ({})) };
+  async function api(path, options = {}, retries = 2) {
+    for (let attempt = 0; attempt <= retries; attempt++) {
+      try {
+        const res = await fetch(`${API_URL}${path}`, {
+          ...options,
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(options.headers || {}),
+          },
+        });
+        const data = await res.json().catch(() => ({}));
+        return { ok: res.ok, status: res.status, data };
+      } catch (err) {
+        if (attempt === retries) {
+          console.error(`API error for ${path}:`, err);
+          return { ok: false, status: 0, data: { error: 'Network error' } };
+        }
+        // Wait before retry (exponential backoff)
+        await new Promise(r => setTimeout(r, 300 * (attempt + 1)));
+      }
+    }
   }
 
   async function requireAuth() {

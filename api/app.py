@@ -843,6 +843,7 @@ def list_event_materials(event_id):
 
 
 @app.get("/events/<int:event_id>/materials/<int:material_id>/download")
+@limiter.exempt
 def download_event_material(event_id, material_id):
     event = Event.query.get_or_404(event_id)
     material = EventMaterial.query.filter_by(id=material_id, event_id=event_id).first_or_404()
@@ -864,7 +865,26 @@ def download_event_material(event_id, material_id):
 
     event_dir = os.path.join("/app/data/materials", str(event_id))
     from flask import send_from_directory
-    return send_from_directory(event_dir, material.file_path, as_attachment=True)
+    # Images/slides: inline display (no attachment). PDFs: download (attachment).
+    is_image = material.file_type in ('slide', 'image')
+    return send_from_directory(event_dir, material.file_path, as_attachment=not is_image)
+
+
+@app.get("/events/<int:event_id>/materials/<int:material_id>/view")
+@limiter.exempt
+def view_event_material(event_id, material_id):
+    """Serve material inline for images - for <img> tags."""
+    event = Event.query.get_or_404(event_id)
+    material = EventMaterial.query.filter_by(id=material_id, event_id=event_id).first_or_404()
+
+    if not event.is_public:
+        return jsonify({"error": "This event is not public"}), 403
+    if not material.is_revealed:
+        return jsonify({"error": "This material is not yet available"}), 403
+
+    event_dir = os.path.join("/app/data/materials", str(event_id))
+    from flask import send_from_directory
+    return send_from_directory(event_dir, material.file_path, as_attachment=False)
 
 
 # ---------------------------------------------------------------------------
@@ -953,6 +973,7 @@ def delete_quiz_question(event_id, question_id):
 
 @app.get("/events/<int:event_id>/quiz")
 @_require_login
+@limiter.exempt
 def get_quiz(event_id):
     event = Event.query.get_or_404(event_id)
     questions = QuizQuestion.query.filter_by(event_id=event_id).order_by(QuizQuestion.sort_order.asc()).all()
