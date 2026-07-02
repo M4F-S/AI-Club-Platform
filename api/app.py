@@ -136,6 +136,28 @@ def _is_valid_email(email: str) -> bool:
     return re.match(r"^[^@\s]+@[^@\s]+\.[^@\s]+$", email) is not None
 
 
+def _log_security_event(action, details=None):
+    """Log structured security events for audit trail."""
+    ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+    user_id = session.get('user_id')
+    app.logger.warning("[SECURITY] action=%s ip=%s user_id=%s details=%s", action, ip, user_id, details or "")
+
+
+def _check_account_lockout(ip_address):
+    """Check if IP is locked out due to failed login attempts.
+    Returns (is_allowed, error_message)."""
+    from datetime import timedelta
+    cutoff = utcnow() - timedelta(minutes=15)
+    failed_count = LoginAttempt.query.filter(
+        LoginAttempt.ip_address == ip_address,
+        LoginAttempt.success == False,
+        LoginAttempt.created_at > cutoff
+    ).count()
+    if failed_count >= 5:
+        return False, "Account temporarily locked. Please try again in 15 minutes."
+    return True, None
+
+
 import threading
 
 def _send_email_sync(subject: str, body: str, to: str) -> bool:
