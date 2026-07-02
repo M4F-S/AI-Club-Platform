@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+Allow: /become-member.html
+Allow: /become-partner.html
+Allow: /login.html
+Allow: /privacy-policy.html
+Allow: /reset-password.html
+Disallow: /admin.html
+Disallow: /members/
+Disallow: /api/
+
+Sitemap: https://mysophia.tech/ai-club/sitemap.xml

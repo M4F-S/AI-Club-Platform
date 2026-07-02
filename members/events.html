@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Workshops & Events — 42 Berlin AI Club</title>
+  <meta name="robots" content="noindex, nofollow">
+  <script src="https://unpkg.com/lucide@1.21.0/dist/umd/lucide.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/ai-club/members/members.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23120a0d'/%3E%3Cpath d='M16 2 C13 6, 12 11, 14 15 C11 13, 7 14, 5 17 C4 19, 5 22, 8 23 C7 25, 8 27, 10 28 C12 29, 14 28, 15 26 C15 28, 16 30, 17 30 C18 30, 18 28, 18 26 C19 28, 21 29, 23 28 C25 27, 26 25, 25 23 C28 22, 29 19, 27 17 C25 14, 21 13, 18 15 C20 11, 19 6, 16 2 Z' fill='%23ff6b8a'/%3E%3C/svg%3E">
+</head>
+<body>
+  <header class="member-header">
+    <div class="container member-header-inner">
+      <a href="/ai-club/members/index.html" class="logo" aria-label="Dashboard">
+        <div class="logo-icon">
+          <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="phoenixGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+                <stop offset="0%" style="stop-color:#e07a5f"/>
+                <stop offset="50%" style="stop-color:#ff6b8a"/>
+                <stop offset="100%" style="stop-color:#f2cc8f"/>
+              </linearGradient>
+            </defs>
+            <path d="M16 2 C13 6, 12 11, 14 15 C11 13, 7 14, 5 17 C4 19, 5 22, 8 23 C7 25, 8 27, 10 28 C12 29, 14 28, 15 26 C15 28, 16 30, 17 30 C18 30, 18 28, 18 26 C19 28, 21 29, 23 28 C25 27, 26 25, 25 23 C28 22, 29 19, 27 17 C25 14, 21 13, 18 15 C20 11, 19 6, 16 2 Z" fill="url(#phoenixGrad)"/>
+            <path d="M16 6 C14 9, 13 13, 14 16 C12 15, 10 15, 9 17 C8 18, 9 20, 11 21 C10 22, 11 23, 12 24 C13 24, 14 23, 15 22 C15 24, 16 25, 17 25 C18 25, 18 24, 18 22 C19 23, 20 24, 21 24 C22 23, 23 22, 22 21 C24 20, 25 18, 24 17 C23 15, 21 15, 19 16 C20 13, 19 9, 16 6 Z" fill="#faf3f0" opacity="0.4"/>
+          </svg>
+        </div>
+        42 Berlin AI Club
+      </a>
+      <div class="user-menu">
+        <span class="user-name" id="user-name">Loading...</span>
+        <button class="logout-btn" id="logout-btn">Log out</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="container member-layout">
+    <nav class="member-nav"></nav>
+    <main class="member-main">
+
+      <h1 class="page-title animate-on-scroll">Workshops & Events</h1>
+      <p class="page-subtitle animate-on-scroll">Workshops, talks, and meetups for club members.</p>
+      <div id="events-list" class="animate-on-scroll"><p>Loading...</p></div>
+      <script>
+document.addEventListener("DOMContentLoaded", async () => {
+
+          (async () => {
+            const { api } = window.MemberAPI;
+            const res = await api('/events');
+            const list = document.getElementById('events-list');
+            if (!res.ok || !res.data.length) {
+              list.innerHTML = '<div class="card animate-on-scroll"><p>No workshops scheduled yet.</p></div>';
+              return;
+            }
+            list.innerHTML = res.data.map((e, i) => `
+              <div class="card animate-on-scroll stagger-${Math.min(i % 4 + 1, 4)}">
+                <h2><a href="event.html?id=${e.id}" style="text-decoration: none; color: inherit;">${escapeHtml(e.title)}</a></h2>
+                <p class="meta">${e.event_date ? new Date(e.event_date).toLocaleString() : 'Date TBD'} ${e.location ? '· ' + escapeHtml(e.location) : ''}</p>
+                <p>${escapeHtml(e.description || '')}</p>
+                <div style="margin-top: 12px;">
+                  <a href="event.html?id=${e.id}" class="btn btn-primary">View workshop →</a>
+                  ${e.link ? `<a href="${escapeHtml(e.link)}" target="_blank" rel="noopener" class="btn btn-secondary" style="margin-left: 8px;">RSVP</a>` : ''}
+                </div>
+              </div>
+            `).join('');
+          })();
+          function escapeHtml(t) { const d=document.createElement('div'); d.textContent=t; return d.innerHTML; }
+      
+});
+</script>
+    </main>
+  </div>
+
+  <script src="/ai-club/members/members.js"></script>
+</body>
+</html>
