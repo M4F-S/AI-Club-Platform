@@ -17,4 +17,6 @@ RUN mkdir -p /app/data
 
 EXPOSE 5000
 
+RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app/data
+USER appuser
 CMD ["python", "wsgi.py"]
