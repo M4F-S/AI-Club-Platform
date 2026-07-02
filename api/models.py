@@ -160,7 +160,7 @@ class QuizAttempt(db.Model):
     event_id = db.Column(db.Integer, db.ForeignKey("events.id"), nullable=False)
     score = db.Column(db.Integer, nullable=False)
     answers_json = db.Column(db.Text, nullable=False)
-    created_at = db.Column(db.DateTime, nullable=False, default=utcnow)
+    completed_at = db.Column(db.DateTime, nullable=False, default=utcnow)
     user = db.relationship("User", backref="quiz_attempts")
     event = db.relationship("Event", backref="quiz_attempts")
 
