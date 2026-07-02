@@ -164,6 +164,14 @@ class QuizAttempt(db.Model):
     user = db.relationship("User", backref="quiz_attempts")
     event = db.relationship("Event", backref="quiz_attempts")
 
+class LoginAttempt(db.Model):
+    __tablename__ = "login_attempts"
+    id = db.Column(db.Integer, primary_key=True)
+    ip_address = db.Column(db.String(64), nullable=False, index=True)
+    username = db.Column(db.String(255), nullable=True)
+    success = db.Column(db.Boolean, nullable=False, default=False)
+    created_at = db.Column(db.DateTime, nullable=False, default=utcnow)
+
 class AuditLog(db.Model):
     __tablename__ = "audit_logs"
     id = db.Column(db.Integer, primary_key=True)
