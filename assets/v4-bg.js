@@ -165,10 +165,14 @@ col+=vec3(.3,.9,.75)*max(rip,0.)*.5;col+=vec3(.45,.4,1.)*exp(-d*9.)*u_mstr*.22;f
     } catch (e) { /* fluid optional */ }
   }
 
-  /* ---- loader ---- */
+  /* ---- loader (once per session) ---- */
+  const _seenLoader = sessionStorage.getItem('v4_loader_seen');
   const loader = document.createElement('div');
   loader.id = 'v4-loader';
   loader.innerHTML = '<img src="/assets/logo-gate.png" alt="" onerror="this.style.display=\'none\'"><div class="l-label">Initializing neural field</div><div class="l-count">0</div><div class="l-bar"><i></i></div>';
+  if (_seenLoader) { loader.remove(); }
+  else {
+  sessionStorage.setItem('v4_loader_seen', '1');
   document.body.appendChild(loader);
   const lc = loader.querySelector('.l-count'), lb = loader.querySelector('.l-bar i');
   let p = 0; const t0 = performance.now();
@@ -179,6 +183,9 @@ col+=vec3(.3,.9,.75)*max(rip,0.)*.5;col+=vec3(.45,.4,1.)*exp(-d*9.)*u_mstr*.22;f
     lc.textContent = p; lb.style.transform = `scaleX(${p / 100})`;
     if (p < 100) requestAnimationFrame(lt); else setTimeout(() => { loader.classList.add('done'); document.body.classList.add('loaded'); }, 200);
   })();
+  }
+
+  if (_seenLoader) document.body.classList.add('loaded');
 
   /* ---- custom cursor ---- */
   if (!matchMedia('(hover:none)').matches) {

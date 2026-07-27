@@ -214,3 +214,32 @@ footer h4,footer .logo{color:#F2F0FF !important}
 
 /* skip link */
 .skip-link{background:#7C6CFF !important;color:#fff !important}
+
+/* ================================================================
+   READABILITY FIXES — content pages over fluid bg
+   ================================================================ */
+/* dim the WebGL fluid + blobs behind dense content */
+#v4-gl{opacity:.35 !important}
+.member-main,.member-layout,.quiz-container,.quiz-wrapper,main{position:relative;z-index:3}
+/* quiz + member content cards must be opaque enough to read */
+.question,.option,.q-card,.quiz-card,.options .option{
+  background:rgba(11,10,30,.82) !important;border:1px solid rgba(124,108,255,.25) !important;color:#F2F0FF !important;
+}
+.q-text,.question-text,.q-header{color:#F2F0FF !important}
+.opt-text,.option span{color:#F2F0FF !important}
+.option:hover{border-color:#7C6CFF !important}
+.option[data-correct="true"].revealed,.option.correct{border-color:#4DE3C1 !important;background:rgba(77,227,193,.12) !important}
+.option.wrong{border-color:#FF6EC7 !important;background:rgba(255,110,199,.1) !important}
+.feedback-rationale,.hint-content,.hint-box{background:rgba(11,10,30,.85) !important;color:#9A94C7 !important;border-color:rgba(124,108,255,.2) !important}
+.next-btn,.start-btn,.submit-btn,.quiz-btn{background:linear-gradient(110deg,#7C6CFF,#5a8bff) !important;color:#fff !important;border-radius:99px !important;font-family:'Clash Display' !important}
+.progress-bar,.quiz-progress{background:rgba(124,108,255,.15) !important}
+.progress-fill,.quiz-progress .fill{background:linear-gradient(90deg,#7C6CFF,#4DE3C1) !important}
+
+/* member area text */
+.member-main h1,.member-main h2,.member-main h3,.member-main p{color:#F2F0FF !important}
+.member-main .text-muted,.member-main .muted{color:#9A94C7 !important}
+.user-name,.welcome-name{color:#F2F0FF !important}
+.logout-btn{background:rgba(18,16,43,.5) !important;border:1px solid rgba(124,108,255,.25) !important;color:#9A94C7 !important;border-radius:99px !important}
+.logout-btn:hover{color:#FF6EC7 !important;border-color:rgba(255,110,199,.4) !important}
+
+/* loader: skip on repeat visits (sessionStorage) — JS handles; keep it subtle */
