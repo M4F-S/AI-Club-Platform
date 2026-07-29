@@ -68,18 +68,25 @@
     if (el.dataset.odoDone === '1') return;
     el.dataset.odoDone = '1';
     const str = String(target);
+    // measure one line height in px for exact clipping
     el.innerHTML = ''; el.classList.add('odo');
+    const lh = parseFloat(getComputedStyle(el).fontSize) * 1.05 || 56;
     [...str].forEach((ch, i) => {
       const col = document.createElement('span'); col.className = 'odo-col';
+      col.style.height = lh + 'px'; col.style.overflow = 'hidden';
       const strip = document.createElement('span'); strip.className = 'odo-strip';
-      for (let d = 0; d <= 9; d++) { const s = document.createElement('span'); s.textContent = d; strip.appendChild(s); }
+      strip.style.display = 'flex'; strip.style.flexDirection = 'column';
+      for (let d = 0; d <= 9; d++) {
+        const s = document.createElement('span');
+        s.textContent = d; s.style.height = lh + 'px'; s.style.lineHeight = lh + 'px'; s.style.display = 'block';
+        strip.appendChild(s);
+      }
       col.appendChild(strip); el.appendChild(col);
-      // settle on the final digit after the roll
       const final = +ch;
       const delay = 200 + i * 140 + Math.random() * 160;
       setTimeout(() => {
         strip.style.transition = 'transform 1.1s cubic-bezier(.16,1,.3,1)';
-        strip.style.transform = `translateY(-${final}em)`;
+        strip.style.transform = `translateY(-${final * lh}px)`;
       }, delay);
     });
   }
