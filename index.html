@@ -22,6 +22,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/ai-club.css?v=11">
   <link rel="stylesheet" href="/assets/v4-design.css?v=2">
+  <link rel="stylesheet" href="/assets/v4-features.css?v=1">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -143,30 +144,24 @@
     <section id="what-we-do">
       <h2 class="section-title animate-on-scroll">What we do</h2>
       <p class="section-subtitle animate-on-scroll">Hands-on learning for every level.</p>
-      <div class="activities">
-        <div class="card activity-card animate-on-scroll">
-          <h3>Workshops</h3>
-          <p>Host AI workshops for beginners and advanced members.</p>
+      <div class="hex-wrap">
+        <div class="hex" data-v4-reveal>
+          <h3>Workshops</h3><p>Host AI workshops for beginners and advanced members.</p><span class="h-tag">Weekly</span>
         </div>
-        <div class="card activity-card animate-on-scroll stagger-1">
-          <h3>Prompt engineering</h3>
-          <p>Run prompt engineering sessions and practical AI tool demos.</p>
+        <div class="hex" data-v4-reveal>
+          <h3>Prompt Engineering</h3><p>Run prompt engineering sessions and practical AI tool demos.</p><span class="h-tag">Bi-weekly</span>
         </div>
-        <div class="card activity-card animate-on-scroll stagger-2">
-          <h3>Projects</h3>
-          <p>Build small AI projects together in teams or individually.</p>
+        <div class="hex" data-v4-reveal>
+          <h3>Projects</h3><p>Build small AI projects together in teams or individually.</p><span class="h-tag">Ongoing</span>
         </div>
-        <div class="card activity-card animate-on-scroll">
-          <h3>Responsible AI</h3>
-          <p>Discuss AI safety, responsible use, privacy, and bias.</p>
+        <div class="hex" data-v4-reveal>
+          <h3>Responsible AI</h3><p>Discuss AI safety, responsible use, privacy, and bias.</p><span class="h-tag">Monthly</span>
         </div>
-        <div class="card activity-card animate-on-scroll stagger-1">
-          <h3>Guest speakers</h3>
-          <p>Invite guest speakers, mentors, and industry partners when available.</p>
+        <div class="hex" data-v4-reveal>
+          <h3>Guest Speakers</h3><p>Invite guest speakers, mentors, and industry partners when available.</p><span class="h-tag">Per semester</span>
         </div>
-        <div class="card activity-card animate-on-scroll stagger-2">
-          <h3>Resources</h3>
-          <p>Share resources and best practices for using AI in study, coding, and project work.</p>
+        <div class="hex" data-v4-reveal>
+          <h3>Resources</h3><p>Share resources and best practices for using AI in study, coding, and project work.</p><span class="h-tag">Always on</span>
         </div>
       </div>
     </section>
@@ -181,13 +176,39 @@
       </div>
     </section>
 
-    <section>
-      <div class="cta-section animate-on-scroll">
-        <h2>Join the community</h2>
-        <p>Applications are reviewed to confirm 42 Berlin student status. Once approved, you will receive login credentials and access to the member area.</p>
-        <div class="hero-actions" style="justify-content: center;">
-          <a href="/become-member.html" class="btn btn-primary">Apply for membership</a>
-          <a href="/become-partner.html" class="btn btn-secondary">Become a partner</a>
+    <section id="join">
+      <h2 class="section-title" data-v4-reveal>Connect your <span class="text-gradient">node.</span></h2>
+      <p class="section-subtitle" data-v4-reveal>Applications are reviewed to confirm 42 Berlin student status — credentials arrive by email, usually within 48 hours.</p>
+      <div class="ring-wrap" data-v4-reveal>
+        <div class="ring-box">
+          <svg viewBox="0 0 120 120">
+            <defs>
+              <linearGradient id="ringGrad" x1="0" y1="0" x2="120" y2="120" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#7C6CFF"/><stop offset=".5" stop-color="#4DE3C1"/><stop offset="1" stop-color="#FF6EC7"/>
+              </linearGradient>
+            </defs>
+            <circle class="r-bg" cx="60" cy="60" r="54"/>
+            <circle class="r-seg" id="seg-0" cx="60" cy="60" r="54" stroke="#7C6CFF"/>
+            <circle class="r-seg" id="seg-1" cx="60" cy="60" r="54" stroke="#4DE3C1" transform="rotate(90 60 60)"/>
+            <circle class="r-seg" id="seg-2" cx="60" cy="60" r="54" stroke="#FF6EC7" transform="rotate(180 60 60)"/>
+            <circle class="r-seg" id="seg-3" cx="60" cy="60" r="54" stroke="#5a8bff" transform="rotate(270 60 60)"/>
+            <circle class="ring-sweep" cx="60" cy="60" r="54"/>
+          </svg>
+          <div class="ring-center">
+            <span class="rc-num" id="rc-num">0%</span>
+            <span class="rc-label">Sync progress</span>
+          </div>
+        </div>
+        <div>
+          <form class="jform" id="join-form" novalidate>
+            <div class="form-group jfield" data-seg="0"><label>Name</label><input type="text" placeholder="Ada Lovelace" autocomplete="name"></div>
+            <div class="form-group jfield" data-seg="1"><label>Email</label><input type="email" placeholder="ada@student.42berlin.de" autocomplete="email"></div>
+            <div class="form-group jfield" data-seg="2"><label>42 Login</label><input type="text" placeholder="alovelac"></div>
+            <div class="form-group jfield" data-seg="3"><label>Why join? (one line)</label><textarea rows="2" placeholder="I want to build things that matter…"></textarea></div>
+            <div class="j-note"><i></i>Prefer the full form? <a href="/become-member.html" style="color:var(--mint)">Open the application page</a>.</div>
+            <button type="submit" class="btn btn-primary" id="join-submit">Request access <span class="arr">→</span></button>
+          </form>
+          <div class="j-success" id="j-success"><h3>◉ Node connected</h3><p>Application received.</p></div>
         </div>
       </div>
     </section>
@@ -241,5 +262,8 @@
 
   <script src="/assets/ai-club.js?v=12" defer></script>
   <script src="/assets/v4-bg.js?v=1"></script>
+  <script src="/assets/v4-features.js?v=1"></script>
+  <script src="/assets/v4-ring.js?v=1"></script>
+  <script src="/assets/v4-agent.js?v=1"></script>
 </body>
 </html>
