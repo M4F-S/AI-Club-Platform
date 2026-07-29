@@ -253,3 +253,7 @@ footer h4{font-size:17px !important;font-family:'Clash Display' !important}
 
 /* nav */
 .nav-links a{font-size:14px !important}
+
+/* odometer clip fix */
+.odo{display:inline-flex;overflow:hidden;vertical-align:bottom}
+.odo-col{display:inline-block;overflow:hidden}
