@@ -197,3 +197,59 @@ body.loaded .hero h1 .wi{transform:translateY(0)}
 
 /* misc */
 .m-loading{color:var(--muted);font-size:14px;padding:26px 0;text-align:center}
+
+/* ================================================================
+   TYPOGRAPHY UPGRADE — larger, bolder, more polished type
+   ================================================================ */
+
+/* counters: bigger + gradient */
+.stat-card{min-width:150px}
+[data-stat],.stat-number,.odo{
+  font-family:'Clash Display',var(--font-d) !important;
+  font-size:clamp(40px,4.6vw,56px) !important;
+  font-weight:600 !important;line-height:1.05 !important;
+  background:linear-gradient(120deg,#7C6CFF,#4DE3C1);
+  -webkit-background-clip:text;background-clip:text;color:transparent !important;
+}
+.odo-col{height:1.05em;line-height:1.05}
+.odo{height:1.05em;line-height:1.05}
+.odo-strip span{height:1.05em;line-height:1.05}
+.stat-label{
+  font-size:12px !important;letter-spacing:.3em !important;text-transform:uppercase !important;
+  color:var(--muted) !important;margin-top:10px !important;font-family:var(--font-d) !important;
+}
+.stat-card{padding:22px 26px !important}
+
+/* body copy: larger + better readability */
+.about-text p,.card p,section p{font-size:16.5px !important;line-height:1.7 !important;color:#c3bde4 !important}
+.about-text h2,.card h2{font-size:clamp(22px,2.6vw,30px) !important;font-family:'Clash Display' !important;margin-bottom:14px !important}
+.section-subtitle{font-size:16px !important;color:var(--muted) !important}
+
+/* hex cards */
+.hex{min-height:230px;padding:36px 30px}
+.hex h3{font-size:19px !important}
+.hex p{font-size:14px !important;line-height:1.6 !important}
+
+/* timeline cards */
+.tl-item h3{font-size:19px !important}
+.tl-item p{font-size:14px !important;line-height:1.6 !important}
+.tl-date{font-size:11.5px !important}
+
+/* project cards */
+.proj h3{font-size:20px !important}
+.proj p{font-size:14.5px !important;line-height:1.65 !important}
+
+/* manifesto */
+.mani-line{font-size:clamp(26px,4vw,46px) !important}
+
+/* footer */
+footer p,footer a{font-size:15px !important}
+footer h4{font-size:17px !important;font-family:'Clash Display' !important}
+
+/* member area + workshop content */
+.member-main p,.member-main li,.member-main .card p{font-size:15.5px !important;line-height:1.7 !important}
+.q-text,.question-text{font-size:17px !important;line-height:1.6 !important}
+.opt-text,.option{font-size:15px !important;line-height:1.55 !important}
+
+/* nav */
+.nav-links a{font-size:14px !important}

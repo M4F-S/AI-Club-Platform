@@ -181,19 +181,8 @@
 
   // Real stats loader
   async function loadStats() {
-    const statEls = document.querySelectorAll('[data-stat]');
-    if (statEls.length === 0) return;
-    try {
-      const res = await fetch(`${API_URL}/stats`);
-      if (!res.ok) return;
-      const data = await res.json();
-      statEls.forEach((el) => {
-        const key = el.getAttribute('data-stat');
-        if (data[key] !== undefined) el.textContent = data[key];
-      });
-    } catch (e) {
-      // Silent fail: leave default text
-    }
+    // Stat counters handled by v4-features.js odometers (superseded).
+    // Intentionally left empty to avoid racing the odometer animation.
   }
 
   // Current user badge for nav (only shown when logged in)
