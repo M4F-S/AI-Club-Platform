@@ -65,6 +65,8 @@
 
   /* ============ ODOMETER helper ============ */
   function odometer(el, target) {
+    if (el.dataset.odoDone === '1') return;
+    el.dataset.odoDone = '1';
     const str = String(target);
     el.innerHTML = ''; el.classList.add('odo');
     [...str].forEach((ch, i) => {
@@ -72,7 +74,13 @@
       const strip = document.createElement('span'); strip.className = 'odo-strip';
       for (let d = 0; d <= 9; d++) { const s = document.createElement('span'); s.textContent = d; strip.appendChild(s); }
       col.appendChild(strip); el.appendChild(col);
-      setTimeout(() => strip.style.transform = `translateY(-${+ch}em)`, 120 + i * 120 + Math.random() * 150);
+      // settle on the final digit after the roll
+      const final = +ch;
+      const delay = 200 + i * 140 + Math.random() * 160;
+      setTimeout(() => {
+        strip.style.transition = 'transform 1.1s cubic-bezier(.16,1,.3,1)';
+        strip.style.transform = `translateY(-${final}em)`;
+      }, delay);
     });
   }
 
