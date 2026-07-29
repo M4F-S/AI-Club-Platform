@@ -257,3 +257,13 @@ footer h4{font-size:17px !important;font-family:'Clash Display' !important}
 /* odometer clip fix */
 .odo{display:inline-flex;overflow:hidden;vertical-align:bottom}
 .odo-col{display:inline-block;overflow:hidden}
+
+/* odometer digit visibility fix — solid glow, not transparent gradient */
+.odo-strip span{
+  background:none !important;-webkit-background-clip:unset !important;background-clip:unset !important;
+  color:#F2F0FF !important;-webkit-text-fill-color:#F2F0FF !important;
+  text-shadow:0 0 18px rgba(124,108,255,.55), 0 0 40px rgba(77,227,193,.25);
+  font-family:'Clash Display' !important;font-weight:600;
+}
+/* keep the CONTAINER gradient label, but digits must be solid */
+.stat-number,[data-stat]{background:none !important;color:#F2F0FF !important;-webkit-text-fill-color:#F2F0FF !important}
