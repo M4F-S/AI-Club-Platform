@@ -73,11 +73,24 @@
   addEventListener('scroll', () => { energy = Math.min(1, energy + .14); }, { passive: true });
   addEventListener('resize', resize);
 
+  const heroAttractor = () => {
+    const el = document.querySelector('.hero h1');
+    if (!el) return null;
+    const r = el.getBoundingClientRect();
+    if (r.bottom < 0 || r.top > innerHeight) return null;
+    return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+  };
+
   function step() {
+    const att = heroAttractor();
     for (const p of particles) {
       p.x += p.vx * (1 + energy * 1.6); p.y += p.vy * (1 + energy * 1.6); p.tw += .02;
       const mdx = mouse.x - p.x, mdy = mouse.y - p.y, md = Math.hypot(mdx, mdy);
       if (md < 150 && md > 24) { p.x += mdx / md * .18; p.y += mdy / md * .18; }
+      if (att) {
+        const adx = att.x - p.x, ady = att.y - p.y, ad = Math.hypot(adx, ady);
+        if (ad < 260 && ad > 40) { p.x += adx / ad * .12; p.y += ady / ad * .12; }
+      }
       if (p.x < -20) p.x = W + 20; if (p.x > W + 20) p.x = -20;
       if (p.y < -20) p.y = H + 20; if (p.y > H + 20) p.y = -20;
     }
