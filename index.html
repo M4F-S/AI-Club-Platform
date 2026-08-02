@@ -72,6 +72,8 @@
     <a href="#events" data-hover>Events</a>
     <a href="#projects" data-hover>Projects</a>
     <a href="#join" data-hover>Join</a>
+    <a href="/login.html" data-hover>Login</a>
+    <a href="/admin.html" data-hover>Admin</a>
   </div>
   <button class="nav-member" id="nav-member-btn" data-hover aria-label="Member area">
     <svg viewBox="0 0 16 16" width="13" height="13" fill="none"><circle cx="8" cy="5.2" r="3" stroke="currentColor" stroke-width="1.4"/><path d="M2 14c1-3.2 3.4-4.6 6-4.6s5 1.4 6 4.6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
@@ -88,6 +90,8 @@
   <a href="#events"><i></i>Events</a>
   <a href="#projects"><i></i>Builds</a>
   <a href="#join"><i></i>Join</a>
+  <a href="/login.html"><i></i>Login</a>
+  <a href="/admin.html"><i></i>Admin</a>
 </div>
 
 <main id="main">
@@ -422,6 +426,8 @@
     <a href="#events" class="f-node" data-hover><span class="fn-dot" style="background:var(--mint);box-shadow:0 0 14px var(--mint)"></span>Events</a>
     <a href="#projects" class="f-node" data-hover><span class="fn-dot" style="background:var(--pink);box-shadow:0 0 14px var(--pink)"></span>Projects</a>
     <a href="#join" class="f-node" data-hover><span class="fn-dot" style="background:#5a8bff;box-shadow:0 0 14px #5a8bff"></span>Join</a>
+    <a href="/login.html" class="f-node" data-hover><span class="fn-dot" style="background:var(--violet);box-shadow:0 0 14px var(--violet)"></span>Login</a>
+    <a href="/admin.html" class="f-node" data-hover><span class="fn-dot" style="background:#ff5a8b;box-shadow:0 0 14px #ff5a8b"></span>Admin</a>
   </div>
   <img class="f-mark" src="/assets/logo-gate.png" alt="">
   <div class="f-sign">Open a <span style="background:linear-gradient(110deg,var(--violet),var(--mint));-webkit-background-clip:text;background-clip:text;color:transparent">channel.</span></div>
@@ -1410,7 +1416,14 @@ void main(){
   const open = () => { overlay.classList.add('open'); document.body.style.overflow = 'hidden'; };
   const close = () => { overlay.classList.remove('open'); document.body.style.overflow = ''; };
 
-  document.getElementById('nav-member-btn').addEventListener('click', () => { open(); tryLoadDashboard(); });
+  document.getElementById('nav-member-btn').addEventListener('click', async () => {
+    // If already logged in, go straight to the full dashboard
+    try {
+      const r = await fetch('/api/member/me', { credentials: 'same-origin' });
+      if (r.ok) { window.location.href = '/members/index.html'; return; }
+    } catch (e) {}
+    open(); tryLoadDashboard();
+  });
   document.getElementById('member-close').addEventListener('click', close);
   overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
   addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
@@ -1439,7 +1452,8 @@ void main(){
       if (r.ok) {
         const rb = document.getElementById('nav-member-btn').getBoundingClientRect();
         window.emitRipples?.(rb.left + rb.width / 2, rb.top + rb.height / 2, 3, 220);
-        tryLoadDashboard();
+        // Member dashboard API only returns basic user info; redirect to full dashboard
+        window.location.href = '/members/index.html';
       } else {
         errEl.textContent = 'Invalid credentials. Try again.'; errEl.classList.add('show');
       }
