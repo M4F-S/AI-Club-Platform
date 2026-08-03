@@ -118,10 +118,11 @@ async function ask(e) {
           if (window.initScrollAnimations) window.initScrollAnimations();
         }
         
-        if (document.readyState === 'loading') {
-          document.addEventListener('DOMContentLoaded', loadEvents);
-        } else {
+        // Wait for MemberAPI to be ready regardless of script order
+        if (window.MemberAPI) {
           loadEvents();
+        } else {
+          window.addEventListener('memberapi-ready', loadEvents, { once: true });
         }
       })();
       </script>

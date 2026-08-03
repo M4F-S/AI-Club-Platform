@@ -293,6 +293,7 @@ footer{position:relative;z-index:3;padding:80px clamp(20px,6vw,80px) 46px;text-a
   .m-nav a i{width:5px;height:5px;border-radius:50%;background:var(--violet);box-shadow:0 0 8px var(--violet);font-style:normal;transition:background .3s,box-shadow .3s}
   .m-nav a:active,.m-nav a:hover{color:var(--text)}
   .m-nav a:active i,.m-nav a:hover i{background:var(--mint);box-shadow:0 0 10px var(--mint)}
+  .nav-agent{display:none}
   #orb{right:20px;bottom:92px}
   #agent-panel{right:20px;bottom:158px}
   .scroll-hint{display:none}

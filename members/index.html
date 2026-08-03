@@ -99,6 +99,58 @@ async function ask(e) {
 }
 </script>
 <script src="/members/members.js"></script>
+<script>
+(function() {
+  function escapeHtml(t) {
+    if (t == null) return '';
+    const d = document.createElement('div'); d.textContent = t; return d.innerHTML;
+  }
+
+  async function loadDashboard() {
+    if (!window.MemberAPI) return;
+    const { api } = window.MemberAPI;
+
+    // Latest blog post
+    try {
+      const blogRes = await api('/blog?limit=1');
+      const latestPost = document.getElementById('latest-post');
+      if (blogRes.ok && blogRes.data && blogRes.data.length > 0) {
+        const post = blogRes.data[0];
+        latestPost.innerHTML = `<strong>${escapeHtml(post.title)}</strong><br><span style="color:var(--muted);font-size:0.9rem;">${escapeHtml(post.excerpt || post.description || '')}</span>`;
+      } else {
+        latestPost.innerHTML = '<span style="color:var(--muted)">No blog posts yet.</span>';
+      }
+    } catch (e) {
+      document.getElementById('latest-post').innerHTML = '<span style="color:var(--muted)">Unable to load blog.</span>';
+    }
+
+    // Next event
+    try {
+      const eventsRes = await api('/events');
+      const nextEvent = document.getElementById('next-event');
+      if (eventsRes.ok && eventsRes.data && eventsRes.data.length > 0) {
+        const now = new Date();
+        const upcoming = eventsRes.data
+          .map(e => ({ ...e, dateObj: e.event_date ? new Date(e.event_date) : null }))
+          .filter(e => !e.dateObj || e.dateObj >= now)
+          .sort((a, b) => (a.dateObj && b.dateObj ? a.dateObj - b.dateObj : 0))[0]
+          || eventsRes.data[0];
+        nextEvent.innerHTML = `<strong>${escapeHtml(upcoming.title)}</strong><br><span style="color:var(--muted);font-size:0.9rem;">${upcoming.event_date ? new Date(upcoming.event_date).toLocaleString() : 'Date TBD'} ${upcoming.location ? '· ' + escapeHtml(upcoming.location) : ''}</span>`;
+      } else {
+        nextEvent.innerHTML = '<span style="color:var(--muted)">No upcoming workshops.</span>';
+      }
+    } catch (e) {
+      document.getElementById('next-event').innerHTML = '<span style="color:var(--muted)">Unable to load workshops.</span>';
+    }
+  }
+
+  if (window.MemberAPI) {
+    loadDashboard();
+  } else {
+    window.addEventListener('memberapi-ready', loadDashboard, { once: true });
+  }
+})();
+</script>
 <script>setTimeout(function(){ document.body.classList.add("loaded"); }, 5000);</script>
 </body>
 </html>
