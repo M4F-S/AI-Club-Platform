@@ -43,11 +43,11 @@
     const MEMBER_BASE = '/ai-club/members/';
 
     const adminLink = user.role === 'superadmin' || user.role === 'admin'
-      ? `<li><a href="/admin.html" class="${location.pathname.includes('/admin.html') ? 'active' : ''}"><i data-lucide="shield"></i> Admin</a></li>`
+      ? `<li><a href="/ai-club/admin.html" class="${location.pathname.includes('/admin.html') ? 'active' : ''}"><i data-lucide="shield"></i> Admin</a></li>`
       : '';
 
     const path = location.pathname;
-    const isDashboard = path === '/members/index.html' || path === '/members/';
+    const isDashboard = path.endsWith('/members/index.html') || path.endsWith('/members/') || path.endsWith('/members');
 
     nav.innerHTML = `
       <ul>
