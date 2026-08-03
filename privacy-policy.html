@@ -21,11 +21,10 @@
 <link rel="stylesheet" href="/assets/v4-design.css?v=2">
 <link rel="stylesheet" href="/assets/v4-features.css?v=1">
 <link rel="stylesheet" href="/assets/new-design-system.css">
-</head>
 <style>
-    :root { --bg: #faf8f7; --surface: #ffffff; --text: #1a1212; --text-muted: #7a6a6a; --accent-1: #ff6b8a; --accent-2: #e07a5f; --accent-3: #f2cc8f; --border: rgba(0,0,0,0.08); --shadow: rgba(0,0,0,0.08); --radius: 20px; }
+    :root { --bg: var(--ink0); --surface: var(--panel); --text: var(--text); --text-muted: var(--muted); --accent-1: var(--violet); --accent-2: var(--mint); --accent-3: var(--pink); --border: var(--line); --shadow: 0 4px 24px rgba(0,0,0,0.3); --radius: 16px; }
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+    body { font-family: var(--font-b); background: var(--bg); color: var(--text); line-height: 1.7; }
     .container { max-width: 720px; margin: 0 auto; padding: 0 24px; }
     nav { background: var(--surface); border-bottom: 1px solid var(--border); padding: 16px 0; }
     nav .container { display: flex; justify-content: space-between; align-items: center; }
@@ -40,6 +39,7 @@
     a { color: var(--accent-1); }
     @media (max-width: 768px) { .container { padding: 0 20px; } h1 { font-size: 1.8rem; } }
   </style>
+</head>
 <body>
 <a href="#main" class="skip-link">Skip to main content</a>
 
