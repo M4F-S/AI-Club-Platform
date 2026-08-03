@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Security Quiz — 42 Berlin AI Club</title>
+<meta name="description" content="Test your knowledge of AI security, responsible AI, and safe deployment. A free public quiz by 42 Berlin AI Club.">
+<meta name="theme-color" content="#060612">
+<meta property="og:title" content="AI Security Quiz — 42 Berlin AI Club">
+<meta property="og:description" content="Test your knowledge of AI security, responsible AI, and safe deployment.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://42berlinaiclub.de/ai-club/quiz.html">
+<meta property="og:image" content="https://42berlinaiclub.de/ai-club/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="AI Security Quiz — 42 Berlin AI Club">
+<meta name="twitter:description" content="Test your knowledge of AI security, responsible AI, and safe deployment.">
+<meta name="twitter:image" content="https://42berlinaiclub.de/ai-club/assets/og-image.png">
+<link rel="canonical" href="https://42berlinaiclub.de/ai-club/quiz.html">
+<link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAARSUlEQVR4nO2ZeXQd1X3Hf797Z3vz9kV6Wqzdli1bsmUsZNnYOAY7gbAZmpNAIE0TUsIpLckfzUlP25OTtmkgSZM0DWlokxLSkDQHThoIZieAYzDYZvEqYWuxtqfl7du8N+u9/UOSLRthi9L/+j7nzJmZO3fuvb/v/f3uMgNQoUKFChUqVKhQoUKFChUqVPj/Bl4iGQGAz50XLs/LgwCIF5TDATifS0dyQTkAuDgdcS4v8PnHHDhn82mLKlwo7zzOvXOuXQvvzb9zaYSLPMMLzu/3/IJGAcwZiOenX2g4LgiHHPiCCAAAHBeVheeEXlz+2fr5+Unv11ZKQXL7wTFL4Oj64idk6RfeU9mi8pesY94ARABCAc8eBICQeUHInOGEAqEiIJUBBQU4UYBQcS4fzAtDFsSZr3Sh95HAeR2DC8cS7V3UTiQCeELNIEjqUhYtAS72d3xvNr6QB88ZDghACCASJGSuRWyhNzmb73UCSCgAEYk3VM3V6EqBOpoVH30XrHJh3v0ZAGNz13OegojIOWPnPIWxc6Jw/j7uvsg7CAJSCTizARxncaYlPACXuFnkoecEWpyXnzOQUu4wF3eYG6gkAc6JAjjv/kgIIJWpL9q2+cff+3HtJz91J1joRkop4Fm3nyuLUApAXZxJIeDUdf7Y8b5tXgLGgVvGhcYvIcBig847L307bxEAEEBEJASBO0r1nk/ftuKLX74XbEMAxvjZMCCijESQUVIkK5XO5CYnTxfHx08D5xyQCkgoBSRzYYKCCEzn1Ftb23HXP/2X2ty7FcCeDxF+YewvxaVUAYD3DIJL9fJ7yjsXj0gIAHBAKgDnHKgggmMKck00orSsqBV84QhRZN1MxbNARRE4UTijIiIVQC+VMkdPDugTUzMASDgRJDANBgRtAHQACZWCLVEueAMkEHEBs8sAhCASzlEgAIwDs535KLxwilrU1IsLdZFBcCGuzg58i0eVuXjnlgOS1wNNW68FbgE3LQZIzPgLzz83+fAvfx3csr234VOf+XPgKAOKbjW6fktVW+8uLgTqI319l4tdV90c7Lv6WveKpiYQfLWB9p4+lENRYDoX/NFQ9e67/4FQSRl7/uffL8X6+wEI48ywSPWGTSS8rmPOpZ1F7fzgXGwWeI8ii64RKSHyirYaQZEEITd4UAxGA1JVNAjc4oIkgBz0CamX9z6dPfLOy+HN2y8Dyxaa27fc8Pkf/OP3SaiqeeNf3/15UwOvp6d3Z9X1H7vS1bimY/s3vvMLBLWaqpGAu3F9T3L/I980ZgeOE0oBuGUR0a1K3voQyZ/px/zosCBX+US5xveeKffscemlwBKyLTUInr2ci0EOhLgDgcCOnX3mmbEYIiClgiz6g1UoCJg8tP+NYN+2y3PvvHXMzkwVw1d/4jojp1nluEa7/u2ff6gNDJ9wXbF1/fDPnx+t7utuRF4cZkld5PHY2Ni37vlScMtNV2nDR94w4/3Dcu3GNcg5dwrTM/5Vu262c/GYXc7OOFZJo9TrRccuFFJvDgBQBGDLNnyBi4XA0vfcAXS55eC1N308/fTTB4uxhFk4M1XOZmkk8epLb+SGh8d93ZsvZzYqzXf+2VewtrMrNT5TBMUb4Wga5nhslAdqVrFkUWju7WjFtGaXR9MyVZUVqlhIAoBjZRMzZrx/Sm39yFbfut23I5VUpa53e/LI48+Uox4o+0I15dRErpg6cbqkJcuysqoegPHzF57LC4mLLIXPrioX5SEEqKIAAhWiTa2OaSMYJc0TrQ5L3kAELJs5pl6moao6kBSFipLcunPbtbRsU4uBJTQ1VNuW45LCkfDqlqZ623Dg+Ehs2simx4yMlgfDtsuxiQE9NnqGO3ZOUAK1paHDrxNXsIZwm8nuQFQI1r...">
+<link rel="apple-touch-icon" href="/ai-club/assets/apple-touch-icon.png">
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@300,400,500,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/ai-club/assets/ai-club.css?v=11">
+<link rel="stylesheet" href="/ai-club/assets/v4-design.css?v=2">
+<link rel="stylesheet" href="/ai-club/assets/v4-features.css?v=1">
+<link rel="stylesheet" href="/ai-club/assets/new-design-system.css">
+<style>
+  .hero { min-height: 38vh; padding: 150px 24px 50px; }
+  .hero-content { max-width: 780px; }
+  .hero h1 { font-size: clamp(2rem, 5.5vw, 3.4rem); }
+  .quiz-wrap { max-width: 760px; margin: 0 auto; padding: 0 24px 80px; }
+  .quiz-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px;
+    margin-bottom: 24px;
+  }
+  .progress-bar {
+    height: 6px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 100px;
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--violet), var(--mint));
+    border-radius: 100px;
+    transition: width 0.3s ease;
+  }
+  .progress-text {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin-bottom: 24px;
+  }
+  .question-number {
+    color: var(--violet);
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 10px;
+  }
+  .question-text {
+    font-family: var(--font-heading);
+    font-size: clamp(1.15rem, 2.5vw, 1.45rem);
+    font-weight: 600;
+    line-height: 1.45;
+    margin-bottom: 24px;
+  }
+  .options { display: flex; flex-direction: column; gap: 12px; }
+  .option {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px 18px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: rgba(255,255,255,0.02);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+    font-size: 0.98rem;
+    width: 100%;
+    color: var(--text);
+  }
+  .option:hover { border-color: var(--violet); background: rgba(124,108,255,0.08); }
+  .option.selected { border-color: var(--violet); background: rgba(124,108,255,0.12); }
+  .option.correct { border-color: var(--success); background: rgba(34,197,94,0.12); }
+  .option.incorrect { border-color: var(--error); background: rgba(239,68,68,0.12); }
+  .opt-radio {
+    width: 22px; height: 22px;
+    border: 2px solid var(--border);
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 2px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+  }
+  .option.selected .opt-radio { border-color: var(--violet); background: var(--violet); }
+  .option.correct .opt-radio { border-color: var(--success); background: var(--success); }
+  .option.incorrect .opt-radio { border-color: var(--error); background: var(--error); }
+  .opt-radio::after {
+    content: ''; width: 7px; height: 7px; background: #fff; border-radius: 50%; opacity: 0; transition: opacity 0.2s;
+  }
+  .option.selected .opt-radio::after,
+  .option.correct .opt-radio::after,
+  .option.incorrect .opt-radio::after { opacity: 1; }
+  .opt-text { padding-top: 2px; line-height: 1.5; }
+  .quiz-nav {
+    display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 28px;
+  }
+  .quiz-nav .btn { min-width: 130px; }
+  .quiz-nav .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .results-card {
+    text-align: center; padding: 40px 24px;
+  }
+  .score-display {
+    font-family: var(--font-heading);
+    font-size: clamp(3rem, 8vw, 5rem);
+    font-weight: 700;
+    background: linear-gradient(110deg, var(--violet), var(--mint));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    line-height: 1; margin-bottom: 8px;
+  }
+  .score-label { color: var(--muted); margin-bottom: 16px; }
+  .breakdown-item {
+    border-left: 3px solid var(--border);
+    padding: 16px 18px;
+    margin-bottom: 14px;
+    background: rgba(255,255,255,0.02);
+    border-radius: 0 10px 10px 0;
+  }
+  .breakdown-item.correct { border-left-color: var(--success); }
+  .breakdown-item.incorrect { border-left-color: var(--error); }
+  .start-screen { text-align: center; padding: 40px 20px; }
+  @media (max-width: 640px) {
+    .hero { padding: 130px 20px 40px; }
+    .quiz-wrap { padding: 0 16px 60px; }
+    .quiz-card { padding: 22px; }
+    .quiz-nav { flex-direction: column-reverse; }
+    .quiz-nav .btn { width: 100%; }
+  }
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {"@type": "Question", "name": "Is the AI Security Quiz free?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. The quiz is free and open to everyone interested in responsible AI and AI security."}},
+    {"@type": "Question", "name": "Do I need to log in to take the quiz?", "acceptedAnswer": {"@type": "Answer", "text": "No. The public quiz does not require an account. Member-only event quizzes are available after logging in."}},
+    {"@type": "Question", "name": "What topics does the quiz cover?", "acceptedAnswer": {"@type": "Answer", "text": "Questions cover AI security fundamentals, prompt injection, data privacy, model evaluation, and responsible deployment."}}
+  ]
+}
+</script>
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to main content</a>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="brandGrad" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse"><stop stop-color="#7C6CFF"/><stop offset="1" stop-color="#4DE3C1"/></linearGradient></defs></svg>
+
+<div id="loader">
+  <img class="l-mark" src="/ai-club/assets/logo-gate.png" alt="42 Berlin AI Club emblem">
+  <div class="l-label">Initializing neural field</div>
+  <div class="l-count">0</div>
+  <div class="l-bar"><i></i></div>
+</div>
+
+<div id="cursor-dot"></div>
+<div id="cursor-ring"></div>
+
+<div id="nebula">
+  <div class="blob b1"></div>
+  <div class="blob b2"></div>
+  <div class="blob b3"></div>
+</div>
+<canvas id="field"></canvas>
+<div id="grain"></div>
+
+<nav>
+  <a class="logo" href="/ai-club/" data-hover>
+    <span class="logo-mark"><img src="/ai-club/assets/logo-gate.png" alt=""></span>
+    <span class="logo-text">42 BERLIN<small>AI Club</small></span>
+  </a>
+  <div class="nav-links">
+    <a href="/ai-club/" data-hover>Home</a>
+    <a href="/ai-club/become-member.html" data-hover>Membership</a>
+    <a href="/ai-club/become-partner.html" data-hover>Partners</a>
+    <a href="/ai-club/login.html" data-hover>Login</a>
+    <a href="/ai-club/admin.html" data-hover>Admin</a>
+  </div>
+  <button class="nav-member" id="nav-member-btn" data-hover aria-label="Member area">
+    <svg viewBox="0 0 16 16" width="13" height="13" fill="none"><circle cx="8" cy="5.2" r="3" stroke="currentColor" stroke-width="1.4"/><path d="M2 14c1-3.2 3.4-4.6 6-4.6s5 1.4 6 4.6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+    <span id="nav-member-label">Members</span>
+  </button>
+  <button class="nav-agent" id="nav-agent-btn" data-hover>
+    <span class="dot"></span> Synapse AI
+  </button>
+</nav>
+
+<div class="m-nav" role="navigation" aria-label="Mobile navigation">
+  <a href="/ai-club/"><i></i>Home</a>
+  <a href="/ai-club/become-member.html"><i></i>Join</a>
+  <a href="/ai-club/login.html"><i></i>Login</a>
+</div>
+
+<main id="main">
+  <section class="hero">
+    <div class="hero-content">
+      <h1 class="animate-on-scroll">AI <span class="text-gradient">Security</span> Quiz</h1>
+      <p class="animate-on-scroll stagger-1">10 quick questions on responsible AI, safe deployment, and common vulnerabilities. No login required.</p>
+    </div>
+  </section>
+
+  <div class="quiz-wrap">
+    <div id="quiz-app" class="quiz-card animate-on-scroll">
+      <!-- Quiz renders here -->
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="f-nodes">
+    <a href="mailto:hello@42berlinaiclub.de" class="f-node" data-hover><span class="fn-dot"></span>Email</a>
+    <a href="/ai-club/" class="f-node" data-hover><span class="fn-dot" style="background:var(--mint);box-shadow:0 0 14px var(--mint)"></span>Home</a>
+    <a href="/ai-club/become-member.html" class="f-node" data-hover><span class="fn-dot" style="background:var(--pink);box-shadow:0 0 14px var(--pink)"></span>Join</a>
+    <a href="/ai-club/login.html" class="f-node" data-hover><span class="fn-dot" style="background:var(--violet);box-shadow:0 0 14px var(--violet)"></span>Login</a>
+    <a href="/ai-club/admin.html" class="f-node" data-hover><span class="fn-dot" style="background:#ff5a8b;box-shadow:0 0 14px #ff5a8b"></span>Admin</a>
+  </div>
+  <img class="f-mark" src="/ai-club/assets/logo-gate.png" alt="">
+  <div class="f-sign">Open a <span style="background:linear-gradient(110deg,var(--violet),var(--mint));-webkit-background-clip:text;background-clip:text;color:transparent">channel.</span></div>
+  <p style="color:var(--muted);font-size:14px;max-width:44ch;margin:0 auto 34px">Questions, ideas, or partnership interest — the network listens.</p>
+  <div class="f-legal">42 Berlin AI Club · Student-led · Vendor-neutral · &copy; 2026</div>
+</footer>
+
+<button id="orb" class="orb" aria-label="Open Synapse AI agent" onclick="toggle()">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2.5"/><path d="M12 8v4"/><path d="M12 14h.01"/><circle cx="12" cy="17" r="2.5"/><circle cx="5" cy="12" r="2.5"/><circle cx="19" cy="12" r="2.5"/></svg>
+</button>
+<div id="agent-panel" role="dialog" aria-label="Synapse AI chat">
+  <div class="ap-head">
+    <span class="ap-name"><span class="dot"></span> Synapse AI</span>
+    <button class="ap-close" onclick="toggle()" aria-label="Close">&times;</button>
+  </div>
+  <div class="ap-body" id="agent-messages">
+    <div class="ap-msg agent">Hi, I am Synapse — the club's AI assistant. Ask me anything about workshops, events, membership, or the community.</div>
+  </div>
+  <form class="ap-inp" id="agent-form" onsubmit="return ask(event)">
+    <input type="text" id="agent-input" placeholder="Ask Synapse anything…" autocomplete="off">
+    <button type="submit" aria-label="Send"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
+  </form>
+</div>
+
+<script>
+let agentOpen = false;
+function toggle(force) {
+  agentOpen = typeof force === 'boolean' ? force : !agentOpen;
+  document.getElementById('orb').classList.toggle('open', agentOpen);
+  document.getElementById('agent-panel').classList.toggle('open', agentOpen);
+}
+async function ask(e) {
+  e.preventDefault();
+  const input = document.getElementById('agent-input');
+  const msg = input.value.trim();
+  if (!msg) return false;
+  const box = document.getElementById('agent-messages');
+  box.innerHTML += '<div class="ap-msg user">' + msg.replace(/</g,'&lt;') + '</div>';
+  input.value = '';
+  box.innerHTML += '<div class="ap-msg agent thinking">Thinking...</div>';
+  box.scrollTop = box.scrollHeight;
+  try {
+    const r = await fetch('/api/agent', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({message: msg, context: 'club'})
+    });
+    const data = await r.json();
+    box.querySelector('.thinking').outerHTML = '<div class="ap-msg agent">' + (data.reply || data.response || 'No response.') + '</div>';
+  } catch(e) {
+    box.querySelector('.thinking').outerHTML = '<div class="ap-msg agent">Sorry, I could not reach the server. Please try again.</div>';
+  }
+  box.scrollTop = box.scrollHeight;
+  return false;
+}
+</script>
+<script>
+(function() {
+  var loader = document.getElementById('loader');
+  if (loader) {
+    var lCount = loader.querySelector('.l-count');
+    var lBar = loader.querySelector('.l-bar i');
+    var p = 0;
+    var t0 = performance.now();
+    (function loadTick() {
+      var el = performance.now() - t0;
+      p = Math.min(100, Math.round((el / 1500) * 100 * (0.4 + Math.random() * 0.6)));
+      if (el > 1500) p = 100;
+      if (lCount) lCount.textContent = p;
+      if (lBar) lBar.style.transform = 'scaleX(' + (p / 100) + ')';
+      if (p < 100) requestAnimationFrame(loadTick);
+      else setTimeout(function() { loader.classList.add('done'); document.body.classList.add('loaded'); }, 220);
+    })();
+  } else {
+    document.body.classList.add('loaded');
+  }
+})();
+</script>
+<script src="/ai-club/assets/v4-bg.js?v=1"></script>
+<script src="/ai-club/assets/v4-features.js?v=1"></script>
+<script src="/ai-club/assets/v4-agent.js?v=1"></script>
+<script>
+(function() {
+  const questions = [
+    {
+      q: "What is the most common goal of a prompt-injection attack against an LLM application?",
+      options: ["Slow down inference", "Steal training data", "Override system instructions or extract secrets", "Corrupt the model weights"],
+      correct: 2,
+      explanation: "Prompt injection aims to make the model ignore its system prompt and reveal hidden instructions, API keys, or behave maliciously."
+    },
+    {
+      q: "Which practice reduces the risk of leaking private data in training datasets?",
+      options: ["Using larger models", "Differential privacy and data minimization", "Disabling logging", "Increasing temperature"],
+      correct: 1,
+      explanation: "Differential privacy and collecting only necessary data limit memorization and exposure of sensitive training examples."
+    },
+    {
+      q: "Why should output from an AI system be treated as untrusted by default?",
+      options: ["It is always encrypted", "It may be hallucinated or manipulated", "It runs in a sandbox", "It is verified by humans"],
+      correct: 1,
+      explanation: "LLMs can hallucinate facts, reproduce biases, or be manipulated by input prompts, so outputs need validation before action."
+    },
+    {
+      q: "What does 'red-teaming' an AI model typically involve?",
+      options: ["Training on red-colored images", "Adversarial testing to find failure modes", "Deploying only in China", "Removing safety filters"],
+      correct: 1,
+      explanation: "Red-teaming is structured adversarial testing to discover harmful, biased, or unreliable behaviors before release."
+    },
+    {
+      q: "Which layer is the best place to enforce rate limits for an AI API?",
+      options: ["Client-side JavaScript", "A server-side gateway or reverse proxy", "The database", "User documentation"],
+      correct: 1,
+      explanation: "Server-side enforcement is the only reliable layer because client code can be bypassed."
+    },
+    {
+      q: "What is a primary risk of using third-party AI APIs for sensitive data?",
+      options: ["They make code shorter", "Data leaves your environment and may be retained", "They improve SEO", "They guarantee zero latency"],
+      correct: 1,
+      explanation: "Third-party APIs often process data on external infrastructure, creating privacy, compliance, and retention risks."
+    },
+    {
+      q: "In responsible AI deployment, 'human-in-the-loop' means:",
+      options: ["Humans write all code", "Humans review or approve high-stakes AI outputs", "Humans replace the model", "Humans provide electricity"],
+      correct: 1,
+      explanation: "Human-in-the-loop keeps a person involved in decisions where errors could cause significant harm."
+    },
+    {
+      q: "Which of these is an example of an indirect prompt-injection vector?",
+      options: ["A user typing into a chat box", "A malicious instruction hidden in a web page fetched by the model", "A slow GPU", "A misspelled word"],
+      correct: 1,
+      explanation: "Indirect prompt injection hides instructions in data the model retrieves, such as web pages or documents."
+    },
+    {
+      q: "Why is input validation important before sending data to an LLM?",
+      options: ["It makes prompts shorter", "It reduces cost and blocks obvious attacks", "It improves grammar", "It is required by all browsers"],
+      correct: 1,
+      explanation: "Validation can reject oversized, malformed, or malicious inputs that could trigger abuses or increase cost."
+    },
+    {
+      q: "What should you do first when an AI system produces harmful output in production?",
+      options: ["Delete the model file", "Document, roll back or disable, then investigate", "Post it on social media", "Increase the temperature"],
+      correct: 1,
+      explanation: "The first priority is stopping further harm, then investigating root cause with proper logging and incident response."
+    }
+  ];
+
+  const app = document.getElementById('quiz-app');
+  let current = 0;
+  let answers = [];
+  let submitted = false;
+
+  function renderStart() {
+    app.innerHTML = `
+      <div class="start-screen">
+        <h2 style="font-family:var(--font-heading);font-size:1.6rem;margin-bottom:12px;">Ready?</h2>
+        <p style="color:var(--muted);margin-bottom:24px;">${questions.length} questions · Instant feedback · No account needed</p>
+        <button class="btn btn-primary" id="btn-start" style="min-width:160px;">Start quiz</button>
+      </div>
+    `;
+    document.getElementById('btn-start').addEventListener('click', () => { current = 0; answers = []; submitted = false; renderQuestion(); });
+  }
+
+  function renderQuestion() {
+    const q = questions[current];
+    const progress = ((current + 1) / questions.length) * 100;
+    const selected = answers[current];
+    app.innerHTML = `
+      <div class="progress-bar"><div class="progress-fill" style="width:${progress}%"></div></div>
+      <div class="progress-text">Question ${current + 1} of ${questions.length}</div>
+      <div class="question-number">Question ${current + 1}</div>
+      <div class="question-text">${escapeHtml(q.q)}</div>
+      <div class="options">
+        ${q.options.map((opt, i) => `
+          <button class="option ${selected === i ? 'selected' : ''}" data-index="${i}" aria-label="Option ${String.fromCharCode(65+i)}">
+            <span class="opt-radio"></span>
+            <span class="opt-text">${escapeHtml(opt)}</span>
+          </button>
+        `).join('')}
+      </div>
+      <div class="quiz-nav">
+        <button class="btn btn-secondary" id="btn-prev" ${current === 0 ? 'disabled' : ''}>Previous</button>
+        <button class="btn btn-primary" id="btn-next" ${typeof selected !== 'number' ? 'disabled' : ''}>${current === questions.length - 1 ? 'Finish' : 'Next'}</button>
+      </div>
+    `;
+    app.querySelectorAll('.option').forEach(btn => {
+      btn.addEventListener('click', () => {
+        answers[current] = parseInt(btn.dataset.index);
+        renderQuestion();
+      });
+    });
+    document.getElementById('btn-prev').addEventListener('click', () => { if (current > 0) { current--; renderQuestion(); } });
+    document.getElementById('btn-next').addEventListener('click', () => {
+      if (current < questions.length - 1) { current++; renderQuestion(); }
+      else { renderResults(); }
+    });
+  }
+
+  function renderResults() {
+    let correct = 0;
+    questions.forEach((q, i) => { if (answers[i] === q.correct) correct++; });
+    const score = Math.round((correct / questions.length) * 100);
+    app.innerHTML = `
+      <div class="results-card">
+        <div class="score-label">Your Score</div>
+        <div class="score-display">${score}%</div>
+        <p style="color:var(--muted);margin-bottom:24px;">${correct} of ${questions.length} correct</p>
+        <button class="btn btn-primary" id="btn-retry" style="min-width:160px;">Try again</button>
+      </div>
+      <h3 style="font-family:var(--font-heading);font-size:1.2rem;margin-bottom:16px;">Answer breakdown</h3>
+      ${questions.map((q, i) => `
+        <div class="breakdown-item ${answers[i] === q.correct ? 'correct' : 'incorrect'}">
+          <div style="font-weight:600;margin-bottom:6px;">${i + 1}. ${escapeHtml(q.q)}</div>
+          <div style="color:var(--muted);font-size:0.9rem;margin-bottom:6px;">
+            Your answer: ${answers[i] != null ? escapeHtml(q.options[answers[i]]) : '<em>Skipped</em>'} ·
+            Correct: ${escapeHtml(q.options[q.correct])}
+          </div>
+          <div style="font-size:0.9rem;line-height:1.5;">${escapeHtml(q.explanation)}</div>
+        </div>
+      `).join('')}
+    `;
+    document.getElementById('btn-retry').addEventListener('click', renderStart);
+  }
+
+  function escapeHtml(t) {
+    if (!t) return '';
+    const d = document.createElement('div'); d.textContent = t; return d.innerHTML;
+  }
+
+  renderStart();
+})();
+</script>
+</body>
+</html>
