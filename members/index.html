@@ -113,11 +113,11 @@ async function ask(e) {
 
     // Latest blog post
     try {
-      const blogRes = await api('/blog?limit=1');
+      const blogRes = await api('/posts?limit=1');
       const latestPost = document.getElementById('latest-post');
       if (blogRes.ok && blogRes.data && blogRes.data.length > 0) {
         const post = blogRes.data[0];
-        latestPost.innerHTML = `<strong>${escapeHtml(post.title)}</strong><br><span style="color:var(--muted);font-size:0.9rem;">${escapeHtml(post.excerpt || post.description || '')}</span>`;
+        latestPost.innerHTML = `<strong>${escapeHtml(post.title)}</strong><br><span style="color:var(--muted);font-size:0.9rem;">${escapeHtml(post.summary || post.excerpt || post.description || '')}</span>`;
       } else {
         latestPost.innerHTML = '<span style="color:var(--muted)">No blog posts yet.</span>';
       }
