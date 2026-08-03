@@ -182,7 +182,7 @@ col+=vec3(.3,.9,.75)*max(rip,0.)*.5;col+=vec3(.45,.4,1.)*exp(-d*9.)*u_mstr*.22;f
   const _seenLoader = sessionStorage.getItem('v4_loader_seen');
   const loader = document.createElement('div');
   loader.id = 'v4-loader';
-  loader.innerHTML = '<img src="/assets/logo-gate.png" alt="" onerror="this.style.display=\'none\'"><div class="l-label">Initializing neural field</div><div class="l-count">0</div><div class="l-bar"><i></i></div>';
+  loader.innerHTML = '<img src="/assets/logo-gate.png" alt="42 Berlin AI Club" onerror="this.style.display=\'none\'"><div class="l-label">Initializing neural field</div><div class="l-count">0</div><div class="l-bar"><i></i></div>';
   if (_seenLoader) { loader.remove(); }
   else {
   sessionStorage.setItem('v4_loader_seen', '1');
