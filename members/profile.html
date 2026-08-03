@@ -17,7 +17,7 @@
 <body>
   <header class="member-header">
     <div class="container member-header-inner">
-      <a href="/members/index.html" class="logo" aria-label="Dashboard">
+      <a href="/ai-club/members/index.html" class="logo" aria-label="Dashboard">
         <img src="/assets/logo-gate.png" alt="42 Berlin AI Club" style="height:32px;width:auto;border-radius:8px;">
         <span style="margin-left:10px;font-family:var(--font-d);font-size:18px;letter-spacing:-.02em;color:var(--text)">42 Berlin AI Club</span>
       </a>
@@ -28,7 +28,9 @@
     </div>
   </header>
 
-<main class="member-main">
+<div class="container member-layout">
+    <nav class="member-nav"></nav>
+    <main class="member-main">
 
       <h1 class="page-title animate-on-scroll">Your Profile</h1>
       <p class="page-subtitle animate-on-scroll">Manage your account and password.</p>
@@ -89,6 +91,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 </script>
     </main>
+</div>
 
 
 <button id="orb" class="orb" aria-label="Open Synapse AI agent" onclick="toggle()">
