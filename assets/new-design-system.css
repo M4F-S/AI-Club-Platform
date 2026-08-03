@@ -478,3 +478,25 @@ footer{position:relative;z-index:3;padding:80px clamp(20px,6vw,80px) 46px;text-a
 .h2-like { font-family: var(--font-d); font-size: clamp(28px, 4vw, 48px); font-weight: 600; line-height: 1.1; }
 .h3-like { font-family: var(--font-d); font-size: clamp(20px, 2.5vw, 28px); font-weight: 600; }
 .success-badge { color: var(--mint); }
+
+
+/* ============ COMPATIBILITY: Old form CSS variables ============ */
+/* These support login, become-member, become-partner, admin, reset-password forms */
+:root {
+  --color-surface: rgba(18, 16, 43, 0.55);
+  --color-bg: rgba(11, 10, 30, 0.6);
+  --color-accent: #7C6CFF;
+  --color-secondary: #4DE3C1;
+  --border: rgba(124, 108, 255, 0.18);
+  --radius: 16px;
+  --radius-sm: 10px;
+  --font-heading: Clash Display, Space Grotesk, system-ui, sans-serif;
+  --shadow: 0 4px 24px rgba(0,0,0,0.3);
+  --shadow-lg: 0 8px 40px rgba(0,0,0,0.5);
+  --color-error: #ff5a6e;
+  --color-error-bg: rgba(255, 90, 110, 0.1);
+  --color-success: #4DE3C1;
+  --color-success-bg: rgba(77, 227, 193, 0.1);
+  --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+}
