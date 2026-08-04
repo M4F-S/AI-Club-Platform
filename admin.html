@@ -875,6 +875,24 @@ async function ask(e) {
     const { ok } = await api('/admin/applications?status=pending');
     if (ok) { loginCard.style.display = 'none'; adminPanel.style.display = 'block'; loadApplications(); }
   })();
+
+  // Expose handlers globally so inline onclick= attributes can reach them
+  window.approve = approve;
+  window.reject = reject;
+  window.promoteMember = promoteMember;
+  window.demoteMember = demoteMember;
+  window.deleteMember = deleteMember;
+  window.deletePartnerInquiry = deletePartnerInquiry;
+  window.createEvent = createEvent;
+  window.deleteEvent = deleteEvent;
+  window.showCreateEventForm = showCreateEventForm;
+  window.hideCreateEventForm = hideCreateEventForm;
+  window.toggleMaterialReveal = toggleMaterialReveal;
+  window.deleteMaterial = deleteMaterial;
+  window.uploadSlide = uploadSlide;
+  window.uploadQuiz = uploadQuiz;
+  window.uploadFile = uploadFile;
+  window.uploadVideo = uploadVideo;
 })();
 </script>
 <script>setTimeout(function(){ document.body.classList.add("loaded"); }, 5000);</script>
