@@ -122,11 +122,11 @@
 <div id="ticker">
   <div class="ticker-track" id="ticker-track">
     <div class="tick"><span class="live"><i></i>Network live</span><span class="sep">◆</span></div>
-    <div class="tick">Next event <b>Prompt Engineering Lab — Thu 18:00</b><span class="sep">◆</span></div>
-    <div class="tick">Members <b data-count="142">0</b><span class="sep">◆</span></div>
-    <div class="tick">Projects shipped <b data-count="27">0</b><span class="sep">◆</span></div>
-    <div class="tick">Workshop hours <b data-count="140">0</b><span class="sep">◆</span></div>
-    <div class="tick">Guest talks this semester <b data-count="6">0</b><span class="sep">◆</span></div>
+    <div class="tick">Next event <b data-ticker="next-event">Loading…</b><span class="sep">◆</span></div>
+    <div class="tick">Members <b data-count="0">0</b><span class="sep">◆</span></div>
+    <div class="tick">Projects shipped <b data-count="0">0</b><span class="sep">◆</span></div>
+    <div class="tick">Workshop hours <b data-count="0">0</b><span class="sep">◆</span></div>
+    <div class="tick">Guest talks this semester <b data-count="0">0</b><span class="sep">◆</span></div>
   </div>
 </div>
 
@@ -217,31 +217,10 @@
       <div class="tl-items">
         <div class="tl-item hot" data-hover>
           <span class="tl-dot"></span>
-          <div class="tl-date">Thu · 18:00</div>
-          <h3>Prompt Engineering Lab</h3>
-          <p>Live teardown of real prompts — bring your worst, leave with your best.</p>
-          <span class="tl-chip">In 2 days · 14 seats left</span>
-        </div>
-        <div class="tl-item" data-hover>
-          <span class="tl-dot"></span>
-          <div class="tl-date">Next Tue · 17:30</div>
-          <h3>Build Night: RAG Bots</h3>
-          <p>Teams ship a mini retrieval bot in two hours. Beginners paired with peers.</p>
-          <span class="tl-chip">Team event</span>
-        </div>
-        <div class="tl-item" data-hover>
-          <span class="tl-dot"></span>
-          <div class="tl-date">Feb 12 · 19:00</div>
-          <h3>Talk: AI Safety in Practice</h3>
-          <p>Guest session on evaluation, red-teaming, and responsible deployment.</p>
-          <span class="tl-chip">Guest speaker</span>
-        </div>
-        <div class="tl-item" data-hover>
-          <span class="tl-dot"></span>
-          <div class="tl-date">Feb 20 · 18:00</div>
-          <h3>Demo Night #7</h3>
-          <p>Members show what they built. Five minutes per project, honest feedback.</p>
-          <span class="tl-chip">Open stage</span>
+          <div class="tl-date">Loading…</div>
+          <h3>Fetching upcoming events</h3>
+          <p>Pulling the latest signals from the network.</p>
+          <span class="tl-chip">Loading</span>
         </div>
       </div>
     </div>
@@ -1328,24 +1307,39 @@ void main(){
     });
   }
 
-  /* ---- events timeline ---- */
-  const events = await j('/api/events');
-  if (events && events.length && document.querySelector('.tl-items')) {
-    const fmt = (iso) => {
-      if (!iso) return 'TBA';
-      const d = new Date(iso);
-      return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) + ' · ' +
-             d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
-    };
+  /* ---- events timeline (with retry for cold API) ---- */
+  const fmt = (iso) => {
+    if (!iso) return 'TBA';
+    const d = new Date(iso);
+    return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) + ' · ' +
+           d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+  };
+  async function loadTimeline() {
+    const events = await j('/api/events');
     const wrap = document.querySelector('.tl-items');
-    wrap.innerHTML = events.slice(0, 4).map((e, i) => `
-      <div class="tl-item ${i === 0 ? 'hot' : ''}" data-hover style="cursor:pointer" onclick="openWorkshop(${e.id})">
-        <span class="tl-dot"></span>
-        <div class="tl-date">${fmt(e.event_date)}</div>
-        <h3>${e.title || 'Event'}</h3>
-        <p>${(e.description || '').slice(0, 90)}${(e.description || '').length > 90 ? '…' : ''}</p>
-        <span class="tl-chip">${e.event_type || 'event'}</span>
-      </div>`).join('');
+    if (events && events.length && wrap) {
+      wrap.innerHTML = events.slice(0, 4).map((e, i) => `
+        <div class="tl-item ${i === 0 ? 'hot' : ''}" data-hover style="cursor:pointer" onclick="openWorkshop(${e.id})">
+          <span class="tl-dot"></span>
+          <div class="tl-date">${fmt(e.event_date)}</div>
+          <h3>${e.title || 'Event'}</h3>
+          <p>${(e.description || '').slice(0, 90)}${(e.description || '').length > 90 ? '…' : ''}</p>
+          <span class="tl-chip">${e.event_type || 'event'}</span>
+        </div>`).join('');
+      // dynamic next-event ticker (all loop copies)
+      const next = events.find(e => !e.event_date || new Date(e.event_date) >= new Date()) || events[0];
+      document.querySelectorAll('[data-ticker="next-event"]').forEach(el => {
+        el.textContent = next
+          ? (next.title || 'Next event') + ' — ' + fmt(next.event_date)
+          : 'Check back soon';
+      });
+      return true;
+    }
+    return false;
+  }
+  if (!(await loadTimeline())) {
+    // API cold or slow — retry after 2s so the page never shows stale placeholders
+    setTimeout(async () => { await loadTimeline(); }, 2000);
   }
 
   /* ---- projects constellation <- resources ---- */
