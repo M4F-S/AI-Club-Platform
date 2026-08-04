@@ -439,6 +439,444 @@ async function ask(e) {
   }
 })();
 </script>
+<script>window.lucide={createIcons:function(){}};</script>
+<script>
+(function(){
+  const API_URL = '/api';
+  let currentStatus = 'pending';
+  let currentView = 'applications';
+  const loginCard = document.getElementById('login-card');
+  const adminPanel = document.getElementById('admin-panel');
+  const loginAlert = document.getElementById('login-alert');
+  const adminAlert = document.getElementById('admin-alert');
+
+  async function api(path, options = {}) {
+    const res = await fetch(`${API_URL}${path}`, {
+      ...options,
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json', ...options.headers }
+    });
+    const data = await res.json().catch(() => ({}));
+    return { ok: res.ok, status: res.status, data };
+  }
+
+  document.getElementById('admin-login-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    loginAlert.className = 'alert';
+    const identifier = e.target.identifier.value.trim();
+    const payload = identifier.includes('@')
+      ? { email: identifier, password: e.target.password.value }
+      : { username: identifier, password: e.target.password.value };
+    const { ok, data } = await api('/member/login', { method: 'POST', body: JSON.stringify(payload) });
+    if (ok) {
+      loginCard.style.display = 'none';
+      adminPanel.style.display = 'block';
+      loadApplications();
+    } else {
+      loginAlert.className = 'alert show error';
+      loginAlert.textContent = data.error || 'Invalid password';
+    }
+  });
+
+  document.getElementById('logout-btn').addEventListener('click', async () => {
+    await api('/member/logout', { method: 'POST' });
+    loginCard.style.display = 'block';
+    adminPanel.style.display = 'none';
+  });
+
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      const appList = document.getElementById('applications-list');
+      const memberList = document.getElementById('members-list');
+      const partnerList = document.getElementById('partners-list');
+      const eventsList = document.getElementById('events-list');
+      if (tab.dataset.view === 'members') {
+        currentView = 'members';
+        appList.style.display = 'none'; memberList.style.display = 'block';
+        partnerList.style.display = 'none'; eventsList.style.display = 'none';
+        loadMembers();
+      } else if (tab.dataset.view === 'partners') {
+        currentView = 'partners';
+        appList.style.display = 'none'; memberList.style.display = 'none';
+        partnerList.style.display = 'block'; eventsList.style.display = 'none';
+        loadPartners();
+      } else if (tab.dataset.view === 'events') {
+        currentView = 'events';
+        appList.style.display = 'none'; memberList.style.display = 'none';
+        partnerList.style.display = 'none'; eventsList.style.display = 'block';
+        loadEvents();
+      } else {
+        currentView = 'applications';
+        currentStatus = tab.dataset.status;
+        memberList.style.display = 'none'; partnerList.style.display = 'none';
+        eventsList.style.display = 'none'; appList.style.display = 'block';
+        loadApplications();
+      }
+    });
+  });
+
+  async function loadApplications() {
+    const list = document.getElementById('applications-list');
+    list.innerHTML = '<div class="empty">Loading...</div>';
+    const { ok, data } = await api(`/admin/applications?status=${currentStatus}`);
+    if (!ok) { list.innerHTML = `<div class="empty">Failed to load applications: ${escapeHtml(data.error)}</div>`; return; }
+    if (data.length === 0) { list.innerHTML = `<div class="empty">No ${currentStatus} applications.</div>`; return; }
+    list.innerHTML = data.map(app => `
+      <div class="application-card">
+        <h3>${escapeHtml(app.name)}</h3>
+        <div class="meta">Applied ${new Date(app.created_at).toLocaleString()}</div>
+        <div class="field"><strong>Intra username</strong> ${escapeHtml(app.intra_username)}</div>
+        <div class="field"><strong>Email</strong> ${escapeHtml(app.email)}</div>
+        <div class="field"><strong>Level</strong> ${escapeHtml(app.level || 'Not specified')}</div>
+        <div class="field"><strong>Message</strong> ${escapeHtml(app.message || 'No message')}</div>
+        ${currentStatus === 'pending' ? `
+          <div class="actions">
+            <button class="admin-btn admin-btn-success" onclick="approve(${app.id})">Approve & create account</button>
+            <button class="admin-btn admin-btn-danger" onclick="reject(${app.id})">Reject</button>
+          </div>` : ''}
+      </div>`).join('');
+  }
+
+  async function approve(id) {
+    if (!confirm('Approve this application and create a member account?')) return;
+    adminAlert.className = 'alert';
+    const { ok, data } = await api('/admin/approve', { method: 'POST', body: JSON.stringify({ application_id: id }) });
+    adminAlert.className = `alert show ${ok ? 'success' : 'error'}`;
+    adminAlert.textContent = ok ? `Approved! Temporary password: ${data.temp_password}` : (data.error || 'Failed to approve');
+    if (ok) loadApplications();
+  }
+
+  async function reject(id) {
+    if (!confirm('Reject this application?')) return;
+    adminAlert.className = 'alert';
+    const { ok, data } = await api('/admin/reject', { method: 'POST', body: JSON.stringify({ application_id: id }) });
+    adminAlert.className = `alert show ${ok ? 'success' : 'error'}`;
+    adminAlert.textContent = ok ? 'Application rejected' : (data.error || 'Failed to reject');
+    if (ok) loadApplications();
+  }
+
+  async function loadMembers() {
+    const list = document.getElementById('members-list');
+    list.innerHTML = '<div class="empty">Loading members...</div>';
+    const { ok, data } = await api('/admin/members');
+    if (!ok) { list.innerHTML = `<div class="empty">Failed to load members: ${escapeHtml(data.error)}</div>`; return; }
+    if (data.length === 0) { list.innerHTML = '<div class="empty">No members found.</div>'; return; }
+    list.innerHTML = data.map(member => {
+      const roleClass = member.role === 'superadmin' ? 'role-superadmin' : (member.role === 'admin' ? 'role-admin' : 'role-member');
+      const canPromote = member.role === 'member';
+      const canDemote = member.role === 'admin';
+      const isSuper = member.role === 'superadmin';
+      return `
+        <div class="member-card">
+          <div class="info">
+            <h3>${escapeHtml(member.name)}</h3>
+            <div class="field"><strong>Email</strong> ${escapeHtml(member.email)}</div>
+            <div class="field"><strong>Intra</strong> ${escapeHtml(member.intra_username || 'N/A')}</div>
+            <span class="role ${roleClass}">${member.role}</span>
+          </div>
+          <div class="actions">
+            ${canPromote ? `<button class="admin-btn admin-btn-success" onclick="promoteMember(${member.id})">Promote to admin</button>` : ''}
+            ${canDemote ? `<button class="admin-btn admin-btn-danger" onclick="demoteMember(${member.id})">Demote to member</button>` : ''}
+            ${!isSuper ? `<button class="admin-btn admin-btn-danger" onclick="deleteMember(${member.id})">Delete</button>` : ''}
+            ${isSuper ? '<span style="color:var(--text-muted);font-size:0.9rem;">Superadmin</span>' : ''}
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  async function promoteMember(id) {
+    if (!confirm('Promote this member to admin?')) return;
+    adminAlert.className = 'alert';
+    const { ok, data } = await api('/admin/promote', { method: 'POST', body: JSON.stringify({ user_id: id }) });
+    adminAlert.className = `alert show ${ok ? 'success' : 'error'}`;
+    adminAlert.textContent = ok ? 'Member promoted to admin.' : (data.error || 'Failed to promote');
+    if (ok) loadMembers();
+  }
+
+  async function demoteMember(id) {
+    if (!confirm('Demote this admin to regular member?')) return;
+    adminAlert.className = 'alert';
+    const { ok, data } = await api('/admin/demote', { method: 'POST', body: JSON.stringify({ user_id: id }) });
+    adminAlert.className = `alert show ${ok ? 'success' : 'error'}`;
+    adminAlert.textContent = ok ? 'Admin demoted to member.' : (data.error || 'Failed to demote');
+    if (ok) loadMembers();
+  }
+
+  async function loadPartners() {
+    const list = document.getElementById('partners-list');
+    list.innerHTML = '<div class="empty">Loading partner inquiries...</div>';
+    const { ok, data } = await api('/admin/partner-inquiries');
+    if (!ok) { list.innerHTML = `<div class="empty">Failed to load partner inquiries: ${escapeHtml(data.error)}</div>`; return; }
+    if (data.length === 0) { list.innerHTML = '<div class="empty">No partner inquiries.</div>'; return; }
+    list.innerHTML = data.map(inq => `
+      <div class="application-card">
+        <h3>${escapeHtml(inq.organization)}</h3>
+        <div class="meta">Submitted ${new Date(inq.created_at).toLocaleString()}</div>
+        <div class="field"><strong>Contact</strong> ${escapeHtml(inq.contact_name)}</div>
+        <div class="field"><strong>Email</strong> ${escapeHtml(inq.email)}</div>
+        <div class="field"><strong>Type</strong> ${escapeHtml(inq.partnership_type)}</div>
+        <div class="field"><strong>Message</strong> ${escapeHtml(inq.message || 'No message')}</div>
+        <div class="actions">
+          <button class="admin-btn admin-btn-danger" onclick="deletePartnerInquiry(${inq.id})">Delete</button>
+        </div>
+      </div>`).join('');
+  }
+
+  async function loadEvents() {
+    const list = document.getElementById('events-list');
+    list.innerHTML = '<div class="empty">Loading events...</div>';
+    const { ok, data } = await api('/admin/events');
+    if (!ok) { list.innerHTML = `<div class="empty">Failed to load events: ${escapeHtml(data.error)}</div>`; return; }
+    let html = `
+      <div class="toolbar" style="margin-bottom: 24px;">
+        <button class="admin-btn admin-btn-primary" onclick="showCreateEventForm()">+ Create Event</button>
+      </div>
+      <div id="create-event-form" style="display:none; margin-bottom: 24px;">
+        <div class="application-card">
+          <h3>Create New Event</h3>
+          <div class="form-group" style="margin-top: 12px;">
+            <input type="text" id="event-title" placeholder="Event title" style="width: 100%; margin-bottom: 10px;">
+            <input type="text" id="event-slug" placeholder="URL slug (e.g. defensible-ai)" style="width: 100%; margin-bottom: 10px;">
+            <textarea id="event-description" placeholder="Description" style="width: 100%; margin-bottom: 10px; min-height: 60px;"></textarea>
+            <input type="datetime-local" id="event-date" style="width: 100%; margin-bottom: 10px;">
+            <input type="text" id="event-location" placeholder="Location" style="width: 100%; margin-bottom: 10px;">
+            <select id="event-type" style="width: 100%; margin-bottom: 10px;">
+              <option value="workshop">Workshop</option>
+              <option value="talk">Talk</option>
+              <option value="meetup">Meetup</option>
+            </select>
+            <label style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
+              <input type="checkbox" id="event-public" checked> Public event
+            </label>
+            <div class="actions">
+              <button class="admin-btn admin-btn-success" onclick="createEvent()">Create</button>
+              <button class="admin-btn admin-btn-secondary" onclick="hideCreateEventForm()">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </div>`;
+    if (data.length === 0) { html += '<div class="empty">No events yet. Create one above.</div>'; }
+    else {
+      html += data.map(event => `
+        <div class="application-card" style="margin-bottom: 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px;">
+            <div>
+              <h3>${escapeHtml(event.title)}</h3>
+              <div class="meta">${event.event_date ? new Date(event.event_date).toLocaleString() : 'Date TBD'} ${event.location ? '· ' + escapeHtml(event.location) : ''} · ${event.event_type} · ${event.is_public ? 'Public' : 'Members-only'}</div>
+              <div class="field"><strong>Slug</strong> ${escapeHtml(event.slug || 'N/A')}</div>
+              <div class="field"><strong>Description</strong> ${escapeHtml(event.description || 'No description')}</div>
+            </div>
+            <div class="actions">
+              <button class="admin-btn admin-btn-danger" onclick="deleteEvent(${event.id})">Delete</button>
+            </div>
+          </div>
+          <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <strong>Materials</strong>
+              <span class="meta" id="material-count-${event.id}">Loading...</span>
+            </div>
+            <div id="materials-${event.id}"></div>
+            <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border);">
+              <strong>Add Materials</strong>
+              <div style="margin-top: 12px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+                <div style="background: var(--color-bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px;">
+                  <div style="font-weight: 600; font-size: 0.9rem; margin-bottom: 8px;">Slides</div>
+                  <input type="file" id="upload-slide-${event.id}" accept="image/*" multiple style="width: 100%; font-size: 0.85rem; margin-bottom: 8px;">
+                  <input type="text" id="upload-slide-title-${event.id}" placeholder="Title (optional)" style="width: 100%; margin-bottom: 8px; font-size: 0.85rem;">
+                  <input type="number" id="upload-slide-sort-${event.id}" value="0" placeholder="Order" style="width: 100%; margin-bottom: 8px; font-size: 0.85rem;">
+                  <button class="admin-btn admin-btn-primary" style="width: 100%; font-size: 0.85rem;" onclick="uploadSlide(${event.id})">Upload Slide(s)</button>
+                </div>
+                <div style="background: var(--color-bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px;">
+                  <div style="font-weight: 600; font-size: 0.9rem; margin-bottom: 8px;">Quiz</div>
+                  <input type="file" id="upload-quiz-${event.id}" accept=".html,.json" style="width: 100%; font-size: 0.85rem; margin-bottom: 8px;">
+                  <input type="text" id="upload-quiz-title-${event.id}" placeholder="Quiz title" style="width: 100%; margin-bottom: 8px; font-size: 0.85rem;">
+                  <input type="number" id="upload-quiz-sort-${event.id}" value="0" placeholder="Order" style="width: 100%; margin-bottom: 8px; font-size: 0.85rem;">
+                  <button class="admin-btn admin-btn-primary" style="width: 100%; font-size: 0.85rem;" onclick="uploadQuiz(${event.id})">Upload Quiz</button>
+                </div>
+                <div style="background: var(--color-bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px;">
+                  <div style="font-weight: 600; font-size: 0.9rem; margin-bottom: 8px;">Files</div>
+                  <input type="file" id="upload-file-${event.id}" style="width: 100%; font-size: 0.85rem; margin-bottom: 8px;">
+                  <input type="text" id="upload-file-title-${event.id}" placeholder="File title" style="width: 100%; margin-bottom: 8px; font-size: 0.85rem;">
+                  <input type="number" id="upload-file-sort-${event.id}" value="0" placeholder="Order" style="width: 100%; margin-bottom: 8px; font-size: 0.85rem;">
+                  <button class="admin-btn admin-btn-primary" style="width: 100%; font-size: 0.85rem;" onclick="uploadFile(${event.id})">Upload File</button>
+                  <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border);">
+                    <input type="url" id="upload-video-${event.id}" placeholder="Video URL (YouTube/Vimeo/embed)" style="width: 100%; margin-bottom: 8px; font-size: 0.85rem;">
+                    <input type="text" id="upload-video-title-${event.id}" placeholder="Video title (optional)" style="width: 100%; margin-bottom: 8px; font-size: 0.85rem;">
+                    <button class="admin-btn admin-btn-primary" style="width: 100%; font-size: 0.85rem;" onclick="uploadVideo(${event.id})">Add Video</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>`).join('');
+    }
+    list.innerHTML = html;
+    if (data.length > 0) { for (const event of data) loadEventMaterials(event.id); }
+  }
+
+  function showCreateEventForm() { document.getElementById('create-event-form').style.display = 'block'; }
+  function hideCreateEventForm() {
+    document.getElementById('create-event-form').style.display = 'none';
+    document.getElementById('event-title').value = '';
+    document.getElementById('event-slug').value = '';
+    document.getElementById('event-description').value = '';
+    document.getElementById('event-date').value = '';
+    document.getElementById('event-location').value = '';
+  }
+
+  async function createEvent() {
+    adminAlert.className = 'alert';
+    const title = document.getElementById('event-title').value.trim();
+    const slug = document.getElementById('event-slug').value.trim().toLowerCase();
+    const description = document.getElementById('event-description').value.trim();
+    const eventDate = document.getElementById('event-date').value;
+    const location = document.getElementById('event-location').value.trim();
+    const eventType = document.getElementById('event-type').value;
+    const isPublic = document.getElementById('event-public').checked;
+    if (!title) { adminAlert.className = 'alert show error'; adminAlert.textContent = 'Title is required'; return; }
+    const payload = { title, slug: slug || undefined, description, event_date: eventDate ? new Date(eventDate).toISOString() : undefined, location, event_type: eventType, is_public: isPublic };
+    const { ok, data } = await api('/admin/events', { method: 'POST', body: JSON.stringify(payload) });
+    adminAlert.className = `alert show ${ok ? 'success' : 'error'}`;
+    adminAlert.textContent = ok ? 'Event created!' : (data.error || 'Failed to create event');
+    if (ok) { hideCreateEventForm(); loadEvents(); }
+  }
+
+  async function deleteEvent(id) {
+    if (!confirm('Delete this event and all its materials? This cannot be undone.')) return;
+    adminAlert.className = 'alert';
+    const { ok, data } = await api('/admin/events/' + id, { method: 'DELETE' });
+    adminAlert.className = `alert show ${ok ? 'success' : 'error'}`;
+    adminAlert.textContent = ok ? 'Event deleted.' : (data.error || 'Failed to delete event');
+    if (ok) loadEvents();
+  }
+
+  async function loadEventMaterials(eventId) {
+    const container = document.getElementById('materials-' + eventId);
+    const countEl = document.getElementById('material-count-' + eventId);
+    if (!container) return;
+    const { ok, data } = await api('/admin/events/' + eventId + '/materials');
+    if (!ok) { container.innerHTML = '<div class="empty">Failed to load materials</div>'; if (countEl) countEl.textContent = 'Error'; return; }
+    if (countEl) countEl.textContent = data.length + ' material(s)';
+    if (data.length === 0) { container.innerHTML = '<div class="empty" style="padding: 16px;">No materials uploaded.</div>'; return; }
+    container.innerHTML = data.map(m => `
+      <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: var(--color-bg); border-radius: 8px; margin-bottom: 8px;">
+        <div>
+          <strong>${escapeHtml(m.title)}</strong>
+          <span class="meta" style="margin-left: 8px;">${m.file_type} · ${m.is_revealed ? 'Revealed' : 'Hidden'}</span>
+        </div>
+        <div class="actions">
+          <button class="admin-btn ${m.is_revealed ? 'admin-btn-secondary' : 'admin-btn-success'}" onclick="toggleMaterialReveal(${eventId}, ${m.id})" style="font-size: 0.85rem; padding: 6px 12px;">${m.is_revealed ? 'Hide' : 'Reveal'}</button>
+          <button class="admin-btn admin-btn-danger" onclick="deleteMaterial(${eventId}, ${m.id})" style="font-size: 0.85rem; padding: 6px 12px;">Delete</button>
+        </div>
+      </div>`).join('');
+  }
+
+  async function toggleMaterialReveal(eventId, materialId) {
+    adminAlert.className = 'alert';
+    const { ok, data } = await api('/admin/events/' + eventId + '/materials/' + materialId + '/reveal', { method: 'POST' });
+    adminAlert.className = `alert show ${ok ? 'success' : 'error'}`;
+    adminAlert.textContent = ok ? (data.message || 'Toggled') : (data.error || 'Failed');
+    if (ok) loadEventMaterials(eventId);
+  }
+
+  async function deleteMaterial(eventId, materialId) {
+    if (!confirm('Delete this material? This cannot be undone.')) return;
+    adminAlert.className = 'alert';
+    const { ok, data } = await api('/admin/events/' + eventId + '/materials/' + materialId, { method: 'DELETE' });
+    adminAlert.className = `alert show ${ok ? 'success' : 'error'}`;
+    adminAlert.textContent = ok ? 'Material deleted.' : (data.error || 'Failed to delete');
+    if (ok) loadEventMaterials(eventId);
+  }
+
+  async function deleteMember(id) {
+    if (!confirm('Delete this member account? This cannot be undone.')) return;
+    adminAlert.className = 'alert';
+    const { ok, data } = await api('/admin/members/' + id, { method: 'DELETE' });
+    adminAlert.className = `alert show ${ok ? 'success' : 'error'}`;
+    adminAlert.textContent = ok ? 'Member deleted.' : (data.error || 'Failed to delete member');
+    if (ok) loadMembers();
+  }
+
+  async function deletePartnerInquiry(id) {
+    if (!confirm('Delete this partner inquiry? This cannot be undone.')) return;
+    adminAlert.className = 'alert';
+    const { ok, data } = await api('/admin/partner-inquiries/' + id, { method: 'DELETE' });
+    adminAlert.className = `alert show ${ok ? 'success' : 'error'}`;
+    adminAlert.textContent = ok ? 'Partner inquiry deleted.' : (data.error || 'Failed to delete');
+    if (ok) loadPartners();
+  }
+
+  async function uploadMaterial(eventId, fileType, fileInputId, titleInputId, sortInputId) {
+    const fileInput = document.getElementById(fileInputId);
+    const titleInput = document.getElementById(titleInputId);
+    const sortInput = document.getElementById(sortInputId);
+    if (!fileInput.files || !fileInput.files[0]) { adminAlert.className = 'alert show error'; adminAlert.textContent = 'Please select a file'; return; }
+    const formData = new FormData();
+    formData.append('file', fileInput.files[0]);
+    formData.append('title', titleInput.value || fileInput.files[0].name);
+    formData.append('file_type', fileType);
+    formData.append('sort_order', sortInput.value || 0);
+    formData.append('is_revealed', 'false');
+    const { ok, data } = await api('/admin/events/' + eventId + '/materials', { method: 'POST', body: formData });
+    adminAlert.className = `alert show ${ok ? 'success' : 'error'}`;
+    adminAlert.textContent = ok ? 'Material uploaded!' : (data.error || 'Upload failed');
+    if (ok) { fileInput.value = ''; titleInput.value = ''; loadEventMaterials(eventId); }
+  }
+
+  async function uploadSlide(eventId) {
+    const fileInput = document.getElementById('upload-slide-' + eventId);
+    const sortInput = document.getElementById('upload-slide-sort-' + eventId);
+    if (!fileInput.files || !fileInput.files.length) { adminAlert.className = 'alert show error'; adminAlert.textContent = 'Please select one or more slides'; return; }
+    const formData = new FormData();
+    for (const f of fileInput.files) formData.append('files', f);
+    formData.append('sort_order', sortInput.value || 0);
+    formData.append('is_revealed', 'false');
+    const { ok, data } = await api('/admin/events/' + eventId + '/materials', { method: 'POST', body: formData });
+    adminAlert.className = `alert show ${ok ? 'success' : 'error'}`;
+    adminAlert.textContent = ok ? (data.created ? data.created + ' slide(s) uploaded!' : 'Slide uploaded!') : (data.error || 'Upload failed');
+    if (ok) { fileInput.value = ''; document.getElementById('upload-slide-title-' + eventId).value = ''; loadEventMaterials(eventId); }
+  }
+
+  async function uploadVideo(eventId) {
+    const urlInput = document.getElementById('upload-video-' + eventId);
+    const titleInput = document.getElementById('upload-video-title-' + eventId);
+    const video_url = urlInput.value.trim();
+    if (!video_url) { adminAlert.className = 'alert show error'; adminAlert.textContent = 'Enter a video URL'; return; }
+    const { ok, data } = await api('/admin/events/' + eventId + '/materials/video', { method: 'POST', body: JSON.stringify({ video_url, title: titleInput.value.trim() || 'Workshop video', is_revealed: false }) });
+    adminAlert.className = `alert show ${ok ? 'success' : 'error'}`;
+    adminAlert.textContent = ok ? 'Video added!' : (data.error || 'Failed to add video');
+    if (ok) { urlInput.value = ''; titleInput.value = ''; loadEventMaterials(eventId); }
+  }
+
+  async function uploadQuiz(eventId) {
+    await uploadMaterial(eventId, 'quiz', 'upload-quiz-' + eventId, 'upload-quiz-title-' + eventId, 'upload-quiz-sort-' + eventId);
+  }
+
+  async function uploadFile(eventId) {
+    const fileInput = document.getElementById('upload-file-' + eventId);
+    let fileType = 'file';
+    if (fileInput.files && fileInput.files[0]) {
+      const name = fileInput.files[0].name.toLowerCase();
+      if (name.endsWith('.pdf')) fileType = 'pdf';
+    }
+    await uploadMaterial(eventId, fileType, 'upload-file-' + eventId, 'upload-file-title-' + eventId, 'upload-file-sort-' + eventId);
+  }
+
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  // If already logged in as admin, show panel directly
+  (async () => {
+    const { ok } = await api('/admin/applications?status=pending');
+    if (ok) { loginCard.style.display = 'none'; adminPanel.style.display = 'block'; loadApplications(); }
+  })();
+})();
+</script>
 <script>setTimeout(function(){ document.body.classList.add("loaded"); }, 5000);</script>
 </body>
 </html>
