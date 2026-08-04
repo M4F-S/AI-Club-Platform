@@ -81,9 +81,6 @@
     <svg viewBox="0 0 16 16" width="13" height="13" fill="none"><circle cx="8" cy="5.2" r="3" stroke="currentColor" stroke-width="1.4"/><path d="M2 14c1-3.2 3.4-4.6 6-4.6s5 1.4 6 4.6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
     <span id="nav-member-label">Members</span>
   </button>
-  <button class="nav-agent" id="nav-agent-btn" data-hover>
-    <span class="dot"></span> Synapse AI
-  </button>
 </nav>
 
 <div class="m-nav" role="navigation" aria-label="Mobile navigation">
@@ -923,7 +920,8 @@
     if (open) setTimeout(() => input.focus(), 350);
   };
   orb.addEventListener('click', () => toggle());
-  document.getElementById('nav-agent-btn').addEventListener('click', () => toggle(true));
+  const navAgentBtn = document.getElementById('nav-agent-btn');
+  if (navAgentBtn) navAgentBtn.addEventListener('click', () => toggle(true));
   addEventListener('keydown', e => {
     if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); toggle(true); }
     if (e.key === 'Escape') toggle(false);
