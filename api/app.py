@@ -242,7 +242,7 @@ def _require_admin(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         user = _current_user()
-        if not user or not user.is_active or user.role not in ("member", "admin", "superadmin"):
+        if not user or not user.is_active or user.role not in ("admin", "superadmin"):
             return jsonify({"error": "Admin access required"}), 403
         request.current_user = user
         return f(*args, **kwargs)
@@ -423,7 +423,7 @@ def admin_login():
     user = User.query.filter(
         (User.email == login) | (User.intra_username == login)
     ).first()
-    if not user or not user.is_active or user.role not in ("member", "admin", "superadmin"):
+    if not user or not user.is_active or user.role not in ("admin", "superadmin"):
         db.session.add(LoginAttempt(ip_address=ip_address, username=login, success=False))
         db.session.commit()
         _log_security_event("admin_login_failed", {"username": login})
