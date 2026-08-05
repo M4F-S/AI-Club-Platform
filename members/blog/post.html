@@ -64,8 +64,7 @@
       const p = res.data;
       document.getElementById('post-title').textContent = p.title;
       document.getElementById('post-meta').textContent = `${new Date(p.created_at).toLocaleDateString()} · ${p.author || 'Unknown'}`;
-      document.getElementById('post-content').innerHTML = p.content.replace(/
-/g, '<br>');
+      document.getElementById('post-content').innerHTML = p.content.replace(/\n/g, '<br>');
     })();
   </script>
   <script src="/assets/v4-bg.js?v=1"></script>

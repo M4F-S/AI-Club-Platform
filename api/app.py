@@ -1,8 +1,12 @@
 """42 Berlin AI Club API."""
 import re
 import os
+import io
 import uuid
 import json
+import zipfile
+import urllib.request
+import urllib.error
 import secrets
 import hashlib
 import smtplib
@@ -15,6 +19,7 @@ from flask import Flask, jsonify, request, session, g
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from werkzeug.middleware.proxy_fix import ProxyFix
+from werkzeug.utils import secure_filename
 
 from config import Config
 from models import (
@@ -41,6 +46,12 @@ def create_app():
     app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
 
     db.init_app(app)
+
+    try:
+        from flask_migrate import Migrate
+        Migrate(app, db)
+    except Exception:
+        pass  # Flask-Migrate optional at runtime
 
     limiter = Limiter(
         get_remote_address,
@@ -214,7 +225,7 @@ def _origin_ok() -> bool:
     try:
         from urllib.parse import urlparse
         parsed = urlparse(origin)
-        allowed_hosts = {"mysophia.tech", "www.mysophia.tech", "42berlinaiclub.de", "www.42berlinaiclub.de"}
+        allowed_hosts = {"mysophia.tech", "www.mysophia.tech", "42berlinaiclub.de", "www.42berlinaiclub.de", "new.42berlinaiclub.de"}
         return parsed.hostname in allowed_hosts
     except Exception:
         return False
@@ -735,9 +746,10 @@ def delete_event(event_id):
     # Delete materials first (SQLite FK is disabled, no CASCADE)
     for material in event.materials:
         import os
-        full_path = os.path.join("/app/data/materials", str(event_id), material.file_path)
-        if os.path.exists(full_path):
-            os.remove(full_path)
+        if material.file_path:  # video-only materials have no file on disk
+            full_path = os.path.join("/app/data/materials", str(event_id), material.file_path)
+            if os.path.exists(full_path):
+                os.remove(full_path)
         db.session.delete(material)
     db.session.delete(event)
     db.session.commit()
@@ -809,7 +821,7 @@ def update_event(event_id):
 # Admin event materials
 # ---------------------------------------------------------------------------
 
-ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png", "gif", "pdf", "webp", "svg"}
+ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png", "gif", "pdf", "webp", "svg", "zip", "mp4", "webm", "mov", "pptx", "key"}
 MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16 MB
 
 
@@ -825,63 +837,138 @@ def list_event_materials_admin(event_id):
     return jsonify([m.to_dict() for m in materials]), 200
 
 
-@app.post("/admin/events/<int:event_id>/materials")
-@_require_admin
-def upload_event_material(event_id):
-    event = Event.query.get_or_404(event_id)
 
-    if "file" not in request.files:
-        return jsonify({"error": "No file provided"}), 400
+def _ext_file_type(ext):
+    if ext in {"jpg", "jpeg", "png", "webp"}:
+        return "slide"
+    if ext in {"gif", "svg"}:
+        return "image"
+    if ext == "pdf":
+        return "pdf"
+    if ext in {"mp4", "webm", "mov"}:
+        return "video"
+    if ext in {"pptx", "key"}:
+        return "slides"
+    return "file"
 
-    file = request.files["file"]
-    if file.filename == "":
-        return jsonify({"error": "Empty filename"}), 400
 
-    title = (request.form.get("title") or file.filename).strip()
-    description = (request.form.get("description") or "").strip()
-    file_type = (request.form.get("file_type") or "").strip().lower()
-    sort_order = int(request.form.get("sort_order") or 0)
-    is_revealed = request.form.get("is_revealed", "false").lower() == "true"
-    is_downloadable = request.form.get("is_downloadable", "true").lower() == "true"
-
-    if not file_type:
-        ext = file.filename.rsplit(".", 1)[1].lower() if "." in file.filename else ""
-        if ext in {"jpg", "jpeg", "png", "gif", "webp", "svg"}:
-            file_type = "slide" if ext in {"jpg", "jpeg", "png", "webp"} else "image"
-        elif ext == "pdf":
-            file_type = "pdf"
-        else:
-            file_type = "file"
-
-    if not _allowed_file(file.filename):
-        return jsonify({"error": f"File type not allowed. Allowed: {', '.join(ALLOWED_EXTENSIONS)}"}), 400
-
-    # Save file
+def _save_material(event_id, fileobj, orig_name, title=None, description="",
+                   sort_order=0, is_revealed=False, is_downloadable=True, file_type=None):
+    """Persist one uploaded file as an EventMaterial. Returns the material."""
+    ext = orig_name.rsplit(".", 1)[1].lower() if "." in orig_name else ""
+    ftype = (file_type or _ext_file_type(ext)).strip().lower()
     event_dir = os.path.join("/app/data/materials", str(event_id))
     os.makedirs(event_dir, exist_ok=True)
-
-    ext = file.filename.rsplit(".", 1)[1].lower() if "." in file.filename else ""
-    filename = f"{uuid.uuid4()}.{ext}"
-    file_path = os.path.join(event_dir, filename)
-    file.save(file_path)
-
-    file_size = os.path.getsize(file_path)
-
+    filename = f"{uuid.uuid4()}.{ext}" if ext else str(uuid.uuid4())
+    full = os.path.join(event_dir, filename)
+    fileobj.save(full)
     material = EventMaterial(
         event_id=event_id,
-        title=title,
-        description=description,
+        title=(title or orig_name).strip() or orig_name,
+        description=(description or "").strip(),
         file_path=filename,
-        file_type=file_type,
-        file_size=file_size,
+        file_type=ftype,
+        file_size=os.path.getsize(full),
         sort_order=sort_order,
         is_revealed=is_revealed,
         is_downloadable=is_downloadable,
     )
     db.session.add(material)
-    db.session.commit()
+    return material
 
-    return jsonify(material.to_dict()), 201
+
+@app.post("/admin/events/<int:event_id>/materials")
+@_require_admin
+def upload_event_material(event_id):
+    event = Event.query.get_or_404(event_id)
+
+    # Accept one or many files under "file"/"files". A single .zip of slides
+    # is extracted server-side into ordered materials (sorted by filename).
+    files = request.files.getlist("files") or request.files.getlist("file")
+    files = [f for f in files if f and f.filename]
+    if not files:
+        return jsonify({"error": "No file provided"}), 400
+
+    description = (request.form.get("description") or "").strip()
+    is_revealed = request.form.get("is_revealed", "false").lower() == "true"
+    is_downloadable = request.form.get("is_downloadable", "true").lower() == "true"
+    base_order = int(request.form.get("sort_order") or 0)
+
+    created = []
+
+    # Single zip -> extract slides into ordered materials
+    if len(files) == 1 and files[0].filename.lower().endswith(".zip"):
+        zf = files[0]
+        try:
+            archive = zipfile.ZipFile(zf.stream)
+        except zipfile.BadZipFile:
+            return jsonify({"error": "Invalid zip archive"}), 400
+        names = sorted(
+            n for n in archive.namelist()
+            if not n.endswith("/") and not os.path.basename(n).startswith((".", "__MACOSX"))
+        )
+        if not names:
+            return jsonify({"error": "Zip archive is empty"}), 400
+        skipped = []
+        for i, name in enumerate(names):
+            base = os.path.basename(name)
+            if not _allowed_file(base) or base.lower().endswith(".zip"):
+                skipped.append(base)
+                continue
+            ext = base.rsplit(".", 1)[1].lower() if "." in base else ""
+            data = archive.read(name)
+            event_dir = os.path.join("/app/data/materials", str(event_id))
+            os.makedirs(event_dir, exist_ok=True)
+            filename = f"{uuid.uuid4()}.{ext}" if ext else str(uuid.uuid4())
+            with open(os.path.join(event_dir, filename), "wb") as fh:
+                fh.write(data)
+            m = EventMaterial(
+                event_id=event_id,
+                title=os.path.splitext(base)[0].replace("_", " ").replace("-", " ").strip() or base,
+                description=description,
+                file_path=filename,
+                file_type=_ext_file_type(ext),
+                file_size=len(data),
+                sort_order=base_order + i,
+                is_revealed=is_revealed,
+                is_downloadable=is_downloadable,
+            )
+            db.session.add(m)
+            created.append(m)
+        db.session.commit()
+        out = [m.to_dict() for m in created]
+        resp = {"created": len(created), "materials": out}
+        if skipped:
+            resp["skipped"] = skipped
+        return jsonify(resp), 201
+
+    # Multi-file (or single) upload
+    skipped = []
+    for i, f in enumerate(files):
+        if not _allowed_file(f.filename):
+            skipped.append(f.filename)
+            continue
+        title = (request.form.get("title") or "").strip()
+        if len(files) > 1:
+            title = ""  # fall back to per-file name for batches
+        m = _save_material(
+            event_id, f, f.filename,
+            title=title or None,
+            description=description,
+            sort_order=base_order + i,
+            is_revealed=is_revealed,
+            is_downloadable=is_downloadable,
+            file_type=(request.form.get("file_type") or "").strip().lower() or None,
+        )
+        created.append(m)
+    db.session.commit()
+    out = [m.to_dict() for m in created]
+    if len(out) == 1 and not skipped:
+        return jsonify(out[0]), 201
+    resp = {"created": len(created), "materials": out}
+    if skipped:
+        resp["skipped"] = skipped
+    return jsonify(resp), 201
 
 
 @app.put("/admin/events/<int:event_id>/materials/<int:material_id>")
@@ -892,6 +979,8 @@ def update_event_material(event_id, material_id):
     material.title = (data.get("title") or material.title).strip()
     material.description = (data.get("description") or material.description).strip()
     material.file_type = (data.get("file_type") or material.file_type).strip().lower()
+    if "video_url" in data:
+        material.video_url = (data.get("video_url") or "").strip() or None
     if "sort_order" in data:
         material.sort_order = int(data["sort_order"])
     if "is_revealed" in data:
@@ -915,9 +1004,10 @@ def toggle_material_reveal(event_id, material_id):
 @_require_admin
 def delete_event_material(event_id, material_id):
     material = EventMaterial.query.filter_by(id=material_id, event_id=event_id).first_or_404()
-    full_path = os.path.join("/app/data/materials", str(event_id), material.file_path)
-    if os.path.exists(full_path):
-        os.remove(full_path)
+    if material.file_path:  # video-only materials have no file on disk
+        full_path = os.path.join("/app/data/materials", str(event_id), material.file_path)
+        if os.path.exists(full_path):
+            os.remove(full_path)
     db.session.delete(material)
     db.session.commit()
     return jsonify({"message": "Material deleted"}), 200
@@ -970,6 +1060,9 @@ def download_event_material(event_id, material_id):
     if not material.is_downloadable:
         return jsonify({"error": "This material is not available for download"}), 403
 
+    if not material.file_path:
+        return jsonify({"error": "Video materials have no downloadable file"}), 400
+
     event_dir = os.path.join("/app/data/materials", str(event_id))
     from flask import send_from_directory
     # Images/slides: inline display (no attachment). PDFs: download (attachment).
@@ -989,12 +1082,160 @@ def view_event_material(event_id, material_id):
     if not material.is_revealed:
         return jsonify({"error": "This material is not yet available"}), 403
 
+    if not material.file_path:
+        return jsonify({"error": "Video materials have no viewable file"}), 400
+
     event_dir = os.path.join("/app/data/materials", str(event_id))
     from flask import send_from_directory
     return send_from_directory(event_dir, material.file_path, as_attachment=False)
 
 
+@app.post("/admin/events/<int:event_id>/materials/video")
+@_require_admin
+def add_video_material(event_id):
+    """Attach an externally-hosted video (YouTube/Vimeo/embed URL) as a material.
+    No file is stored — saves disk and bandwidth."""
+    Event.query.get_or_404(event_id)
+    data = request.get_json(silent=True) or {}
+    video_url = (data.get("video_url") or "").strip()
+    if not video_url or not re.match(r"^https?://", video_url):
+        return jsonify({"error": "A valid http(s) video_url is required"}), 400
+    title = (data.get("title") or "Workshop video").strip()
+    material = EventMaterial(
+        event_id=event_id,
+        title=title,
+        description=(data.get("description") or "").strip(),
+        file_path=None,
+        file_type="video",
+        file_size=None,
+        video_url=video_url,
+        sort_order=int(data.get("sort_order") or 0),
+        is_revealed=bool(data.get("is_revealed", False)),
+        is_downloadable=False,
+    )
+    db.session.add(material)
+    db.session.commit()
+    return jsonify(material.to_dict()), 201
+
+
 # ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# PageAgent gateway (OpenRouter free models, PII-sanitized, action allow-list)
+# ---------------------------------------------------------------------------
+
+AGENT_ACTIONS = {"navigate", "highlight", "answer", "read_stats", "read_events", "read_resources", "read_posts"}
+OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
+# free auto-router -> only free models; fallbacks are explicit free ids
+AGENT_MODELS = ["openrouter/free", "openai/gpt-oss-120b:free", "meta-llama/llama-3.3-70b-instruct:free"]
+
+_PII_EMAIL = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}")
+
+def _sanitize(text):
+    """Strip PII before sending to free models (never leak member data)."""
+    if not text:
+        return ""
+    text = _PII_EMAIL.sub("[email]", str(text))
+    return text[:2000]
+
+def _agent_context():
+    """Ground the agent in real club data."""
+    try:
+        stats = {
+            "members": User.query.filter_by(is_active=True).count(),
+            "workshops": Event.query.filter_by(event_type="workshop").count(),
+            "events": Event.query.filter_by(event_type="event").count(),
+        }
+        events = [{"title": e.title, "date": e.event_date.isoformat() if e.event_date else None,
+                   "type": e.event_type, "location": e.location}
+                  for e in Event.query.order_by(Event.event_date.asc()).limit(6).all()]
+        return stats, events
+    except Exception:
+        return {}, []
+
+def _call_openrouter(messages):
+    api_key = os.environ.get("OPENROUTER_API_KEY", "").strip()
+    if not api_key:
+        return None, "agent_not_configured"
+    last_err = None
+    for model in AGENT_MODELS:
+        try:
+            payload = json.dumps({"model": model, "messages": messages, "max_tokens": 400, "temperature": 0.3}).encode()
+            req = urllib.request.Request(OPENROUTER_URL, data=payload, headers={
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json",
+                "HTTP-Referer": "https://42berlinaiclub.de",
+                "X-Title": "42 Berlin AI Club Synapse",
+            })
+            with urllib.request.urlopen(req, timeout=25) as resp:
+                data = json.loads(resp.read().decode())
+            return data["choices"][0]["message"]["content"], None
+        except urllib.error.HTTPError as e:
+            last_err = f"{model}: http {e.code}"
+            continue
+        except Exception as e:
+            last_err = f"{model}: {e}"
+            continue
+    return None, last_err or "all_models_failed"
+
+@app.post("/agent")
+@limiter.limit("20 per minute")
+def agent():
+    data = request.get_json(silent=True) or {}
+    user_msg = _sanitize(data.get("message"))
+    action = (data.get("action") or "answer").strip().lower()
+    if not user_msg:
+        return jsonify({"error": "message is required"}), 400
+    if action not in AGENT_ACTIONS:
+        return jsonify({"error": "unsupported action"}), 400
+
+    stats, events = _agent_context()
+    system = (
+        "You are Synapse, the in-page AI operator for the 42 Berlin AI Club website "
+        "(a student-led, vendor-neutral AI community). Be concise, warm, and technical. "
+        "Ground answers in the provided real club data; never invent numbers or events. "
+        "You can suggest navigating to sections: mission, activities, events, projects, join, responsible. "
+        f"Live stats: {json.dumps(stats)}. Upcoming events: {json.dumps(events)}."
+    )
+    content, err = _call_openrouter([
+        {"role": "system", "content": system},
+        {"role": "user", "content": user_msg},
+    ])
+    if err == "agent_not_configured":
+        return jsonify({"error": "Agent not configured", "fallback": True}), 503
+    if err:
+        return jsonify({"error": "Agent temporarily unavailable", "fallback": True, "detail": err}), 502
+
+    # Sanity guard: free-tier models sometimes return off-topic stubs.
+    # If the reply is too short or shares no keyword with the question/data, ground it ourselves.
+    def _grounded_fallback():
+        ev_txt = "; ".join(f"{e['title']} ({e['date'] or 'date TBA'})" for e in events) or "no events scheduled yet"
+        m = stats.get("members", "?")
+        w = stats.get("workshops", "?")
+        q = user_msg.lower()
+        if any(k in q for k in ("event", "workshop", "next", "when", "schedule", "talk")):
+            return (f"Here's what's on the calendar: {ev_txt}. "
+                    f"We're {m} members strong with {w} workshops so far — "
+                    "scroll to the events timeline and click any card to open its materials and quiz.")
+        if any(k in q for k in ("join", "apply", "member", "sign up", "register")):
+            return ("Joining takes one minute: fill the four fields in the activation ring below — "
+                    "name, email, 42 login, and one honest line. The board reviews applications "
+                    "within ~48 hours and credentials arrive by email.")
+        if any(k in q for k in ("mission", "about", "purpose", "club")):
+            return ("We're a student-led, vendor-neutral AI community at 42 Berlin. The mission: "
+                    "build practical AI skills through workshops, peer learning, and projects — "
+                    "while using AI thoughtfully, ethically, and responsibly.")
+        return None
+
+    stub = (not content) or len(content.strip()) < 60
+    q_words = {w.strip(".,?!").lower() for w in user_msg.split() if len(w) > 3}
+    shared = any(w in (content or "").lower() for w in q_words)
+    if stub or not shared:
+        grounded = _grounded_fallback()
+        if grounded:
+            content = grounded
+    return jsonify({"reply": content, "action": action}), 200
+
+
 # Admin quiz questions
 # ---------------------------------------------------------------------------
 
@@ -1004,6 +1245,43 @@ def list_quiz_questions(event_id):
     Event.query.get_or_404(event_id)
     questions = QuizQuestion.query.filter_by(event_id=event_id).order_by(QuizQuestion.sort_order.asc()).all()
     return jsonify([q.to_dict(include_answer=True) for q in questions]), 200
+
+
+@app.post("/admin/events/<int:event_id>/quiz/bulk")
+@_require_admin
+def bulk_import_quiz(event_id):
+    """Bulk-import quiz questions from JSON: {"questions": [...]}.
+    Each: {question, hint?, options[4], correct_answer(int), explanation?, sort_order?}."""
+    Event.query.get_or_404(event_id)
+    data = request.get_json(silent=True) or {}
+    questions = data.get("questions")
+    if not isinstance(questions, list) or not questions:
+        return jsonify({"error": "Provide a non-empty 'questions' array"}), 400
+    created, errors = [], []
+    for i, q in enumerate(questions):
+        try:
+            text = (q.get("question") or "").strip()
+            options = q.get("options")
+            correct = q.get("correct_answer")
+            if not text or not isinstance(options, list) or len(options) < 2:
+                raise ValueError("question text and >=2 options required")
+            if not isinstance(correct, int) or not (0 <= correct < len(options)):
+                raise ValueError("correct_answer must be a valid option index")
+            qq = QuizQuestion(
+                event_id=event_id,
+                question=text,
+                hint=(q.get("hint") or "").strip() or None,
+                options_json=json.dumps(options),
+                correct_answer=correct,
+                explanation=(q.get("explanation") or "").strip() or None,
+                sort_order=int(q.get("sort_order", i)),
+            )
+            db.session.add(qq)
+            created.append(qq)
+        except Exception as e:
+            errors.append({"index": i, "error": str(e)})
+    db.session.commit()
+    return jsonify({"created": len(created), "errors": errors}), 201 if not errors else 207
 
 
 @app.post("/admin/events/<int:event_id>/quiz")
@@ -1196,6 +1474,42 @@ def member_me():
     return jsonify({"user": request.current_user.to_dict(include_email=False)}), 200
 
 
+@app.get("/member/dashboard")
+@_require_login
+def member_dashboard():
+    """Aggregate the member's activity: profile, quiz scores, and available content."""
+    user = request.current_user
+    attempts = (QuizAttempt.query.filter_by(user_id=user.id)
+                .order_by(QuizAttempt.completed_at.desc()).all())
+    quiz_history = [{
+        "event_id": a.event_id,
+        "event_title": a.event.title if a.event else None,
+        "score": a.score,
+        "completed_at": a.completed_at.isoformat() if a.completed_at else None,
+    } for a in attempts]
+
+    events = Event.query.order_by(Event.event_date.desc()).all()
+    event_list = [{
+        "id": e.id, "title": e.title, "slug": e.slug, "event_date": e.event_date.isoformat() if e.event_date else None,
+        "location": e.location, "event_type": e.event_type,
+        "materials_count": EventMaterial.query.filter_by(event_id=e.id, is_revealed=True).count(),
+        "quiz_count": QuizQuestion.query.filter_by(event_id=e.id).count(),
+        "attempted": any(a.event_id == e.id for a in attempts),
+        "best_score": max([a.score for a in attempts if a.event_id == e.id], default=None),
+    } for e in events]
+
+    return jsonify({
+        "user": user.to_dict(include_email=False),
+        "quiz_history": quiz_history,
+        "events": event_list,
+        "stats": {
+            "quizzes_taken": len(attempts),
+            "avg_score": round(sum(a.score for a in attempts) / len(attempts)) if attempts else 0,
+            "events_available": len(event_list),
+        },
+    }), 200
+
+
 @app.post("/member/change-password")
 @_require_login
 def change_password():
@@ -1289,12 +1603,14 @@ def reset_password():
 # ---------------------------------------------------------------------------
 
 @app.get("/posts")
+@limiter.exempt
 def list_posts():
     posts = BlogPost.query.filter_by(published=True).order_by(BlogPost.created_at.desc()).all()
     return jsonify([p.to_dict() for p in posts]), 200
 
 
 @app.get("/posts/<slug>")
+@limiter.exempt
 def get_post(slug):
     post = BlogPost.query.filter_by(slug=slug, published=True).first_or_404()
     return jsonify(post.to_dict()), 200
