@@ -501,3 +501,12 @@ footer{position:relative;z-index:3;padding:80px clamp(20px,6vw,80px) 46px;text-a
   --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
+
+/* Synapse agent — thinking dots */
+.ap-dots i{display:inline-block;width:5px;height:5px;margin:0 2px;border-radius:50%;background:#4DE3C1;animation:apBlink 1.2s infinite}
+.ap-dots i:nth-child(2){animation-delay:.2s}.ap-dots i:nth-child(3){animation-delay:.4s}
+@keyframes apBlink{0%,60%,100%{opacity:.25}30%{opacity:1}}
+/* Synapse agent — contextual follow-up chips */
+.ap-sugg{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 10px;padding:0 14px}
+.ap-sugg button{font:inherit;font-size:12px;color:#7C6CFF;background:rgba(124,108,255,.08);border:1px solid rgba(124,108,255,.3);border-radius:999px;padding:5px 11px;cursor:pointer;transition:background .2s,color .2s}
+.ap-sugg button:hover{background:rgba(124,108,255,.18);color:#9C8FFF}
