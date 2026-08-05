@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Page not found — 42 Berlin AI Club</title>
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://api.fontshare.com">
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@300,400,500,700&display=swap" rel="stylesheet">
+<style>
+  :root { --bg: #060612; --text: #f4f2ff; --muted: #8a86a8; --accent: #8c7bff; --mint: #4de3c1; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Satoshi', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+  /* aurora blobs */
+  .blob { position: absolute; border-radius: 50%; filter: blur(90px); opacity: .35; }
+  .b1 { width: 420px; height: 420px; background: #6d5bd0; top: -120px; left: -100px; animation: drift 26s ease-in-out infinite; }
+  .b2 { width: 360px; height: 360px; background: #1d9bb8; bottom: -120px; right: -80px; animation: drift 32s ease-in-out infinite reverse; }
+  .b3 { width: 260px; height: 260px; background: #4de3c1; top: 50%; left: 55%; opacity: .15; animation: drift 38s ease-in-out infinite; }
+  @keyframes drift {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(40px, -30px) scale(1.08); }
+    66% { transform: translate(-30px, 25px) scale(.95); }
+  }
+  .card {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding: 48px 40px;
+    background: rgba(14, 12, 30, .55);
+    border: 1px solid rgba(140, 123, 255, .18);
+    border-radius: 24px;
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    box-shadow: 0 24px 60px rgba(0,0,0,.45);
+    max-width: 480px;
+    margin: 20px;
+  }
+  .code {
+    font-family: 'Clash Display', sans-serif;
+    font-size: clamp(72px, 18vw, 120px);
+    font-weight: 700;
+    line-height: 1;
+    background: linear-gradient(120deg, var(--accent), var(--mint));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    letter-spacing: 2px;
+  }
+  h1 { font-family: 'Clash Display', sans-serif; font-size: 1.5rem; margin: 16px 0 8px; font-weight: 600; }
+  p { color: var(--muted); font-size: 1rem; line-height: 1.6; margin-bottom: 28px; }
+  .btn {
+    display: inline-block;
+    padding: 14px 28px;
+    border-radius: 999px;
+    background: linear-gradient(120deg, var(--accent), #6a5ae0);
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: .95rem;
+    transition: transform .25s cubic-bezier(.16,1,.3,1), box-shadow .25s;
+    box-shadow: 0 8px 24px rgba(124,108,255,.35);
+  }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(124,108,255,.5); }
+  .btn:focus-visible { outline: 2px solid var(--mint); outline-offset: 3px; }
+  @media (prefers-reduced-motion: reduce) {
+    .blob { animation: none; }
+    .btn { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <div class="blob b1"></div>
+  <div class="blob b2"></div>
+  <div class="blob b3"></div>
+  <main class="card">
+    <div class="code">404</div>
+    <h1>This page drifted off the network</h1>
+    <p>The page you're looking for doesn't exist, was moved, or never made it to the cluster. Check the URL or head back to base.</p>
+    <a class="btn" href="/">← Back to home</a>
+  </main>
+</body>
+</html>

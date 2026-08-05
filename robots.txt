@@ -9,4 +9,4 @@ Disallow: /admin.html
 Disallow: /members/
 Disallow: /api/
 
-Sitemap: https://42berlinaiclub.de/ai-club/sitemap.xml
+Sitemap: https://42berlinaiclub.de/sitemap.xml
