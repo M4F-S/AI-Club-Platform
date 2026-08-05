@@ -286,7 +286,7 @@ def health():
 def public_stats():
     return jsonify({
         "members": User.query.filter_by(is_active=True).count(),
-        "events": Event.query.filter_by(event_type="event").count(),
+        "events": Event.query.filter(Event.is_public == True).count(),
         "projects": Resource.query.count(),
         "workshops": Event.query.filter_by(event_type="workshop").count(),
     }), 200
