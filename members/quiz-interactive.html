@@ -234,6 +234,15 @@ body {
   <link rel="stylesheet" href="/assets/v4-features.css?v=1">
 </head>
 <body>
+<!-- AUTH GATE: member-only quiz (was publicly accessible) -->
+<script>
+(function () {
+  fetch('/api/member/me', { credentials: 'include' })
+    .then(function (r) { if (!r.ok) { window.location.href = '/login.html'; } })
+    .catch(function () { window.location.href = '/login.html'; });
+})();
+</script>
+
 <div class="container">
   <div class="header">
     <h1>Defensible AI Architecture</h1>
