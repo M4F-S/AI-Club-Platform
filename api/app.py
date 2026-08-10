@@ -1143,11 +1143,14 @@ def _agent_context():
         stats = {
             "members": User.query.filter_by(is_active=True).count(),
             "workshops": Event.query.filter_by(event_type="workshop").count(),
-            "events": Event.query.filter_by(event_type="event").count(),
+            "events": Event.query.filter(Event.is_public == True).count(),
         }
+        now = datetime.now()
         events = [{"title": e.title, "date": e.event_date.isoformat() if e.event_date else None,
                    "type": e.event_type, "location": e.location}
-                  for e in Event.query.order_by(Event.event_date.asc()).limit(6).all()]
+                  for e in Event.query.filter(
+                      (Event.event_date >= now) | (Event.event_date == None)  # noqa: E711
+                  ).order_by(Event.event_date.asc()).limit(6).all()]
         return stats, events
     except Exception:
         return {}, []
@@ -1159,7 +1162,7 @@ def _call_openrouter(messages):
     last_err = None
     for model in AGENT_MODELS:
         try:
-            payload = json.dumps({"model": model, "messages": messages, "max_tokens": 400, "temperature": 0.3}).encode()
+            payload = json.dumps({"model": model, "messages": messages, "max_tokens": 500, "temperature": 0.7}).encode()
             req = urllib.request.Request(OPENROUTER_URL, data=payload, headers={
                 "Authorization": f"Bearer {api_key}",
                 "Content-Type": "application/json",
@@ -1188,18 +1191,34 @@ def agent():
     if action not in AGENT_ACTIONS:
         return jsonify({"error": "unsupported action"}), 400
 
+    # Optional multi-turn context (frontend sends last N messages)
+    history = []
+    for h in (data.get("history") or [])[-6:]:
+        role = (h.get("role") or "").strip().lower()
+        if role not in ("user", "assistant"):
+            continue
+        content = _sanitize(h.get("content") or "")
+        if content:
+            history.append({"role": role, "content": content})
+
     stats, events = _agent_context()
     system = (
         "You are Synapse, the in-page AI operator for the 42 Berlin AI Club website "
-        "(a student-led, vendor-neutral AI community). Be concise, warm, and technical. "
-        "Ground answers in the provided real club data; never invent numbers or events. "
-        "You can suggest navigating to sections: mission, activities, events, projects, join, responsible. "
+        "(a student-led, vendor-neutral AI community at 42 Berlin). You are sharp, warm, "
+        "and a little playful — a friendly AI nerd who loves this club. Answer in 1-3 "
+        "punchy sentences; light emoji ok, never more than one. "
+        "ALWAYS ground answers in the real club data provided below; never invent numbers, "
+        "events, or people. If you don't know, say so and offer to navigate. "
+        "When asked about the NEXT event: only mention events from the Upcoming events list "
+        "below — if that list is empty, say there are no upcoming events scheduled yet and offer "
+        "to join the newsletter or check back. NEVER cite an event that already happened. "
+        "You may suggest navigating to sections: mission, activities, events, projects, join, responsible. "
         f"Live stats: {json.dumps(stats)}. Upcoming events: {json.dumps(events)}."
     )
-    content, err = _call_openrouter([
-        {"role": "system", "content": system},
+    messages = [{"role": "system", "content": system}] + history + [
         {"role": "user", "content": user_msg},
-    ])
+    ]
+    content, err = _call_openrouter(messages)
     if err == "agent_not_configured":
         return jsonify({"error": "Agent not configured", "fallback": True}), 503
     if err:
@@ -1603,14 +1622,12 @@ def reset_password():
 # ---------------------------------------------------------------------------
 
 @app.get("/posts")
-@limiter.exempt
 def list_posts():
     posts = BlogPost.query.filter_by(published=True).order_by(BlogPost.created_at.desc()).all()
     return jsonify([p.to_dict() for p in posts]), 200
 
 
 @app.get("/posts/<slug>")
-@limiter.exempt
 def get_post(slug):
     post = BlogPost.query.filter_by(slug=slug, published=True).first_or_404()
     return jsonify(post.to_dict()), 200
