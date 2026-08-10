@@ -91,6 +91,7 @@
   <a href="/members/"><i></i>Members</a>
   <a href="#join"><i></i>Join</a>
   <a href="/login.html"><i></i>Login</a>
+  <a href="/admin.html"><i></i>Admin</a>
 </div>
 
 <main id="main">
@@ -406,6 +407,7 @@
     <a href="#join" class="f-node" data-hover><span class="fn-dot" style="background:#5a8bff;box-shadow:0 0 14px #5a8bff"></span>Join</a>
     <a href="/login.html" class="f-node" data-hover><span class="fn-dot" style="background:var(--violet);box-shadow:0 0 14px var(--violet)"></span>Login</a>
     <a href="/admin.html" class="f-node" data-hover><span class="fn-dot" style="background:#ff5a8b;box-shadow:0 0 14px #ff5a8b"></span>Admin</a>
+    <a href="/privacy-policy.html" class="f-node" data-hover><span class="fn-dot" style="background:var(--violet);box-shadow:0 0 14px var(--violet)"></span>Privacy</a>
   </div>
   <img class="f-mark" src="/assets/logo-gate.png" alt="42 Berlin AI Club">
   <div class="f-sign">Open a <span style="background:linear-gradient(110deg,var(--violet),var(--mint));-webkit-background-clip:text;background-clip:text;color:transparent">channel.</span></div>
@@ -1383,12 +1385,12 @@ void main(){
           <p>${(e.description || '').slice(0, 90)}${(e.description || '').length > 90 ? '…' : ''}</p>
           <span class="tl-chip">${e.event_type || 'event'}</span>
         </div>`).join('');
-      // dynamic next-event ticker (all loop copies)
-      const next = events.find(e => !e.event_date || new Date(e.event_date) >= new Date()) || events[0];
+      // dynamic next-event ticker (all loop copies) — never cite a past event
+      const next = events.find(e => !e.event_date || new Date(e.event_date) >= new Date());
       document.querySelectorAll('[data-ticker="next-event"]').forEach(el => {
         el.textContent = next
           ? (next.title || 'Next event') + ' — ' + fmt(next.event_date)
-          : 'Check back soon';
+          : 'No upcoming events scheduled — check back soon';
       });
       return true;
     }
