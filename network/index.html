@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>42 Berlin AI Club — Fly Through the Network</title>
+<meta name="description" content="A student-led, vendor-neutral AI community at 42 Berlin. Scroll through the network — workshops, projects, and responsible AI.">
+<meta name="theme-color" content="#060612">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='7' fill='%234DE3C1'/%3E%3Ccircle cx='16' cy='16' r='12' fill='none' stroke='%237C6CFF' stroke-width='2'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<div id="loader" role="status" aria-label="Loading">
+  <div class="loader-inner">
+    <p class="loader-kicker mono">42 BERLIN AI CLUB</p>
+    <p class="loader-text mono">Initializing neural field<span class="loader-dots"><span>.</span><span>.</span><span>.</span></span></p>
+    <div class="loader-bar"><div class="loader-bar-fill"></div></div>
+  </div>
+</div>
+
+<canvas id="world" aria-hidden="true"></canvas>
+
+<header class="site-header" id="siteHeader">
+  <a class="brand" href="#scene-1" aria-label="42 Berlin AI Club — back to start">
+    <span class="brand-dot" aria-hidden="true"></span>
+    <span class="brand-name mono">42 BERLIN · AI CLUB</span>
+  </a>
+  <nav class="site-nav" aria-label="Scenes">
+    <a href="#scene-1" data-scene="0">Mission</a>
+    <a href="#scene-3" data-scene="2">Activities</a>
+    <a href="#scene-4" data-scene="3">Projects</a>
+    <a href="#scene-7" data-scene="6" class="nav-join">Join</a>
+  </nav>
+</header>
+
+<main id="main">
+  <section class="scene-copy" id="scene-1" data-scene="0" aria-label="Scene 1 — The Core">
+    <p class="eyebrow mono">01 / CORE DIRECTIVE</p>
+    <h1 class="scene-title">One network.<br>Every node matters.</h1>
+    <p class="scene-body">A student-led, vendor-neutral community at 42 Berlin. We explore, build, and question artificial intelligence — through workshops, peer projects, and honest debate about what this technology should become.</p>
+    <p class="scene-tags mono"><span>Student-led</span><span>Vendor-neutral</span><span>42 Berlin</span></p>
+    <p class="scroll-hint mono">Scroll to fly ↓</p>
+  </section>
+
+  <section class="scene-copy" id="scene-2" data-scene="1" aria-label="Scene 2 — The Workshop Lab">
+    <p class="eyebrow mono">02 / SIGNAL PATH · WORKSHOPS</p>
+    <h2 class="scene-title">Learn by building.</h2>
+    <p class="scene-body">Hands-on AI sessions for beginners and advanced members — bring a laptop, leave with a build.</p>
+    <p class="scene-tags mono"><span>Weekly</span><span>Prompt labs</span><span>Live demos</span></p>
+  </section>
+
+  <section class="scene-copy" id="scene-3" data-scene="2" aria-label="Scene 3 — Signal Paths">
+    <p class="eyebrow mono">03 / WHAT WE DO</p>
+    <h2 class="scene-title">Six signal paths,<br>one collective brain.</h2>
+    <p class="scene-body">Workshops, prompt engineering, projects, responsible AI, guest speakers, resources — six ways into the network, all open to every level.</p>
+    <p class="scene-tags mono"><span>Workshops</span><span>Prompt Engineering</span><span>Projects</span><span>Responsible AI</span><span>Speakers</span><span>Resources</span></p>
+  </section>
+
+  <section class="scene-copy" id="scene-4" data-scene="3" aria-label="Scene 4 — Project Constellation">
+    <p class="eyebrow mono">04 / SHIPPED BY MEMBERS</p>
+    <h2 class="scene-title">The project<br>constellation.</h2>
+    <p class="scene-body">Small AI builds in teams or solo — demo nights keep the feedback loop tight. Every node ships.</p>
+    <p class="scene-tags mono"><span>PeerReview Bot</span><span>Bias Lens</span><span>Study Synth</span><span>Voice2Shell</span></p>
+  </section>
+
+  <section class="scene-copy" id="scene-5" data-scene="4" aria-label="Scene 5 — Compute Cluster">
+    <p class="eyebrow mono">05 / WHY WE EXIST</p>
+    <h2 class="scene-title">AI is becoming<br>a core skill.</h2>
+    <p class="scene-body">For coding, for building, for thinking. But skill without judgment is just faster mistakes — so we learn the tools and their limits.</p>
+    <p class="scene-tags mono"><span>Peer to peer</span><span>Node to node</span></p>
+  </section>
+
+  <section class="scene-copy" id="scene-6" data-scene="5" aria-label="Scene 6 — The Quiet Node">
+    <p class="eyebrow mono">06 / RESPONSIBLE BY DESIGN</p>
+    <h2 class="scene-title">Slower signal.<br>Clearer thinking.</h2>
+    <p class="scene-body">The field quiets down here — deliberately. Ethics isn't a checkbox on this network; it's a standing discussion with its own rhythm.</p>
+    <p class="scene-tags mono"><span>Privacy first</span><span>Limits out loud</span><span>No spam</span></p>
+  </section>
+
+  <section class="scene-copy" id="scene-7" data-scene="6" aria-label="Scene 7 — Join the Network">
+    <p class="eyebrow mono">07 / ACTIVATION SEQUENCE</p>
+    <h2 class="scene-title">Connect your node.</h2>
+    <p class="scene-body">Open to all levels, aligned with 42 Berlin's peer-to-peer model. No teachers. No gatekeepers. Just nodes, connecting.</p>
+    <div class="scene-cta">
+      <a class="btn-primary" href="https://42berlinaiclub.de/">Join the network →</a>
+      <a class="btn-ghost" href="https://42berlinaiclub.de/#events">See what's on</a>
+    </div>
+  </section>
+</main>
+
+<div class="progress-ui" aria-hidden="true">
+  <div class="progress-left mono"><span id="sceneIndex">01</span><span class="progress-sep">/</span><span class="progress-total">07</span></div>
+  <div class="progress-mid"><div class="progress-track"><div class="progress-fill" id="progressFill"></div></div></div>
+  <div class="progress-right mono" id="sceneName">THE CORE</div>
+</div>
+
+<script src="three.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,174 @@
+/* ============ TOKENS ============ */
+:root {
+  --bg-deep: #03030A;
+  --bg: #060612;
+  --surface: rgba(242, 240, 255, 0.05);
+  --border: rgba(242, 240, 255, 0.14);
+  --text: #F2F0FF;
+  --text-muted: rgba(242, 240, 255, 0.62);
+  --accent: #4DE3C1;
+  --accent-2: #7C6CFF;
+  --pop: #FF6EC7;
+  --font-display: 'Space Grotesk', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --spring: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ============ BASE ============ */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: auto; }
+body {
+  background: var(--bg-deep);
+  color: var(--text);
+  font-family: var(--font-body);
+  height: 900vh; /* 7 scenes × ~130vh of scroll */
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+.mono { font-family: var(--font-mono); }
+
+.skip-link {
+  position: fixed; top: -60px; left: 16px; z-index: 60;
+  background: var(--accent); color: #03100c; font-family: var(--font-mono);
+  font-size: 13px; padding: 10px 14px; border-radius: 8px; text-decoration: none;
+  transition: top 200ms var(--spring);
+}
+.skip-link:focus { top: 12px; }
+
+/* ============ LOADER ============ */
+#loader {
+  position: fixed; inset: 0; z-index: 100;
+  background: var(--bg-deep);
+  display: flex; align-items: center; justify-content: center;
+  transition: opacity 600ms ease, visibility 600ms ease;
+}
+#loader.done { opacity: 0; visibility: hidden; pointer-events: none; }
+.loader-inner { text-align: center; }
+.loader-kicker { font-size: 12px; letter-spacing: 0.32em; color: var(--accent); margin-bottom: 14px; }
+.loader-text { font-size: 15px; letter-spacing: 0.18em; color: var(--text-muted); }
+.loader-dots span { animation: blink 1.2s infinite; }
+.loader-dots span:nth-child(2) { animation-delay: 0.2s; }
+.loader-dots span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes blink { 0%, 100% { opacity: 0.15; } 50% { opacity: 1; } }
+.loader-bar { width: 260px; height: 2px; margin: 26px auto 0; background: var(--surface); border-radius: 2px; overflow: hidden; }
+.loader-bar-fill { width: 0%; height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); animation: loadbar 2.4s ease forwards; }
+@keyframes loadbar { 0% { width: 0%; } 60% { width: 70%; } 100% { width: 100%; } }
+
+/* ============ 3D CANVAS ============ */
+#world {
+  position: fixed; inset: 0; z-index: 0;
+  display: block;
+  background: var(--bg);
+}
+
+/* ============ HEADER ============ */
+.site-header {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 40;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 24px;
+  background: rgba(6, 6, 18, 0.55);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border-bottom: 1px solid var(--border);
+}
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
+.brand-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 12px var(--accent), 0 0 26px rgba(77, 227, 193, 0.5);
+}
+.brand-name { font-size: 13px; letter-spacing: 0.22em; }
+.site-nav { display: flex; gap: 22px; align-items: center; }
+.site-nav a { color: var(--text-muted); text-decoration: none; font-size: 14px; transition: color 200ms; }
+.site-nav a:hover { color: var(--text); }
+.site-nav .nav-join {
+  color: #03100c; background: var(--accent); padding: 8px 16px; border-radius: 999px;
+  font-weight: 500;
+}
+.site-nav .nav-join:hover { background: #6beccf; color: #03100c; }
+
+/* ============ SCENE COPY ============ */
+.scene-copy {
+  position: absolute; z-index: 10;
+  max-width: 560px;
+  padding: 0 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  left: clamp(24px, 6vw, 96px);
+  opacity: 0;
+  pointer-events: none;
+  will-change: opacity, transform;
+}
+#scene-7.scene-copy { max-width: 640px; }
+.eyebrow {
+  font-size: 12px; letter-spacing: 0.3em; color: var(--accent);
+  margin-bottom: 18px;
+}
+.scene-title {
+  font-family: var(--font-display); font-weight: 700;
+  font-size: clamp(2.4rem, 5.4vw, 4.2rem);
+  line-height: 1.04; letter-spacing: -0.02em;
+  margin-bottom: 20px;
+}
+.scene-body {
+  font-size: clamp(0.95rem, 1.4vw, 1.1rem);
+  line-height: 1.65; color: var(--text-muted);
+  margin-bottom: 22px;
+}
+.scene-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.scene-tags span {
+  font-size: 11px; letter-spacing: 0.06em; color: var(--text-muted);
+  border: 1px solid var(--border); border-radius: 999px;
+  padding: 6px 12px;
+  background: var(--surface);
+}
+.scroll-hint { margin-top: 30px; font-size: 12px; letter-spacing: 0.24em; color: var(--text-muted); animation: hint 2.4s ease infinite; }
+@keyframes hint { 0%, 100% { opacity: 0.4; transform: translateY(0); } 50% { opacity: 1; transform: translateY(4px); } }
+
+.scene-cta { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 8px; }
+.btn-primary {
+  display: inline-block; padding: 14px 26px; border-radius: 999px;
+  background: var(--accent); color: #03100c;
+  font-weight: 600; font-size: 15px; text-decoration: none;
+  box-shadow: 0 0 24px rgba(77, 227, 193, 0.35);
+  transition: transform 200ms var(--spring), box-shadow 200ms;
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 36px rgba(77, 227, 193, 0.55); }
+.btn-ghost {
+  display: inline-block; padding: 14px 26px; border-radius: 999px;
+  color: var(--text); border: 1px solid var(--border);
+  font-weight: 500; font-size: 15px; text-decoration: none;
+  transition: border-color 200ms, background 200ms;
+}
+.btn-ghost:hover { border-color: var(--accent-2); background: var(--surface); }
+
+/* ============ PROGRESS UI ============ */
+.progress-ui {
+  position: fixed; left: 24px; right: 24px; bottom: 22px; z-index: 30;
+  display: flex; align-items: center; gap: 18px;
+  pointer-events: none;
+}
+.progress-left { font-size: 12px; letter-spacing: 0.14em; color: var(--text-muted); display: flex; gap: 6px; min-width: 64px; }
+.progress-left #sceneIndex { color: var(--accent); }
+.progress-sep, .progress-total { color: var(--text-muted); opacity: 0.5; }
+.progress-mid { flex: 1; }
+.progress-track { height: 2px; background: var(--border); border-radius: 2px; overflow: hidden; }
+.progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+.progress-right { font-size: 11px; letter-spacing: 0.22em; color: var(--text-muted); text-transform: uppercase; }
+
+/* ============ RESPONSIVE ============ */
+@media (max-width: 760px) {
+  .site-header { padding: 14px 16px; }
+  .site-nav { gap: 14px; }
+  .site-nav a { font-size: 13px; }
+  .site-nav a:not(.nav-join) { display: none; }
+  .scene-copy { left: 18px; right: 18px; max-width: none; }
+  .progress-right { display: none; }
+  .progress-ui { left: 18px; right: 18px; }
+}
+
+/* Respect reduced motion: still scrolls, just no loader anim extras */
+@media (prefers-reduced-motion: reduce) {
+  .loader-bar-fill, .scroll-hint, .loader-dots span { animation: none; }
+}
