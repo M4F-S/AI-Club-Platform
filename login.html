@@ -83,6 +83,50 @@
       border-radius: var(--radius-sm);
     }
 
+    /* ===== Runaway Login (TETHER C95 remake, 2026-08-17) ===== */
+    .btn-arena {
+      position: relative;
+      margin-top: 6px;
+      width: 100%;
+      height: 132px;
+      display: grid;
+      place-items: center;
+      border: 1px dashed var(--border);
+      border-radius: var(--radius-sm);
+      background: radial-gradient(120% 130% at 50% 0%, rgba(124,108,255,0.10) 0%, transparent 60%);
+      overflow: hidden;
+    }
+    .btn-arena .hint {
+      position: absolute; top: 10px; left: 0; right: 0;
+      text-align: center; font-size: 10px; letter-spacing: 0.28em; text-transform: uppercase;
+      color: var(--faint); pointer-events: none;
+    }
+    .btn-arena .dodge-badge {
+      position: absolute; bottom: 10px; left: 0; right: 0;
+      text-align: center; font-size: 9.5px; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--mint); opacity: 0; transition: opacity 0.3s; pointer-events: none;
+    }
+    .btn-arena.badged .dodge-badge { opacity: 1; }
+    .runaway-btn {
+      position: relative; z-index: 2;
+      display: inline-flex; align-items: center; gap: 12px;
+      font-family: var(--font-d); font-weight: 500; font-size: 15px; letter-spacing: 0.04em;
+      color: #fff;
+      background: linear-gradient(110deg, var(--violet), #5a8bff);
+      padding: 17px 34px; border-radius: 99px; border: none; cursor: pointer;
+      will-change: transform;
+      transition: transform 0.16s cubic-bezier(0.2, 1.3, 0.3, 1), box-shadow 0.3s, filter 0.3s;
+      box-shadow: 0 8px 30px rgba(124,108,255,0.35);
+    }
+    .runaway-btn:hover { filter: brightness(1.08); }
+    .runaway-btn.locked {
+      background: linear-gradient(110deg, var(--violet), var(--mint));
+      box-shadow: 0 0 34px rgba(77,227,193,0.55), 0 0 70px rgba(124,108,255,0.3), 0 10px 36px rgba(0,0,0,0.45);
+    }
+    .runaway-btn:focus-visible { outline: 2px solid var(--mint); outline-offset: 4px; }
+    .runaway-btn .arr { transition: transform 0.35s var(--ease-out); }
+    .runaway-btn:hover .arr { transform: translateX(5px); }
+
     .form-footer {
       text-align: center;
       margin-top: 24px;
@@ -205,10 +249,15 @@
           <input type="password" id="password" name="password" placeholder="Your password" required>
         </div>
 
-        <button type="submit" class="btn btn-primary">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
-          Log in
-        </button>
+        <div class="btn-arena" id="btn-arena">
+          <div class="hint">catch the button</div>
+          <div class="dodge-badge">dodge · half-speed · locked ✓</div>
+          <button type="submit" class="runaway-btn" id="runaway-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+            Log in
+            <span class="arr">→</span>
+          </button>
+        </div>
       </form>
 
       <p class="form-footer" style="margin-top: 16px; margin-bottom: 8px;">
@@ -216,6 +265,9 @@
       </p>
       <p class="form-footer">
         Not a member yet? <a href="become-member.html">Apply for membership</a>
+      </p>
+      <p class="form-footer" style="margin-top: 4px; font-size: 0.8rem; color: var(--faint);">
+        The button dodges the mouse — Tab always reaches it, Enter always submits. It is never disabled.
       </p>
     </div>
 </main>
@@ -256,10 +308,59 @@
     const form = document.getElementById('login-form');
     const alert = document.getElementById('alert');
 
+    /* ===== Runaway Login dodge (TETHER C95 remake, 2026-08-17) ===== */
+    const rBtn = document.getElementById('runaway-btn');
+    const arena = document.getElementById('btn-arena');
+    const intra = document.getElementById('intra');
+    const pwd = document.getElementById('password');
+
+    function fillCount() { return [intra, pwd].filter(i => i && i.value.trim().length > 0).length; }
+    function travelScale() {
+      const f = fillCount();
+      if (f >= 2) return 0;      // both → locked home
+      if (f === 1) return 0.5;   // one → half travel
+      return 1;                  // empty → full dodge
+    }
+    function moveBtn(x, y) { rBtn.style.transform = `translate(${x}px, ${y}px)`; }
+    function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+    function rRect(c) { const r = c.getBoundingClientRect(); return { l: r.left, t: r.top, w: r.width, h: r.height }; }
+    function paintArena() {
+      const s = travelScale();
+      if (s === 0) {
+        rBtn.classList.add('locked'); moveBtn(0, 0); arena.classList.add('badged');
+      } else {
+        rBtn.classList.remove('locked'); arena.classList.remove('badged');
+      }
+    }
+
+    arena.addEventListener('pointermove', e => {
+      if (travelScale() === 0 || document.activeElement === rBtn) return;
+      const b = rRect(rBtn);
+      const bx = b.l + b.w / 2, by = b.t + b.h / 2;
+      const dx = bx - e.clientX, dy = by - e.clientY;
+      const dist = Math.hypot(dx, dy);
+      const danger = 150;
+      if (dist < danger && dist > 0.001) {
+        const s = travelScale();
+        const push = (danger - dist) / danger;
+        const jump = 42 + push * 150;
+        moveBtn(clamp((dx / dist) * jump * s, -180, 180), clamp((dy / dist) * jump * s, -70, 70));
+      }
+    }, { passive: true });
+    arena.addEventListener('pointerleave', () => { if (travelScale() !== 0) moveBtn(0, 0); });
+    [intra, pwd].forEach(i => i.addEventListener('input', paintArena));
+    rBtn.addEventListener('focus', () => moveBtn(0, 0));
+
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       alert.className = 'alert';
       alert.textContent = '';
+
+      if (travelScale() !== 0) {
+        alert.className = 'alert show error';
+        alert.textContent = 'Still faster than you. Fill in both fields first.';
+        return;
+      }
 
       const data = {
         intra_username: form.intra_username.value.trim(),
