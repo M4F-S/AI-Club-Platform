@@ -236,8 +236,7 @@ body {
 </head>
 <body>
 <!-- AUTH GATE: member-only quiz (was publicly accessible) -->
-<script>
-(function () {
+<script>(function () {
   fetch('/api/member/me', { credentials: 'include' })
     .then(function (r) { if (!r.ok) { window.location.href = '/login.html'; } })
     .catch(function () { window.location.href = '/login.html'; });
@@ -1836,8 +1835,7 @@ body {
     <a href="/members/events.html" class="back-link">&larr; Back to Workshops</a>
   </div>
 </div>
-<script>
-const tr = {"correct":"Correct!","incorrect":"Incorrect","next":"Next Question →","seeResults":"See Results","complete":"Quiz Complete!","scoreText":"You got {correct} out of {total} correct","tryAgain":"Try Again","rightAnswer":"Right answer","notQuite":"Not quite"};
+<script>const tr = {"correct":"Correct!","incorrect":"Incorrect","next":"Next Question →","seeResults":"See Results","complete":"Quiz Complete!","scoreText":"You got {correct} out of {total} correct","tryAgain":"Try Again","rightAnswer":"Right answer","notQuite":"Not quite"};
 let currentQ = 0, correctCount = 0, answered = false;
 
 function init() {

@@ -1,4 +1,3 @@
->
 (function() {
   var loader = document.getElementById('loader');
   if (loader) {
@@ -20,7 +19,6 @@
   }
 })();
 
->
 let agentOpen = false;
 function toggle(force) {
   agentOpen = typeof force === 'boolean' ? force : !agentOpen;
@@ -51,5 +49,5 @@ async function ask(e) {
   return false;
 }
 
->setTimeout(function(){ document.body.classList.add("loaded"); }, 5000);
+setTimeout(function(){ document.body.classList.add("loaded"); }, 5000);
 
