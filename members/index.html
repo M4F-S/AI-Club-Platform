@@ -4,15 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard — 42 Berlin AI Club</title>
+    <link rel="stylesheet" href="/assets/new-design-system.css?v=15">
   <meta name="robots" content="noindex, nofollow">
   <meta name="theme-color" content="#060612">
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
-  <link rel="icon" type="image/png" href="data:image/png;base64,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"
-  <link href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@300,400,500,700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/assets/new-design-system.css?v=14">
-  <link rel="stylesheet" href="/members/members.css">
-  <link rel="stylesheet" href="/assets/v4-design.css?v=2">
-  <link rel="stylesheet" href="/assets/v4-features.css?v=1">
+  
+  
+  
+  
+  
 </head>
 <body>
   <header class="member-header">
@@ -67,37 +67,7 @@
     <button type="submit" aria-label="Send"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
   </form>
 </div>
-<script>
-let agentOpen = false;
-function toggle(force) {
-  agentOpen = typeof force === 'boolean' ? force : !agentOpen;
-  document.getElementById('orb').classList.toggle('open', agentOpen);
-  document.getElementById('agent-panel').classList.toggle('open', agentOpen);
-}
-async function ask(e) {
-  e.preventDefault();
-  const input = document.getElementById('agent-input');
-  const msg = input.value.trim();
-  if (!msg) return false;
-  const box = document.getElementById('agent-messages');
-  box.innerHTML += '<div class="ap-msg user">' + msg.replace(/</g,'&lt;') + '</div>';
-  input.value = '';
-  box.innerHTML += '<div class="ap-msg agent thinking">Thinking...</div>';
-  box.scrollTop = box.scrollHeight;
-  try {
-    const r = await fetch('/api/agent', {
-      method: 'POST', headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({message: msg, context: 'club'})
-    });
-    const data = await r.json();
-    box.querySelector('.thinking').outerHTML = '<div class="ap-msg agent">' + (data.reply || data.response || 'No response.') + '</div>';
-  } catch(e) {
-    box.querySelector('.thinking').outerHTML = '<div class="ap-msg agent">Sorry, I could not reach the server. Please try again.</div>';
-  }
-  box.scrollTop = box.scrollHeight;
-  return false;
-}
-</script>
+<script src="/assets/site.js?v=1"></script>
 <script src="https://unpkg.com/lucide@latest"></script>
     <script src="/members/members.js?v=3"></script>
 <script>
@@ -152,6 +122,6 @@ async function ask(e) {
   }
 })();
 </script>
-<script>setTimeout(function(){ document.body.classList.add("loaded"); }, 5000);</script>
+
 </body>
 </html>
