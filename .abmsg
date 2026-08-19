@@ -1,0 +1,17 @@
+refactor(assets): self-host lucide icons + consolidate quiz-page JS (A1, B1)
+
+Per Mohamed's approval of the independent review's remaining items:
+
+A1 - SELF-HOST LUCIDE (remove external unpkg CDN):
+  - Added assets/lucide.1.33.0.min.js (pinned official build; MD5-verified == unpkg 1.33.0)
+  - All 8 member/blog pages switched from https://unpkg.com/lucide@latest (8 refs) and
+    https://unpkg.com/lucide@1.21.0 (2 blog refs) to the self-hosted /assets path.
+  - Removes unpinned @latest supply-chain risk + external single-point-of-failure.
+  - Verified: file serves 200 text/javascript, sets window.lucide.createIcons in-browser.
+
+B1 - CONSOLIDATE QUIZ-PAGE JS (remove redundant v4-agent.js):
+  - quiz.html, quiz-interactive.html, members/quiz-interactive.html dropped
+    /assets/v4-agent.js?v=1 (now 3 files: site.js + v4-bg.js + v4-features.js).
+  - v4-agent.js was a no-op on quiz pages: its IIFE bails on `if (#orb) return`,
+    and quiz HTML ships a static #orb/#agent-panel handled by site.js's toggle/ask.
+  - Verified: quiz starts (Q1/10), agent panel + orb + toggle()/ask() intact, 0 JS errors.
