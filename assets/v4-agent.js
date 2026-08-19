@@ -28,7 +28,7 @@
     <h4>SYNAPSE</h4>
     <span class="ap-status" id="ap-status"><i></i>Standing by</span>
   </div>
-  <div class="ap-body" id="ap-body">
+  <div class="ap-body" id="ap-body" role="log" aria-live="polite" aria-relevant="additions">
     <div class="ap-msg agent"><span class="who">Synapse · in-page operator</span>
       I'm wired into this site. Ask me about events, workshops, joining, or the club — <b>I navigate, you watch.</b>
     </div>
@@ -63,6 +63,14 @@
   addEventListener('keydown', e => {
     if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); toggle(true); }
     if (e.key === 'Escape') toggle(false);
+    if (e.key === 'Tab' && panel.classList.contains('open')) {
+      const focusables = panel.querySelectorAll('button, input, [tabindex]:not([tabindex="-1"])');
+      if (!focusables.length) return;
+      const first = focusables[0], last = focusables[focusables.length - 1];
+      const active = document.activeElement;
+      if (e.shiftKey && (active === first || active === panel)) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && active === last) { e.preventDefault(); first.focus(); }
+    }
   });
 
   /* ---- attention behaviors ---- */
