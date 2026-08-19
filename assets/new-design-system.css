@@ -2,7 +2,7 @@
 :root{
   --ink0:#060612; --ink1:#0B0A1E; --ink2:#141230;
   --violet:#7C6CFF; --mint:#4DE3C1; --pink:#FF6EC7;
-  --text:#F2F0FF; --muted:#9A94C7; --faint:#5d5889;
+  --text:#F2F0FF; --muted:#9A94C7; --faint:#7f79b3;
   --panel:rgba(18,16,43,.55); --line:rgba(124,108,255,.18);
   --font-d:'Clash Display','Space Grotesk',system-ui,sans-serif;
   --font-b:'Satoshi','Inter',system-ui,sans-serif;
@@ -93,7 +93,7 @@ body.loaded .hero-sub{opacity:1;transform:none}
 .hero-cta{display:flex;flex-wrap:wrap;gap:18px;margin-top:44px;opacity:0;transform:translateY(18px);transition:opacity .9s var(--ease-out) 1.25s,transform .9s var(--ease-out) 1.25s}
 body.loaded .hero-cta{opacity:1;transform:none}
 .btn{position:relative;display:inline-flex;align-items:center;gap:12px;font-family:var(--font-d);font-weight:500;font-size:15px;letter-spacing:.04em;padding:17px 34px;border-radius:99px;transition:box-shadow .4s;will-change:transform}
-.btn-primary{background:linear-gradient(110deg,var(--violet),#5a8bff);color:#fff}
+.btn-primary{background:linear-gradient(110deg,var(--violet),#5a8bff);color:#08060f;font-weight:600}
 .btn-primary:hover{box-shadow:0 8px 42px rgba(124,108,255,.5)}
 .btn-ghost{border:1px solid var(--line);color:var(--text);background:rgba(18,16,43,.35);backdrop-filter:blur(8px)}
 .btn-ghost:hover{border-color:var(--mint);box-shadow:0 0 30px rgba(77,227,193,.16)}
@@ -525,7 +525,7 @@ h1,h2,h3,h4,.page-title,.hero h1,.section-title,h1.page-title {
 /* content above bg */
 header,nav,main,footer,.member-main,.member-header {position:relative;z-index:3}
 .btn-primary,.admin-btn-primary {
-  background:linear-gradient(110deg,var(--violet),#5a8bff) !important;color:#fff !important;border:none !important;
+  background:linear-gradient(110deg,var(--violet),#5a8bff) !important;color:#08060f !important;border:none !important;
   transition:box-shadow .4s,transform .3s !important;
 }
 .btn-primary:hover,.admin-btn-primary:hover {box-shadow:0 8px 42px rgba(124,108,255,.5) !important}

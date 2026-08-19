@@ -38,30 +38,31 @@
     }
 
     .form-header h1 {
-      font-family: var(--font-heading);
+      font-family: var(--font-d);
+      font-weight: 600;
       font-size: clamp(1.8rem, 5vw, 2.5rem);
     }
 
     .login-card, .admin-panel {
       max-width: 460px;
       margin: 0 auto;
-      background: var(--color-surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
       padding: 32px;
-      box-shadow: var(--shadow-lg);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      color: var(--text);
     }
 
     .admin-panel { max-width: 900px; display: none; }
 
-    .login-card .form-group {
-      margin-bottom: 20px;
-    }
-
+    .login-card .form-group { margin-bottom: 20px; }
     .login-card label {
       display: block;
       margin-bottom: 8px;
       font-weight: 500;
+      color: var(--muted);
     }
 
     .login-card input,
@@ -70,21 +71,20 @@
     .admin-panel textarea {
       width: 100%;
       padding: 12px 14px;
-      background: var(--color-bg);
-      border: 1px solid var(--border);
+      background: var(--ink1);
+      border: 1px solid var(--line);
       border-radius: 12px;
       color: var(--text);
       font-family: inherit;
       font-size: 1rem;
     }
-
     .login-card input:focus,
     .admin-panel input:focus,
     .admin-panel select:focus,
     .admin-panel textarea:focus {
       outline: none;
-      border-color: var(--color-accent);
-      background: var(--color-surface);
+      border-color: var(--mint);
+      box-shadow: 0 0 0 3px rgba(77, 227, 193, 0.15);
     }
 
     .admin-btn {
@@ -93,8 +93,8 @@
       justify-content: center;
       gap: 6px;
       padding: 10px 18px;
-      border-radius: 10px;
-      font-weight: 600;
+      border-radius: 99px;
+      font-weight: 500;
       font-size: 0.95rem;
       text-decoration: none;
       transition: all 0.2s;
@@ -103,14 +103,16 @@
     }
 
     .admin-btn-primary {
-      background: linear-gradient(135deg, var(--color-accent), var(--color-secondary));
-      color: #ffffff;
+      background: linear-gradient(110deg, var(--violet), #5a8bff);
+      color: #fff;
     }
-
-    .admin-btn-primary:hover { transform: translateY(-2px); }
-    .admin-btn-success { background: #2a7a4a; color: white; }
-    .admin-btn-danger { background: #c92a2a; color: white; }
-    .admin-btn-secondary { background: #e9ecef; color: var(--text); }
+    .admin-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 42px rgba(124, 108, 255, 0.5); }
+    .admin-btn-success { background: rgba(77, 227, 193, 0.15); color: var(--mint); border: 1px solid rgba(77, 227, 193, 0.35); }
+    .admin-btn-success:hover { background: rgba(77, 227, 193, 0.25); }
+    .admin-btn-danger { background: rgba(255, 90, 110, 0.15); color: #ff5a6e; border: 1px solid rgba(255, 90, 110, 0.35); }
+    .admin-btn-danger:hover { background: rgba(255, 90, 110, 0.25); }
+    .admin-btn-secondary { background: rgba(18, 16, 43, 0.5); color: var(--muted); border: 1px solid var(--line); }
+    .admin-btn-secondary:hover { color: var(--text); border-color: var(--mint); box-shadow: 0 0 30px rgba(77, 227, 193, 0.16); }
 
     .toolbar {
       display: flex;
@@ -121,70 +123,46 @@
       gap: 12px;
     }
 
-    .tabs {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
+    .tabs { display: flex; gap: 8px; flex-wrap: wrap; }
 
     .tab {
       padding: 8px 16px;
       border-radius: 100px;
-      border: 1px solid var(--border);
-      background: transparent;
+      border: 1px solid var(--line);
+      background: rgba(18, 16, 43, 0.4);
+      color: var(--muted);
       cursor: pointer;
       font-weight: 500;
       transition: all 0.2s;
     }
-
+    .tab:hover { color: var(--text); border-color: var(--mint); }
     .tab.active {
-      background: var(--text);
-      color: var(--color-bg);
-      border-color: var(--text);
+      background: linear-gradient(110deg, var(--violet), var(--mint));
+      color: #08060f;
+      border-color: transparent;
+      font-weight: 600;
     }
 
     .application-card {
-      background: var(--color-bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
       padding: 20px;
       margin-bottom: 16px;
+      color: var(--text);
     }
+    .application-card h3 { font-family: var(--font-d); font-weight: 600; margin-bottom: 4px; }
 
-    .application-card h3 {
-      font-family: var(--font-heading);
-      margin-bottom: 4px;
-    }
+    .meta { color: var(--muted); font-size: 0.9rem; margin-bottom: 12px; }
+    .field { margin-bottom: 10px; font-size: 0.95rem; }
+    .field strong { display: inline-block; width: 140px; color: var(--muted); font-weight: 500; }
 
-    .meta {
-      color: var(--text-muted);
-      font-size: 0.9rem;
-      margin-bottom: 12px;
-    }
-
-    .field {
-      margin-bottom: 10px;
-      font-size: 0.95rem;
-    }
-
-    .field strong {
-      display: inline-block;
-      width: 140px;
-      color: var(--text-muted);
-      font-weight: 500;
-    }
-
-    .actions {
-      display: flex;
-      gap: 10px;
-      margin-top: 16px;
-      flex-wrap: wrap;
-    }
+    .actions { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
 
     .member-card {
-      background: var(--color-bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
       padding: 20px;
       margin-bottom: 16px;
       display: flex;
@@ -192,13 +170,10 @@
       align-items: center;
       flex-wrap: wrap;
       gap: 12px;
+      color: var(--text);
     }
-
     .member-card .info { flex: 1; min-width: 220px; }
-    .member-card .info h3 {
-      font-family: var(--font-heading);
-      margin-bottom: 4px;
-    }
+    .member-card .info h3 { font-family: var(--font-d); font-weight: 600; margin-bottom: 4px; }
     .member-card .role {
       display: inline-block;
       padding: 4px 10px;
@@ -208,26 +183,16 @@
       text-transform: uppercase;
       margin-top: 6px;
     }
-    .role-superadmin { background: var(--color-accent); color: #fff; }
-    .role-admin { background: var(--sage); color: #fff; }
-    .role-member { background: #e9ecef; color: var(--text); }
+    .role-superadmin { background: linear-gradient(110deg, var(--violet), var(--mint)); color: #08060f; }
+    .role-admin { background: rgba(124, 108, 255, 0.2); color: var(--violet); border: 1px solid rgba(124, 108, 255, 0.35); }
+    .role-member { background: rgba(18, 16, 43, 0.5); color: var(--muted); border: 1px solid var(--line); }
 
-    .empty {
-      text-align: center;
-      color: var(--text-muted);
-      padding: 40px;
-    }
+    .empty { text-align: center; color: var(--muted); padding: 40px; }
 
-    .alert {
-      padding: 12px 14px;
-      border-radius: 12px;
-      margin-bottom: 16px;
-      display: none;
-    }
-
+    .alert { padding: 12px 14px; border-radius: 12px; margin-bottom: 16px; display: none; }
     .alert.show { display: block; }
-    .alert.error { background: var(--color-error-bg); border: 1px solid rgba(201, 42, 42, 0.2); color: var(--color-error); }
-    .alert.success { background: var(--color-success-bg); border: 1px solid rgba(42, 122, 74, 0.2); color: var(--color-success); }
+    .alert.error { background: rgba(255, 90, 110, 0.1); border: 1px solid rgba(255, 90, 110, 0.25); color: #ff5a6e; }
+    .alert.success { background: rgba(77, 227, 193, 0.1); border: 1px solid rgba(77, 227, 193, 0.25); color: var(--mint); }
 
     @media (max-width: 768px) {
       main { padding: 100px 20px 48px; }
@@ -237,8 +202,8 @@
       .toolbar { flex-direction: column; align-items: flex-start; }
       .member-card { flex-direction: column; align-items: flex-start; }
     }
-  </style>
-<script type="application/ld+json"> type="application/ld+json"> type="application/ld+json">
+    </style>
+<script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
@@ -403,10 +368,17 @@
   const adminAlert = document.getElementById('admin-alert');
 
   async function api(path, options = {}) {
+    // For FormData bodies (file uploads), let the browser set the multipart
+    // Content-Type + boundary. Only default to JSON for plain bodies.
+    const isForm = options.body instanceof FormData;
+    const headers = options.headers ? { ...options.headers } : {};
+    if (!isForm && !headers['Content-Type']) {
+      headers['Content-Type'] = 'application/json';
+    }
     const res = await fetch(`${API_URL}${path}`, {
       ...options,
       credentials: 'include',
-      headers: { 'Content-Type': 'application/json', ...options.headers }
+      headers
     });
     const data = await res.json().catch(() => ({}));
     return { ok: res.ok, status: res.status, data };
@@ -532,7 +504,7 @@
             ${canPromote ? `<button class="admin-btn admin-btn-success" onclick="promoteMember(${member.id})">Promote to admin</button>` : ''}
             ${canDemote ? `<button class="admin-btn admin-btn-danger" onclick="demoteMember(${member.id})">Demote to member</button>` : ''}
             ${!isSuper ? `<button class="admin-btn admin-btn-danger" onclick="deleteMember(${member.id})">Delete</button>` : ''}
-            ${isSuper ? '<span style="color:var(--text-muted);font-size:0.9rem;">Superadmin</span>' : ''}
+            ${isSuper ? '<span style="color:var(--muted);font-size:0.9rem;">Superadmin</span>' : ''}
           </div>
         </div>`;
     }).join('');
