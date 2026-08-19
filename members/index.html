@@ -103,9 +103,14 @@
         const upcoming = eventsRes.data
           .map(e => ({ ...e, dateObj: e.event_date ? new Date(e.event_date) : null }))
           .filter(e => !e.dateObj || e.dateObj >= now)
-          .sort((a, b) => (a.dateObj && b.dateObj ? a.dateObj - b.dateObj : 0))[0]
-          || eventsRes.data[0];
-        nextEvent.innerHTML = `<strong>${escapeHtml(upcoming.title)}</strong><br><span style="color:var(--muted);font-size:0.9rem;">${upcoming.event_date ? new Date(upcoming.event_date).toLocaleString() : 'Date TBD'} ${upcoming.location ? '· ' + escapeHtml(upcoming.location) : ''}</span>`;
+          .sort((a, b) => (a.dateObj && b.dateObj ? a.dateObj - b.dateObj : 0))[0];
+        // FIX: do NOT fall back to a past event when nothing is upcoming.
+        // Only show an event as "next" if it is genuinely in the future (or undated).
+        if (upcoming && (!upcoming.dateObj || upcoming.dateObj >= now)) {
+          nextEvent.innerHTML = `<strong>${escapeHtml(upcoming.title)}</strong><br><span style="color:var(--muted);font-size:0.9rem;">${upcoming.event_date ? new Date(upcoming.event_date).toLocaleString() : 'Date TBD'} ${upcoming.location ? '· ' + escapeHtml(upcoming.location) : ''}</span>`;
+        } else {
+          nextEvent.innerHTML = '<span style="color:var(--muted)">No upcoming workshops scheduled yet.</span>';
+        }
       } else {
         nextEvent.innerHTML = '<span style="color:var(--muted)">No upcoming workshops.</span>';
       }

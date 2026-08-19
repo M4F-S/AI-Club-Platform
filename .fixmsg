@@ -1,0 +1,13 @@
+fix(members): stop showing a past workshop as "next workshop" on dashboard
+
+The member dashboard (members/index.html) "Next event" card used
+  .filter(e => e.dateObj >= now) ... [0] || eventsRes.data[0]
+i.e. it explicitly fell back to eventsRes.data[0] when no event was in the
+future. All events in the system were in the past (Jul 2, Jul 15), so the
+fallback surfaced the July 15 "AI Structures" workshop as the "next workshop"
+— directly contradicting the blog section that the same workshop already
+happened (materials/quiz available) and there was nothing upcoming.
+
+Now: only a genuinely future (or undated) event is shown as "next"; otherwise
+the card reads "No upcoming workshops scheduled yet." Homepage ticker/timeline
+were already correct (no fallback); only the member dashboard was affected.
