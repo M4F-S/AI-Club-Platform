@@ -645,3 +645,13 @@ p,li,.section-subtitle {color:#9A94C7 !important}
   .form-row .form-group{margin-bottom:18px}
   .form-wrapper{padding:24px}
 }
+/* ---- hero social-proof chip ---- */
+.hero-proof{display:inline-flex;align-items:center;gap:12px;margin-top:22px;padding:9px 16px;border:1px solid var(--line);border-radius:99px;background:rgba(18,16,43,.45);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);font-size:13.5px;color:var(--muted)}
+.hero-proof .proof-avatars{display:inline-flex}
+.hero-proof .proof-avatars i{width:24px;height:24px;border-radius:50%;border:2px solid var(--ink0);background:linear-gradient(135deg,var(--violet),#5a8bff);margin-left:-8px}
+.hero-proof .proof-avatars i:first-child{margin-left:0}
+.hero-proof .proof-avatars i:nth-child(2){background:linear-gradient(135deg,var(--mint),#2bb39a)}
+.hero-proof .proof-avatars i:nth-child(3){background:linear-gradient(135deg,var(--pink),#d14d9c)}
+.hero-proof .proof-avatars i:nth-child(4){background:linear-gradient(135deg,#5a8bff,#7C6CFF)}
+.hero-proof .proof-text b{color:var(--text);font-weight:600;font-family:var(--font-d)}
+@media (max-width:560px){.hero-proof{flex-wrap:wrap}}
