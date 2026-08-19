@@ -3,17 +3,28 @@
   if (loader) {
     var lCount = loader.querySelector('.l-count');
     var lBar = loader.querySelector('.l-bar i');
-    var p = 0;
-    var t0 = performance.now();
-    (function loadTick() {
-      var el = performance.now() - t0;
-      p = Math.min(100, Math.round((el / 1500) * 100 * (0.4 + Math.random() * 0.6)));
-      if (el > 1500) p = 100;
-      if (lCount) lCount.textContent = p;
-      if (lBar) lBar.style.transform = 'scaleX(' + (p / 100) + ')';
-      if (p < 100) requestAnimationFrame(loadTick);
-      else setTimeout(function() { loader.classList.add('done'); document.body.classList.add('loaded'); }, 220);
-    })();
+    var seen = false;
+    try { seen = sessionStorage.getItem('hl') === '1'; } catch (e) {}
+    if (seen) {
+      if (lCount) lCount.textContent = '100';
+      if (lBar) lBar.style.transform = 'scaleX(1)';
+      loader.classList.add('done'); document.body.classList.add('loaded');
+    } else {
+      var p = 0;
+      var t0 = performance.now();
+      (function loadTick() {
+        var el = performance.now() - t0;
+        p = Math.min(100, Math.round((el / 1500) * 100 * (0.4 + Math.random() * 0.6)));
+        if (el > 1500) p = 100;
+        if (lCount) lCount.textContent = p;
+        if (lBar) lBar.style.transform = 'scaleX(' + (p / 100) + ')';
+        if (p < 100) requestAnimationFrame(loadTick);
+        else setTimeout(function() {
+          loader.classList.add('done'); document.body.classList.add('loaded');
+          try { sessionStorage.setItem('hl', '1'); } catch (e) {}
+        }, 220);
+      })();
+    }
   } else {
     document.body.classList.add('loaded');
   }

@@ -1,3 +1,4 @@
+@import url('https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@300,400,500,700&display=swap');
 /* block 1 */
 :root{
   --ink0:#060612; --ink1:#0B0A1E; --ink2:#141230;

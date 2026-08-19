@@ -39,6 +39,7 @@
   "sameAs": ["https://42berlin.de"]
 }
 </script>
+  <link rel="preconnect" href="https://api.fontshare.com">
 </head>
 <body>
 <a href="#main" class="skip-link">Skip to main content</a>
@@ -709,7 +710,10 @@
   }
 
   resize();
-  if (reduced) { step(0); draw(); }       // static constellation fallback
+  // Low-end guard: prefer a static constellation on reduced-motion, very small
+  // screens (mobile) or low-memory devices to save battery/CPU.
+  var lowEnd = (window.innerWidth < 480) || (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 2);
+  if (reduced || lowEnd) { step(0); draw(); }   // static constellation
   else (function loop(t) { step(t); draw(); requestAnimationFrame(loop); })(0);
 })();
 </script>
@@ -721,21 +725,34 @@
 (() => {
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* ---- loader ---- */
+  /* ---- loader (skip count animation on repeat visits this session) ---- */
   const loader = document.getElementById('loader');
   const lCount = loader.querySelector('.l-count');
   const lBar = loader.querySelector('.l-bar i');
-  let p = 0;
-  const t0 = performance.now();
-  (function loadTick() {
-    const el = performance.now() - t0;
-    p = Math.min(100, Math.round((el / 1500) * 100 * (0.4 + Math.random() * 0.6)));
-    if (el > 1500) p = 100;
-    lCount.textContent = p;
-    lBar.style.transform = `scaleX(${p / 100})`;
-    if (p < 100) requestAnimationFrame(loadTick);
-    else setTimeout(() => { loader.classList.add('done'); document.body.classList.add('loaded'); }, 220);
-  })();
+  try {
+    if (sessionStorage.getItem('hl') === '1') {
+      lCount.textContent = '100';
+      if (lBar) lBar.style.transform = 'scaleX(1)';
+      loader.classList.add('done'); document.body.classList.add('loaded');
+    } else {
+      let p = 0;
+      const t0 = performance.now();
+      (function loadTick() {
+        const el = performance.now() - t0;
+        p = Math.min(100, Math.round((el / 1500) * 100 * (0.4 + Math.random() * 0.6)));
+        if (el > 1500) p = 100;
+        lCount.textContent = p;
+        lBar.style.transform = `scaleX(${p / 100})`;
+        if (p < 100) requestAnimationFrame(loadTick);
+        else {
+          loader.classList.add('done'); document.body.classList.add('loaded');
+          try { sessionStorage.setItem('hl', '1'); } catch (e) {}
+        }
+      })();
+    }
+  } catch (e) {
+    loader.classList.add('done'); document.body.classList.add('loaded');
+  }
 
   /* ---- scroll reveals ---- */
   const io = new IntersectionObserver(entries => {
@@ -1371,8 +1388,30 @@ void main(){
     return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) + ' · ' +
            d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
   };
+  // emit indexable Event structured data (rich results) from the live feed
+  function emitEventJsonLd(events) {
+    try {
+      if (!events || !events.length) return;
+      const upcoming = events.slice(0, 4).map(e => ({
+        '@type': 'Event',
+        'name': e.title || '42 Berlin AI Club workshop',
+        'description': (e.description || '').slice(0, 250),
+        'startDate': e.event_date || undefined,
+        'eventAttendanceMode': 'https://schema.org/OfflineEventAttendanceMode',
+        'location': e.location ? { '@type': 'Place', 'name': e.location } : { '@type': 'Place', 'name': '42 Berlin Campus' },
+        'organizer': { '@type': 'Organization', 'name': '42 Berlin AI Club', 'url': 'https://42berlinaiclub.de' },
+        'eventStatus': 'https://schema.org/EventScheduled',
+      })).filter(e => e.startDate);
+      if (!upcoming.length) return;
+      const ld = document.createElement('script');
+      ld.type = 'application/ld+json';
+      ld.textContent = JSON.stringify(upcoming.length === 1 ? upcoming[0] : { '@context': 'https://schema.org', '@graph': upcoming });
+      (document.head || document.documentElement).appendChild(ld);
+    } catch (e) { /* structured data is progressive enhancement */ }
+  }
   async function loadTimeline() {
     const events = await j('/api/events');
+    emitEventJsonLd(events);
     const wrap = document.querySelector('.tl-items');
     if (events && events.length && wrap) {
       wrap.innerHTML = events.slice(0, 4).map((e, i) => `
@@ -1413,19 +1452,22 @@ void main(){
       </div>`).join('');
   }
 
-  /* ---- blog section (only if posts exist) ---- */
+  /* ---- blog section (always rendered so section numbering stays continuous) ---- */
   const posts = await j('/api/posts');
-  if (posts && posts.length && !document.getElementById('blog')) {
+  if (!document.getElementById('blog')) {
     const sec = document.createElement('section');
     sec.id = 'blog';
-    sec.innerHTML = `<div class="shell">
-      <div class="s-label" data-reveal><span class="glyph"><svg viewBox="0 0 26 26" fill="none"><path d="M5 4h16v18H5z" stroke="#7C6CFF" stroke-width="1.4"/><path d="M9 9h8M9 13h8M9 17h5" stroke="#4DE3C1" stroke-width="1.4" stroke-linecap="round"/></svg></span>06 / Signals <span class="l-line"></span></div>
-      <h2 class="s-title" data-reveal>From the <span class="accent">blog.</span></h2>
-      <div class="proj-grid">${posts.slice(0, 3).map(p => `
+    const grid = posts && posts.length
+      ? `<div class="proj-grid">${posts.slice(0, 3).map(p => `
         <div class="proj" data-reveal data-hover>
           <span class="p-star"></span>
           <h3>${p.title}</h3><p>${(p.summary || (p.content || '').slice(0, 110))}</p>
-        </div>`).join('')}</div></div>`;
+        </div>`).join('')}</div>`
+      : `<div class="blog-empty" data-reveal style="color:var(--muted);font-size:15px;border:1px dashed var(--line);border-radius:16px;padding:26px 22px;background:rgba(18,16,43,.35)">Signals are quiet right now — new field notes drop here as we publish them.</div>`;
+    sec.innerHTML = `<div class="shell">
+      <div class="s-label" data-reveal><span class="glyph"><svg viewBox="0 0 26 26" fill="none"><path d="M5 4h16v18H5z" stroke="#7C6CFF" stroke-width="1.4"/><path d="M9 9h8M9 13h8M9 17h5" stroke="#4DE3C1" stroke-width="1.4" stroke-linecap="round"/></svg></span>06 / Signals <span class="l-line"></span></div>
+      <h2 class="s-title" data-reveal>From the <span class="accent">blog.</span></h2>
+      ${grid}</div>`;
     document.getElementById('responsible')?.before(sec);
   }
 
