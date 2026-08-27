@@ -11,7 +11,7 @@
 <body>
 <!-- AUTH GATE -->
 <script>(function () {
-  fetch('/api/admin/me', { credentials: 'include' })
+  fetch('/api/member/me', { credentials: 'include' })
     .then(r => { if (!r.ok) window.location.href = '/login.html'; })
     .catch(() => { window.location.href = '/login.html'; });
 })();
