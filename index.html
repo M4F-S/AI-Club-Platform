@@ -1688,6 +1688,29 @@ void main(){
     document.getElementById('member-overlay')?.classList.remove('open');
     openWs();
     document.getElementById('ws-title').textContent = 'Loading…';
+    
+    // Handle interactive preview for upcoming fallback events
+    if (String(eventId).startsWith('fb')) {
+      const fbEvents = {
+        'fb1': { title: 'AI Build Weekend / Hackathon', type: 'Hackathon', desc: 'An intensive 48-hour build sprint where 42 Berlin students build and deploy production AI systems with compute grants and mentorship.' },
+        'fb2': { title: 'Guest Speaker Series & LLM Architecture', type: 'Tech Talk', desc: 'Deep dive into transformer internals, attention mechanisms, and real-world production deployment with leading industry researchers.' },
+        'fb3': { title: 'Prompt & RAG Lab', type: 'Hands-on Lab', desc: 'Hands-on practical session building retrieval-augmented generation pipelines, vector embeddings, and chunking strategies.' }
+      };
+      const ev = fbEvents[eventId] || { title: 'Upcoming Event', type: 'Workshop', desc: 'Details for this upcoming session will be published soon.' };
+      document.getElementById('ws-type').textContent = ev.type;
+      document.getElementById('ws-title').textContent = ev.title;
+      document.getElementById('ws-meta').innerHTML = '<span>◷ Upcoming Semester</span><span>◈ 42 Berlin Campus</span>';
+      document.getElementById('ws-materials').innerHTML = `
+        <div class="ws-doc" style="padding: 32px 24px; text-align: center; display: block; background: var(--ink1); border: 1px solid var(--line); border-radius: 16px;">
+          <p style="color:var(--text); font-size: 16px; line-height: 1.6; max-width: 52ch; margin: 0 auto 24px;">${ev.desc}</p>
+          <a href="/become-member.html" class="btn btn-primary" data-hover style="display:inline-flex; margin: 0 auto;">Join Network for RSVP & Live Stream Access <span class="arr">→</span></a>
+        </div>
+      `;
+      const quizBox = document.getElementById('ws-quiz');
+      if (quizBox) quizBox.innerHTML = '<div class="m-loading" style="padding:40px 0;text-align:center;color:var(--muted);">Interactive quiz unlocks once the live workshop concludes.</div>';
+      return;
+    }
+
     try {
       const ev = await j('/api/events/' + eventId);
       currentEvent = ev;
