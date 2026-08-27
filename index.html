@@ -76,8 +76,6 @@
     <a href="#events" data-hover>Events</a>
     <a href="#projects" data-hover>Projects</a>
     <a href="#join" data-hover>Join</a>
-    <a href="/login.html" data-hover>Login</a>
-    <a href="/admin.html" data-hover>Admin</a>
   </div>
   <button class="nav-member" id="nav-member-btn" data-hover aria-label="Member area">
     <svg viewBox="0 0 16 16" width="13" height="13" fill="none"><circle cx="8" cy="5.2" r="3" stroke="currentColor" stroke-width="1.4"/><path d="M2 14c1-3.2 3.4-4.6 6-4.6s5 1.4 6 4.6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
@@ -90,10 +88,7 @@
   <a href="#activities"><i></i>Do</a>
   <a href="#events"><i></i>Events</a>
   <a href="#projects"><i></i>Builds</a>
-  <a href="/members/"><i></i>Members</a>
   <a href="#join"><i></i>Join</a>
-  <a href="/login.html"><i></i>Login</a>
-  <a href="/admin.html"><i></i>Admin</a>
 </div>
 
 <main id="main">
@@ -244,6 +239,20 @@
     </div>
     <h2 class="s-title" data-reveal>The project <span class="accent">constellation.</span></h2>
     <div class="proj-grid">
+      <a href="https://github.com/M4F-S/mnemosyne" target="_blank" rel="noopener noreferrer" class="proj" data-reveal data-hover style="text-decoration:none;color:inherit;display:block;">
+        <span class="p-star" style="background:var(--violet);box-shadow:0 0 12px var(--violet)"></span>
+        <h3>Mnemosyne</h3>
+        <p>Multi-tiered cognitive memory & graph engine for autonomous AI agents — hybrid pgvector search & Obsidian vault sync.</p>
+        <div class="p-tags"><span>Python</span><span>pgvector</span><span>PostgreSQL</span><span>FastAPI</span><span>MCP</span></div>
+        <div class="p-link"><i></i>Open Source ↗</div>
+      </a>
+      <a href="/apobase/" target="_blank" rel="noopener noreferrer" class="proj" data-reveal data-hover style="text-decoration:none;color:inherit;display:block;">
+        <span class="p-star" style="background:var(--mint);box-shadow:0 0 12px var(--mint)"></span>
+        <h3>Apobase</h3>
+        <p>High-speed digital knowledge terminal and AI assistant for community pharmacies — real-time verification & calculators.</p>
+        <div class="p-tags"><span>JavaScript</span><span>Python</span><span>Healthcare AI</span><span>PWA</span></div>
+        <div class="p-link"><i></i>Launch Terminal ↗</div>
+      </a>
       <div class="proj" data-reveal data-hover>
         <span class="p-star"></span>
         <h3>PeerReview Bot</h3>
@@ -716,7 +725,7 @@
   resize();
   // Low-end guard: prefer a static constellation on reduced-motion, very small
   // screens (mobile) or low-memory devices to save battery/CPU.
-  var lowEnd = (window.innerWidth < 480) || (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 2);
+  var lowEnd = false;
   if (reduced || lowEnd) { step(0); draw(); }   // static constellation
   else (function loop(t) { step(t); draw(); requestAnimationFrame(loop); })(0);
 })();
