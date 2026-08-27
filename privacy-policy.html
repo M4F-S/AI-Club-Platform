@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Privacy Policy — 42 Berlin AI Club</title>
-    <link rel="stylesheet" href="/assets/new-design-system.css?v=15">
+<link rel="stylesheet" href="/assets/new-design-system.css?v=16">
 <meta name="description" content="Privacy policy for the 42 Berlin AI Club.">
 <meta name="theme-color" content="#060612">
 <meta property="og:title" content="Privacy Policy — 42 Berlin AI Club">
@@ -19,55 +19,23 @@
 <meta name="twitter:image" content="https://42berlinaiclub.de/assets/og-card.png">
 <link rel="icon" type="image/png" href="/assets/favicon-64.png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
-
-
-
-
+<link rel="preconnect" href="https://api.fontshare.com">
 
 <style>
-    :root { --bg: var(--ink0); --surface: var(--panel); --text: var(--text); --text-muted: var(--muted); --accent-1: var(--violet); --accent-2: var(--mint); --accent-3: var(--pink); --border: var(--line); --shadow: 0 4px 24px rgba(0,0,0,0.3); --radius: 16px; }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: var(--font-b); background: var(--bg); color: var(--text); line-height: 1.7; }
-    .container { max-width: 720px; margin: 0 auto; padding: 0 24px; }
-    nav { background: var(--surface); border-bottom: 1px solid var(--border); padding: 16px 0; }
-    nav .container { display: flex; justify-content: space-between; align-items: center; }
-    .logo { display: flex; align-items: center; gap: 10px; font-family: 'Space Grotesk', sans-serif; font-weight: 700; color: var(--text); text-decoration: none; }
-    .logo-icon { width: 34px; height: 34px; border-radius: 10px; background: linear-gradient(135deg, var(--accent-1), var(--accent-2)); display: flex; align-items: center; justify-content: center; }
-    .logo-icon svg { width: 22px; height: 22px; }
-    main { padding: 80px 0; }
-    h1 { font-family: 'Space Grotesk', sans-serif; font-size: 2.2rem; margin-bottom: 24px; }
-    h2 { font-family: 'Space Grotesk', sans-serif; font-size: 1.4rem; margin: 32px 0 12px; }
-    p { margin-bottom: 16px; color: var(--text-muted); }
-    ul { margin: 12px 0 16px 24px; color: var(--text-muted); }
-    a { color: var(--accent-1); }
-    @media (max-width: 768px) { .container { padding: 0 20px; } h1 { font-size: 1.8rem; } }
-  </style>
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": [
-    {
-      "@type": "ListItem",
-      "position": 1,
-      "name": "42 Berlin AI Club",
-      "item": "https://42berlinaiclub.de/"
-    },
-    {
-      "@type": "ListItem",
-      "position": 2,
-      "name": "Privacy Policy",
-      "item": "https://42berlinaiclub.de/privacy-policy.html"
-    }
-  ]
-}
-</script>
-  <link rel="preconnect" href="https://api.fontshare.com">
+  .legal-shell { max-width: 860px; margin: 0 auto; padding: 140px 24px 80px; position: relative; z-index: 2; }
+  .legal-card { background: var(--panel); border: 1px solid var(--line); border-radius: 20px; padding: clamp(24px, 4vw, 44px); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+  .legal-section { margin-bottom: 32px; padding-bottom: 24px; border-bottom: 1px solid rgba(124,108,255,0.1); }
+  .legal-section:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+  .legal-section h2 { font-family: var(--font-d); font-size: 1.25rem; font-weight: 600; color: var(--text) !important; margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+  .legal-section h2 span.num { color: var(--mint); font-family: var(--font-b); font-size: 0.9rem; }
+  .legal-section p { font-size: 15px; color: var(--muted) !important; line-height: 1.7; margin-bottom: 12px; }
+  .legal-section ul { margin: 12px 0 12px 20px; color: var(--muted) !important; font-size: 15px; line-height: 1.7; }
+  .legal-section li { margin-bottom: 6px; }
+  .legal-section a { color: var(--mint); text-decoration: underline; text-underline-offset: 3px; }
+</style>
 </head>
 <body>
 <a href="#main" class="skip-link">Skip to main content</a>
-
-<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="brandGrad" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse"><stop stop-color="#7C6CFF"/><stop offset="1" stop-color="#4DE3C1"/></linearGradient></defs></svg>
 
 <div id="loader">
   <img class="l-mark" src="/assets/logo-gate.png" alt="42 Berlin AI Club emblem">
@@ -93,79 +61,106 @@
     <span class="logo-text">42 BERLIN<small>AI Club</small></span>
   </a>
   <div class="nav-links">
-    <a href="/" data-hover>Home</a>
+    <a href="/#events" data-hover>Events</a>
+    <a href="/#projects" data-hover>Projects</a>
     <a href="/become-member.html" data-hover>Membership</a>
     <a href="/become-partner.html" data-hover>Partners</a>
-    <a href="/login.html" data-hover>Login</a>
-    <a href="/admin.html" data-hover>Admin</a>
   </div>
-  <button class="nav-member" id="nav-member-btn" data-hover aria-label="Member area">
+  <button class="nav-member" id="nav-member-btn" data-hover aria-label="Member area" onclick="window.location.href='/login.html'">
     <svg viewBox="0 0 16 16" width="13" height="13" fill="none"><circle cx="8" cy="5.2" r="3" stroke="currentColor" stroke-width="1.4"/><path d="M2 14c1-3.2 3.4-4.6 6-4.6s5 1.4 6 4.6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
     <span id="nav-member-label">Members</span>
-  </button>
-  <button class="nav-agent" id="nav-agent-btn" data-hover>
-    <span class="dot"></span> Synapse AI
   </button>
 </nav>
 
 <div class="m-nav" role="navigation" aria-label="Mobile navigation">
-  <a href="/"><i></i>Home</a>
-  <a href="/become-member.html"><i></i>Join</a>
-  <a href="/login.html"><i></i>Login</a>
+  <a href="/#events"><i></i>Events</a>
+  <a href="/#projects"><i></i>Builds</a>
+  <a href="/become-member.html"><i></i>Membership</a>
+  <a href="/become-partner.html"><i></i>Partners</a>
 </div>
 
 <main id="main">
-<div class="container">
-      <h1>Privacy Policy</h1>
-      <p><strong>Effective date:</strong> 22 June 2026</p>
-
-      <h2>1. What we collect</h2>
-      <p>When you apply for membership, contact us, or submit a partnership inquiry, we collect the information you provide (name, 42 intra username, email address, level, and message). For partners we also collect organization name and partnership type.</p>
-
-      <h2>2. How we use your data</h2>
-      <ul>
-        <li>To review and approve membership applications.</li>
-        <li>To create and manage your member account.</li>
-        <li>To respond to messages and partnership inquiries.</li>
-        <li>To notify members about club events and updates.</li>
-      </ul>
-
-      <h2>3. Where your data is stored</h2>
-      <p>Your data is stored in a private database on the same server that hosts this website. Access is restricted to club administrators.</p>
-
-      <h2>4. Who can see your data</h2>
-      <p>Only club administrators can view application and contact data. Public blog posts and public-facing pages do not expose applicant or member personal information.</p>
-
-      <h2>5. Cookies</h2>
-      <p>When you log in to the member or admin area, we set a secure session cookie. It is HttpOnly, Secure, and expires when you log out or after 24 hours of inactivity.</p>
-
-      <h2>6. Third parties</h2>
-      <p>We do not sell or share your personal data with third parties. We may use external fonts and icons loaded from Google Fonts and unpkg; those services may log your IP address according to their own privacy policies.</p>
-
-      <h2>7. Your rights</h2>
-      <p>You can ask us to update or delete your personal data at any time by emailing the admin team. You can also change your password in the member area.</p>
-
-      <h2>8. Contact</h2>
-      <p>If you have questions about this policy, contact us through the form on the home page or email the club admin.</p>
+  <div class="legal-shell">
+    <div class="s-label" style="margin-bottom: 20px;">
+      <span class="glyph"><svg viewBox="0 0 26 26" fill="none"><rect x="4" y="4" width="18" height="18" rx="2" stroke="#7C6CFF" stroke-width="1.4"/><path d="M9 13h8M9 9h8M9 17h5" stroke="#4DE3C1" stroke-width="1.4" stroke-linecap="round"/></svg></span>
+      00 / Legal & Trust
+      <span class="l-line"></span>
     </div>
+    <h1 style="font-family:var(--font-d); font-size:clamp(32px, 5vw, 48px); font-weight:600; color:var(--text); line-height:1.1; margin-bottom:12px;">
+      Privacy <span class="accent">Policy.</span>
+    </h1>
+    <p style="color:var(--muted); font-size:16px; margin-bottom:40px;">
+      Effective date: 22 June 2026 · Built with respect for student privacy and data sovereignty.
+    </p>
+
+    <div class="legal-card">
+      <div class="legal-section">
+        <h2><span class="num">01.</span> What we collect</h2>
+        <p>When you apply for membership, contact us, or submit a partnership inquiry, we collect the information you explicitly provide (name, 42 intra username, email address, campus level, and message). For partners, we also collect organization name and partnership type.</p>
+      </div>
+
+      <div class="legal-section">
+        <h2><span class="num">02.</span> How we use your data</h2>
+        <p>Your information is used strictly to support club operations and communications:</p>
+        <ul>
+          <li>To review and verify 42 Berlin student status for membership applications.</li>
+          <li>To create and securely manage your member authentication account.</li>
+          <li>To respond to inbound inquiries, project proposals, and corporate partnerships.</li>
+          <li>To deliver workshop updates, slide releases, and quiz score tracking.</li>
+        </ul>
+      </div>
+
+      <div class="legal-section">
+        <h2><span class="num">03.</span> Where your data is stored</h2>
+        <p>Your data is stored in an encrypted SQLite database on the club's dedicated self-hosted server in Germany. Access is strictly restricted to authenticated club administrators via SSH and role-based permissions.</p>
+      </div>
+
+      <div class="legal-section">
+        <h2><span class="num">04.</span> Data visibility & privacy</h2>
+        <p>Only verified club administrators can view application and contact submissions. Public-facing pages and workshop directories never expose personal contact information or member credentials.</p>
+      </div>
+
+      <div class="legal-section">
+        <h2><span class="num">05.</span> Authentication & cookies</h2>
+        <p>When you log in to the member or admin area, we set a secure session cookie (`session`). It is marked `HttpOnly`, `SameSite=Lax`, and `Secure` to safeguard your session, expiring automatically upon logout or after inactivity.</p>
+      </div>
+
+      <div class="legal-section">
+        <h2><span class="num">06.</span> Third-party services</h2>
+        <p>We do not sell, rent, or monetize your personal data. External web assets (such as privacy-preserving fonts loaded from Fontshare) adhere strictly to European GDPR privacy standards.</p>
+      </div>
+
+      <div class="legal-section">
+        <h2><span class="num">07.</span> Your rights (GDPR)</h2>
+        <p>Under GDPR, you hold full rights to access, rectify, or request the deletion of your personal data at any time. You can also reset your credentials directly via the member portal.</p>
+      </div>
+
+      <div class="legal-section">
+        <h2><span class="num">08.</span> Contact the team</h2>
+        <p>If you have any questions regarding this policy or wish to request data erasure, reach out directly to the club team at <a href="mailto:contact@42berlinaiclub.de">contact@42berlinaiclub.de</a>.</p>
+      </div>
+    </div>
+  </div>
 </main>
 
 <footer>
   <div class="f-nodes">
-    <a href="mailto:hello@42berlinaiclub.de" class="f-node" data-hover><span class="fn-dot"></span>Email</a>
-    <a href="/" class="f-node" data-hover><span class="fn-dot" style="background:var(--mint);box-shadow:0 0 14px var(--mint)"></span>Home</a>
-    <a href="/become-member.html" class="f-node" data-hover><span class="fn-dot" style="background:var(--pink);box-shadow:0 0 14px var(--pink)"></span>Join</a>
+    <a href="mailto:contact@42berlinaiclub.de" class="f-node" data-hover><span class="fn-dot"></span>Email</a>
+    <a href="/#events" class="f-node" data-hover><span class="fn-dot" style="background:var(--mint);box-shadow:0 0 14px var(--mint)"></span>Events</a>
+    <a href="/#projects" class="f-node" data-hover><span class="fn-dot" style="background:var(--pink);box-shadow:0 0 14px var(--pink)"></span>Projects</a>
+    <a href="/become-member.html" class="f-node" data-hover><span class="fn-dot" style="background:#5a8bff;box-shadow:0 0 14px #5a8bff"></span>Join</a>
     <a href="/login.html" class="f-node" data-hover><span class="fn-dot" style="background:var(--violet);box-shadow:0 0 14px var(--violet)"></span>Login</a>
     <a href="/admin.html" class="f-node" data-hover><span class="fn-dot" style="background:#ff5a8b;box-shadow:0 0 14px #ff5a8b"></span>Admin</a>
+    <a href="/privacy-policy.html" class="f-node" data-hover><span class="fn-dot" style="background:var(--violet);box-shadow:0 0 14px var(--violet)"></span>Privacy</a>
   </div>
   <img class="f-mark" src="/assets/logo-gate.png" alt="42 Berlin AI Club">
   <div class="f-sign">Open a <span style="background:linear-gradient(110deg,var(--violet),var(--mint));-webkit-background-clip:text;background-clip:text;color:transparent">channel.</span></div>
   <p style="color:var(--muted);font-size:14px;max-width:44ch;margin:0 auto 34px">Questions, ideas, or partnership interest — the network listens.</p>
   <div class="f-legal">42 Berlin AI Club · Student-led · Vendor-neutral · &copy; 2026</div>
 </footer>
-<!-- PageAgent button -->
+
 <button id="orb" class="orb" aria-label="Open Synapse AI agent" onclick="toggle()">
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2.5"/><path d="M12 8v4"/><path d="M12 14h.01"/><circle cx="12" cy="17" r="2.5"/><circle cx="5" cy="12" r="2.5"/><circle cx="19" cy="12" r="2.5"/></svg>
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2.5"/><path d="M12 8v4"/><path d="M12 14h.01"/><circle cx="12" cy="17" r="2.5"/><circle cx="5" cy="12" r="2.5"/></svg>
 </button>
 <div id="agent-panel" role="dialog" aria-label="Synapse AI chat">
   <div class="ap-head">
@@ -181,7 +176,5 @@
   </form>
 </div>
 <script src="/assets/site.js?v=1"></script>
-
-
 </body>
 </html>

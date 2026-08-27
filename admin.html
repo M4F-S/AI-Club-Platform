@@ -257,9 +257,7 @@
     <a href="/" data-hover>Home</a>
     <a href="/become-member.html" data-hover>Membership</a>
     <a href="/become-partner.html" data-hover>Partners</a>
-    <a href="/login.html" data-hover>Login</a>
-    <a href="/admin.html" data-hover>Admin</a>
-  </div>
+    </div>
   <button class="nav-member" id="nav-member-btn" data-hover aria-label="Member area">
     <svg viewBox="0 0 16 16" width="13" height="13" fill="none"><circle cx="8" cy="5.2" r="3" stroke="currentColor" stroke-width="1.4"/><path d="M2 14c1-3.2 3.4-4.6 6-4.6s5 1.4 6 4.6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
     <span id="nav-member-label">Members</span>
@@ -273,9 +271,7 @@
   <a href="/"><i></i>Home</a>
   <a href="/become-member.html"><i></i>Membership</a>
   <a href="/become-partner.html"><i></i>Partners</a>
-  <a href="/login.html"><i></i>Login</a>
-  <a href="/admin.html"><i></i>Admin</a>
-</div>
+  </div>
 
 <main id="main">
 <div class="form-header">
@@ -599,7 +595,11 @@
           </div>
           <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border);">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-              <strong>Materials</strong>
+              <div>
+                <strong style="margin-right: 12px;">Materials</strong>
+                <button class="admin-btn admin-btn-success" onclick="toggleAllMaterials(${event.id}, true)" style="font-size: 0.8rem; padding: 4px 10px;">Reveal All</button>
+                <button class="admin-btn admin-btn-secondary" onclick="toggleAllMaterials(${event.id}, false)" style="font-size: 0.8rem; padding: 4px 10px; margin-left: 6px;">Hide All</button>
+              </div>
               <span class="meta" id="material-count-${event.id}">Loading...</span>
             </div>
             <div id="materials-${event.id}"></div>
@@ -696,6 +696,14 @@
           <button class="admin-btn admin-btn-danger" onclick="deleteMaterial(${eventId}, ${m.id})" style="font-size: 0.85rem; padding: 6px 12px;">Delete</button>
         </div>
       </div>`).join('');
+  }
+
+  async function toggleAllMaterials(eventId, state) {
+    adminAlert.className = 'alert';
+    const { ok, data } = await api('/admin/events/' + eventId + '/materials/reveal_all', { method: 'POST', body: JSON.stringify({ state }) });
+    adminAlert.className = `alert show ${ok ? 'success' : 'error'}`;
+    adminAlert.textContent = ok ? (data.message || 'Updated') : (data.error || 'Failed');
+    if (ok) loadEventMaterials(eventId);
   }
 
   async function toggleMaterialReveal(eventId, materialId) {

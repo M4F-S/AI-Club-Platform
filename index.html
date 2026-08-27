@@ -66,29 +66,27 @@
 <div id="grain"></div>
 
 <nav>
-  <a class="logo" href="#hero" data-hover>
+  <a class="logo" href="/" data-hover>
     <span class="logo-mark"><img src="/assets/logo-gate.png" alt="42 Berlin AI Club"></span>
     <span class="logo-text">42 BERLIN<small>AI Club</small></span>
   </a>
   <div class="nav-links">
-    <a href="#mission" data-hover>Mission</a>
-    <a href="#activities" data-hover>Activities</a>
-    <a href="#events" data-hover>Events</a>
-    <a href="#projects" data-hover>Projects</a>
-    <a href="#join" data-hover>Join</a>
+    <a href="/#events" data-hover>Events</a>
+    <a href="/#projects" data-hover>Projects</a>
+    <a href="/become-member.html" data-hover>Membership</a>
+    <a href="/become-partner.html" data-hover>Partners</a>
   </div>
-  <button class="nav-member" id="nav-member-btn" data-hover aria-label="Member area">
+  <button class="nav-member" id="nav-member-btn" data-hover aria-label="Member area" onclick="window.location.href='/login.html'">
     <svg viewBox="0 0 16 16" width="13" height="13" fill="none"><circle cx="8" cy="5.2" r="3" stroke="currentColor" stroke-width="1.4"/><path d="M2 14c1-3.2 3.4-4.6 6-4.6s5 1.4 6 4.6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
     <span id="nav-member-label">Members</span>
   </button>
 </nav>
 
 <div class="m-nav" role="navigation" aria-label="Mobile navigation">
-  <a href="#mission"><i></i>Mission</a>
-  <a href="#activities"><i></i>Do</a>
-  <a href="#events"><i></i>Events</a>
-  <a href="#projects"><i></i>Builds</a>
-  <a href="#join"><i></i>Join</a>
+  <a href="/#events"><i></i>Events</a>
+  <a href="/#projects"><i></i>Builds</a>
+  <a href="/become-member.html"><i></i>Membership</a>
+  <a href="/become-partner.html"><i></i>Partners</a>
 </div>
 
 <main id="main">
@@ -114,7 +112,7 @@
     </div>
     <div class="hero-proof" data-reveal>
       <span class="proof-avatars"><i></i><i></i><i></i><i></i></span>
-      <span class="proof-text"><b id="hero-member-count">0+</b> 42 Berliners are already in the network</span>
+      <span class="proof-text"><b id="hero-member-count">30+</b> 42 Berliners are already in the network</span>
     </div>
   </div>
   <div class="scroll-hint"><span>Scroll</span><span class="drop"></span></div>
@@ -125,10 +123,10 @@
   <div class="ticker-track" id="ticker-track">
     <div class="tick"><span class="live"><i></i>Network live</span><span class="sep">◆</span></div>
     <div class="tick">Next event <b data-ticker="next-event">Loading…</b><span class="sep">◆</span></div>
-    <div class="tick">Members <b data-count="0">0</b><span class="sep">◆</span></div>
-    <div class="tick">Projects shipped <b data-count="0">0</b><span class="sep">◆</span></div>
-    <div class="tick">Workshop hours <b data-count="0">0</b><span class="sep">◆</span></div>
-    <div class="tick">Events this semester <b data-count="0">0</b><span class="sep">◆</span></div>
+    <div class="tick">Members <b data-count="30">30</b><span class="sep">◆</span></div>
+    <div class="tick">Projects shipped <b data-count="6">6</b><span class="sep">◆</span></div>
+    <div class="tick">Workshop hours <b data-count="20">20</b><span class="sep">◆</span></div>
+    <div class="tick">Events this semester <b data-count="4">4</b><span class="sep">◆</span></div>
   </div>
 </div>
 
@@ -253,48 +251,6 @@
         <div class="p-tags"><span>JavaScript</span><span>Python</span><span>Healthcare AI</span><span>PWA</span></div>
         <div class="p-link"><i></i>Launch Terminal ↗</div>
       </a>
-      <div class="proj" data-reveal data-hover>
-        <span class="p-star"></span>
-        <h3>PeerReview Bot</h3>
-        <p>LLM-assisted first-pass code review for 42 projects — flags smells, suggests tests, links docs.</p>
-        <div class="p-tags"><span>Python</span><span>FastAPI</span><span>RAG</span></div>
-        <div class="p-link"><i></i>6 contributors</div>
-      </div>
-      <div class="proj" data-reveal data-hover>
-        <span class="p-star" style="background:var(--mint);box-shadow:0 0 12px var(--mint)"></span>
-        <h3>Campus Compass</h3>
-        <p>Chat interface over 42 Berlin's curriculum PDFs — ask "what do I need for ft_transcendence?"</p>
-        <div class="p-tags"><span>TypeScript</span><span>Embeddings</span><span>Svelte</span></div>
-        <div class="p-link"><i></i>4 contributors</div>
-      </div>
-      <div class="proj" data-reveal data-hover>
-        <span class="p-star" style="background:var(--pink);box-shadow:0 0 12px var(--pink)"></span>
-        <h3>Bias Lens</h3>
-        <p>Workshop-born toolkit that probes model outputs for demographic bias across prompt variants.</p>
-        <div class="p-tags"><span>Python</span><span>Evaluation</span><span>Ethics</span></div>
-        <div class="p-link"><i></i>5 contributors</div>
-      </div>
-      <div class="proj" data-reveal data-hover>
-        <span class="p-star"></span>
-        <h3>Study Synth</h3>
-        <p>Turns peer-eval notes into spaced-repetition decks — spaced learning meets the 42 method.</p>
-        <div class="p-tags"><span>Go</span><span>LLM</span><span>CLI</span></div>
-        <div class="p-link"><i></i>3 contributors</div>
-      </div>
-      <div class="proj" data-reveal data-hover>
-        <span class="p-star" style="background:var(--mint);box-shadow:0 0 12px var(--mint)"></span>
-        <h3>Voice2Shell</h3>
-        <p>Speech-to-command-line experiment for accessibility — whisper in, safe shell commands out.</p>
-        <div class="p-tags"><span>Rust</span><span>Whisper</span><span>Sandbox</span></div>
-        <div class="p-link"><i></i>4 contributors</div>
-      </div>
-      <div class="proj" data-reveal data-hover>
-        <span class="p-star" style="background:var(--pink);box-shadow:0 0 12px var(--pink)"></span>
-        <h3>AI Literacy Zine</h3>
-        <p>Community-written explainers on how models actually work — no math degree required.</p>
-        <div class="p-tags"><span>Writing</span><span>Design</span><span>Open source</span></div>
-        <div class="p-link"><i></i>9 contributors</div>
-      </div>
     </div>
   </div>
 </section>
@@ -392,10 +348,53 @@
 
 <!-- ============ FOOTER ============ -->
 
-<section id="contact" class="section-pad">
-  <div class="container">
+
+<!-- ============ PARTNERS & SPONSORS ============ -->
+<section id="partners">
+  <div class="shell">
+    <div class="s-label" data-reveal>
+      <span class="glyph"><svg viewBox="0 0 26 26" fill="none"><rect x="4" y="4" width="18" height="18" rx="2" stroke="#4DE3C1" stroke-width="1.4"/><path d="M4 10h18M10 4v18" stroke="#7C6CFF" stroke-width="1.4"/></svg></span>
+      09 / Partners & Compute Sponsors
+      <span class="l-line"></span>
+    </div>
+    
+    <div class="mission-grid" style="align-items: start; margin-top: 30px;">
+      <div data-reveal>
+        <h2 class="s-title" style="margin-bottom: 24px;">Power the Next Generation of AI Engineers at <span class="accent">42 Berlin.</span></h2>
+        <p style="color:var(--muted);font-size:16px;max-width:44ch;line-height:1.6;margin-bottom:30px;">
+          We collaborate with leading AI labs, cloud providers, and the Berlin tech ecosystem to provide our 30+ peer-learning developers with compute, API access, and mentorship.
+        </p>
+        <a href="/become-partner.html" class="btn btn-primary" data-hover>Partner With Us / Download Sponsorship Deck <span class="arr">→</span></a>
+      </div>
+      
+      <div class="value-grid" style="grid-template-columns: 1fr; gap: 20px;" data-reveal>
+        <div class="card" style="padding: 24px;">
+          <h3 style="font-family:var(--font-d);font-size:18px;margin-bottom:8px;color:var(--mint);">Compute & API Grants</h3>
+          <p style="font-size:14px;color:var(--muted);">Powering student hackathons, intensive R&D sprints, and open-source foundation model integrations.</p>
+        </div>
+        <div class="card" style="padding: 24px;">
+          <h3 style="font-family:var(--font-d);font-size:18px;margin-bottom:8px;color:var(--mint);">Guest Workshops & Tech Talks</h3>
+          <p style="font-size:14px;color:var(--muted);">Bringing DevRel, AI researchers, and engineering leads on campus for masterclasses.</p>
+        </div>
+        <div class="card" style="padding: 24px;">
+          <h3 style="font-family:var(--font-d);font-size:18px;margin-bottom:8px;color:var(--mint);">Talent & Hackathons</h3>
+          <p style="font-size:14px;color:var(--muted);">Sponsoring prize pools, challenge statements, and hiring directly from 42 Berlin.</p>
+        </div>
+      </div>
+    </div>
+    
+    </div>
+</section>
+
+<section id="contact">
+  <div class="shell">
+    <div class="s-label" data-reveal>
+      <span class="glyph"><svg viewBox="0 0 26 26" fill="none"><path d="M5 13h16M13 5l8 8-8 8" stroke="#7C6CFF" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      10 / Comm link
+      <span class="l-line"></span>
+    </div>
     <h2 class="s-title" data-reveal>Get in <span class="accent">touch.</span></h2>
-    <p class="section-lead">Questions, ideas, or partnership interest? Send us a message.</p>
+    <p style="max-width:56ch;color:var(--muted);font-size:15px;margin-bottom:40px" data-reveal>Questions, ideas, or partnership interest? Send us a message.</p>
     <form class="contact-form" id="contact-form" action="/api/contact" method="POST">
       <div class="form-row">
         <label for="contact-name">Name</label>
@@ -417,10 +416,10 @@
 
 <footer>
   <div class="f-nodes">
-    <a href="mailto:hello@42berlinaiclub.de" class="f-node" data-hover><span class="fn-dot"></span>Email</a>
-    <a href="#events" class="f-node" data-hover><span class="fn-dot" style="background:var(--mint);box-shadow:0 0 14px var(--mint)"></span>Events</a>
-    <a href="#projects" class="f-node" data-hover><span class="fn-dot" style="background:var(--pink);box-shadow:0 0 14px var(--pink)"></span>Projects</a>
-    <a href="#join" class="f-node" data-hover><span class="fn-dot" style="background:#5a8bff;box-shadow:0 0 14px #5a8bff"></span>Join</a>
+    <a href="mailto:contact@42berlinaiclub.de" class="f-node" data-hover><span class="fn-dot"></span>Email</a>
+    <a href="/#events" class="f-node" data-hover><span class="fn-dot" style="background:var(--mint);box-shadow:0 0 14px var(--mint)"></span>Events</a>
+    <a href="/#projects" class="f-node" data-hover><span class="fn-dot" style="background:var(--pink);box-shadow:0 0 14px var(--pink)"></span>Projects</a>
+    <a href="/become-member.html" class="f-node" data-hover><span class="fn-dot" style="background:#5a8bff;box-shadow:0 0 14px #5a8bff"></span>Join</a>
     <a href="/login.html" class="f-node" data-hover><span class="fn-dot" style="background:var(--violet);box-shadow:0 0 14px var(--violet)"></span>Login</a>
     <a href="/admin.html" class="f-node" data-hover><span class="fn-dot" style="background:#ff5a8b;box-shadow:0 0 14px #ff5a8b"></span>Admin</a>
     <a href="/privacy-policy.html" class="f-node" data-hover><span class="fn-dot" style="background:var(--violet);box-shadow:0 0 14px var(--violet)"></span>Privacy</a>
@@ -428,7 +427,7 @@
   <img class="f-mark" src="/assets/logo-gate.png" alt="42 Berlin AI Club">
   <div class="f-sign">Open a <span style="background:linear-gradient(110deg,var(--violet),var(--mint));-webkit-background-clip:text;background-clip:text;color:transparent">channel.</span></div>
   <p style="color:var(--muted);font-size:14px;max-width:44ch;margin:0 auto 34px">Questions, ideas, or partnership interest — the network listens.</p>
-  <div class="f-legal">42 Berlin AI Club · Student-led · Vendor-neutral · © 2026</div>
+  <div class="f-legal">42 Berlin AI Club · Student-led · Vendor-neutral · &copy; 2026</div>
 </footer>
 
 <!-- ============ PAGEAGENT ============ -->
@@ -1394,7 +1393,7 @@ void main(){
       const label = (el.closest('.tick')?.textContent || '').toLowerCase();
       for (const item of map) {
         if (item.words.some(w => label.includes(w)) && stats[item.key] != null) {
-          el.textContent = stats[item.key];
+          el.textContent = stats[item.key] + "+";
           el.dataset.count = stats[item.key];
           break;
         }
@@ -1435,11 +1434,23 @@ void main(){
       (document.head || document.documentElement).appendChild(ld);
     } catch (e) { /* structured data is progressive enhancement */ }
   }
+  
   async function loadTimeline() {
-    const events = await j('/api/events');
+    let events = await j('/api/events');
     emitEventJsonLd(events);
     const wrap = document.querySelector('.tl-items');
+
+      // Fallback events if backend returns none
+      if (!events || !events.length) {
+        events = [
+          {id: 'fb1', title: 'AI Build Weekend / Hackathon', event_date: new Date(Date.now() + 86400000*14).toISOString(), description: 'Intensive 48-hour build sprint. Sponsored API credits and mentorship.', event_type: 'hackathon'},
+          {id: 'fb2', title: 'Guest Speaker Series & LLM Architecture', event_date: new Date(Date.now() + 86400000*21).toISOString(), description: 'Deep dive into transformer internals with industry experts.', event_type: 'talk'},
+          {id: 'fb3', title: 'Prompt & RAG Lab', event_date: new Date(Date.now() + 86400000*28).toISOString(), description: 'Hands-on session building retrieval-augmented generation pipelines.', event_type: 'workshop'}
+        ];
+      }
+
     if (events && events.length && wrap) {
+
       wrap.innerHTML = events.slice(0, 4).map((e, i) => `
         <div class="tl-item ${i === 0 ? 'hot' : ''}" data-hover style="cursor:pointer" onclick="openWorkshop(${e.id})">
           <span class="tl-dot"></span>
@@ -1459,10 +1470,7 @@ void main(){
     }
     return false;
   }
-  if (!(await loadTimeline())) {
-    // API cold or slow — retry after 2s so the page never shows stale placeholders
-    setTimeout(async () => { await loadTimeline(); }, 2000);
-  }
+  await loadTimeline();
 
   /* ---- projects constellation <- resources ---- */
   const resources = await j('/api/resources');

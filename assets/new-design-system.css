@@ -296,11 +296,16 @@ footer{position:relative;z-index:3;padding:80px clamp(20px,6vw,80px) 46px;text-a
 /* ============ MOBILE BOTTOM NAV ============ */
 .m-nav{display:none}
 @media(max-width:820px){
-  .m-nav{display:flex;position:fixed;bottom:14px;left:50%;transform:translateX(-50%);z-index:95;align-items:center;background:rgba(11,10,30,.88);border:1px solid var(--line);border-radius:99px;padding:5px 6px;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:0 12px 44px rgba(0,0,0,.5);max-width:calc(100vw - 22px);white-space:nowrap}
-  .m-nav a{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:clamp(7.5px,2.3vw,9.5px);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:5px 7px;border-radius:99px;transition:color .3s,background .3s;flex:0 0 auto}
+  .m-nav{display:flex;position:fixed;bottom:14px;left:50%;transform:translateX(-50%);z-index:95;align-items:center;background:rgba(11,10,30,.88);border:1px solid var(--line);border-radius:99px;padding:5px 6px;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:0 12px 44px rgba(0,0,0,.5);width:calc(100vw - 22px);max-width:400px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+  .m-nav::-webkit-scrollbar{display:none;}
+  .m-nav a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:clamp(8px,2.5vw,10px);letter-spacing:.04em;text-transform:uppercase;color:var(--muted);padding:6px 10px;border-radius:99px;transition:color .3s,background .3s;flex:1 0 auto;}
   .m-nav a i{width:4px;height:4px;border-radius:50%;background:var(--violet);box-shadow:0 0 6px var(--violet);font-style:normal;transition:background .3s,box-shadow .3s}
-  .m-nav a:active,.m-nav a:hover{color:var(--text)}
-  .m-nav a:active i,.m-nav a:hover i{background:var(--mint);box-shadow:0 0 10px var(--mint)}
+  .m-nav a:active{color:var(--text)}
+  .m-nav a:active i{background:var(--mint);box-shadow:0 0 10px var(--mint)}
+  @media (hover: hover) {
+    .m-nav a:hover{color:var(--text)}
+    .m-nav a:hover i{background:var(--mint);box-shadow:0 0 10px var(--mint)}
+  }
   .nav-agent{display:none}
   #orb{right:20px;bottom:92px}
   #agent-panel{right:20px;bottom:158px}
@@ -681,3 +686,4 @@ p,li,.section-subtitle {color:#9A94C7 !important}
 #v4-cring{width:34px;height:34px;border:1px solid rgba(124,108,255,.55);transition:width .3s var(--ease-out),height .3s var(--ease-out),border-color .3s}
 body.v4-hot #v4-cring{width:56px;height:56px;border-color:var(--mint)}
 @media(hover:none){#v4-cdot,#v4-cring{display:none}}
+

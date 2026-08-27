@@ -351,7 +351,7 @@
   /* ============ MOBILE TAB BAR (site-wide) ============ */
   (() => {
     if (document.querySelector('.m-nav')) return;
-    const nav = document.createElement('nav');
+    const nav = document.createElement('div');
     nav.className = 'm-nav';
     nav.setAttribute('aria-label', 'Mobile navigation');
     const member = location.pathname.startsWith('/members');
