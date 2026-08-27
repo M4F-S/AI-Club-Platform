@@ -1469,13 +1469,23 @@ void main(){
   const grid = document.querySelector('.proj-grid');
   if (resources && resources.length && grid) {
     const cols = ['var(--violet)', 'var(--mint)', 'var(--pink)'];
-    grid.innerHTML = resources.slice(0, 6).map((r, i) => `
-      <div class="proj" data-reveal data-hover>
-        <span class="p-star" style="background:${cols[i % 3]};box-shadow:0 0 12px ${cols[i % 3]}"></span>
+    grid.innerHTML = resources.map((r, i) => {
+      const col = cols[i % 3];
+      const tags = (r.category || '').split(/[\/,·]+/).map(t => t.trim()).filter(Boolean);
+      const tagHtml = tags.map(t => `<span>${t}</span>`).join('');
+      const linkLabel = r.url && r.url.includes('github') ? 'Open Source ↗' : (r.url && r.url.includes('apobase') ? 'Launch Terminal ↗' : (r.url ? 'View Project ↗' : ''));
+      const linkHtml = r.url ? `<div class="p-link"><i></i>${linkLabel}</div>` : '';
+      const cardInner = `
+        <span class="p-star" style="background:${col};box-shadow:0 0 12px ${col}"></span>
         <h3>${r.title || 'Project'}</h3>
-        <p>${(r.description || '').slice(0, 110)}</p>
-        <div class="p-tags">${r.category ? `<span>${r.category}</span>` : ''}</div>
-      </div>`).join('');
+        <p>${r.description || ''}</p>
+        <div class="p-tags">${tagHtml}</div>
+        ${linkHtml}
+      `;
+      return r.url
+        ? `<a href="${r.url}" target="_blank" rel="noopener noreferrer" class="proj" data-reveal data-hover style="text-decoration:none;color:inherit;display:block;">${cardInner}</a>`
+        : `<div class="proj" data-reveal data-hover>${cardInner}</div>`;
+    }).join('');
   }
 
   /* ---- blog section (always rendered so section numbering stays continuous) ---- */
