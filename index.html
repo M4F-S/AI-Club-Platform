@@ -1483,9 +1483,13 @@ void main(){
         ${linkHtml}
       `;
       return r.url
-        ? `<a href="${r.url}" target="_blank" rel="noopener noreferrer" class="proj" data-reveal data-hover style="text-decoration:none;color:inherit;display:block;">${cardInner}</a>`
-        : `<div class="proj" data-reveal data-hover>${cardInner}</div>`;
+        ? `<a href="${r.url}" target="_blank" rel="noopener noreferrer" class="proj in" data-hover style="text-decoration:none;color:inherit;display:block;">${cardInner}</a>`
+        : `<div class="proj in" data-hover>${cardInner}</div>`;
     }).join('');
+    grid.querySelectorAll('[data-hover]').forEach(el => {
+      el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hot'));
+      el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hot'));
+    });
   }
 
   /* ---- blog section (always rendered so section numbering stays continuous) ---- */
