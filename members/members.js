@@ -36,48 +36,48 @@
     return data.user;
   }
 
+  
   function renderNav(user) {
-    const nav = document.querySelector('.member-nav');
+    const nav = document.querySelector('nav') || document.querySelector('.member-header');
     if (!nav) return;
 
     const MEMBER_BASE = '/members/';
+    const path = location.pathname;
+    
+    const a = (p) => path.endsWith(p) ? 'active' : '';
+    const b = (p) => path.includes(p) ? 'active' : '';
 
-    const adminLink = user.role === 'superadmin' || user.role === 'admin'
-      ? `<li><a href="/admin.html" class="${location.pathname.includes('/admin.html') ? 'active' : ''}"><i data-lucide="shield"></i> Admin</a></li>`
+    const adminLink = (user.role === 'superadmin' || user.role === 'admin')
+      ? `<a href="/admin.html" data-hover style="color:var(--mint)">Admin</a>`
       : '';
 
-    const path = location.pathname;
-    const isDashboard = path.endsWith('/members/index.html') || path.endsWith('/members/') || path.endsWith('/members');
-
-    nav.innerHTML = `
-      <ul>
-        <li><a href="${MEMBER_BASE}index.html" class="${isDashboard ? 'active' : ''}"><i data-lucide="layout-dashboard"></i> Dashboard</a></li>
-        <li><a href="${MEMBER_BASE}blog/index.html" class="${path.includes('/members/blog') ? 'active' : ''}"><i data-lucide="newspaper"></i> Blog</a></li>
-        <li><a href="${MEMBER_BASE}resources.html" class="${path.includes('/members/resources.html') ? 'active' : ''}"><i data-lucide="book-open"></i> Resources</a></li>
-        <li><a href="${MEMBER_BASE}events.html" class="${path.includes('/members/events.html') ? 'active' : ''}"><i data-lucide="calendar"></i> Workshops</a></li>
-        <li><a href="${MEMBER_BASE}perks.html" class="${path.includes('/members/perks.html') ? 'active' : ''}"><i data-lucide="gift"></i> Perks</a></li>
-        <li><a href="${MEMBER_BASE}profile.html" class="${path.includes('/members/profile.html') ? 'active' : ''}"><i data-lucide="user"></i> Profile</a></li>
+    const newNav = document.createElement('nav');
+    newNav.innerHTML = `
+      <a class="logo" href="/" data-hover>
+        <span class="logo-mark"><img src="/assets/logo-gate.png" alt="42 Berlin AI Club"></span>
+        <span class="logo-text">42 BERLIN<small>AI Club</small></span>
+      </a>
+      <div class="nav-links">
+        <a href="${MEMBER_BASE}index.html" class="${a('index.html')||a('/members/')}" data-hover>Dashboard</a>
+        <a href="${MEMBER_BASE}events.html" class="${b('events.html')||b('event.html')}" data-hover>Workshops</a>
+        <a href="${MEMBER_BASE}resources.html" class="${b('resources.html')}" data-hover>Resources</a>
+        <a href="${MEMBER_BASE}blog/index.html" class="${b('blog')}" data-hover>Blog</a>
+        <a href="${MEMBER_BASE}perks.html" class="${b('perks.html')}" data-hover>Perks</a>
+        <a href="${MEMBER_BASE}profile.html" class="${b('profile.html')}" data-hover>Profile</a>
         ${adminLink}
-      </ul>
-      <div class="member-exit">
-        <a href="/">
-          <i data-lucide="arrow-left"></i> Public site
-        </a>
       </div>
-      <button class="mobile-nav-toggle" id="mobile-nav-toggle" aria-label="Toggle navigation"><i data-lucide="menu"></i></button>
+      <button class="nav-member" id="logout-btn" data-hover aria-label="Log out" style="color:var(--text);border-color:var(--line)">
+        <span id="nav-member-label">Log out</span>
+      </button>
     `;
-
-    const toggle = document.getElementById('mobile-nav-toggle');
-    if (toggle) {
-      toggle.addEventListener('click', () => {
-        nav.querySelector('ul').classList.toggle('open');
-      });
-    }
-
-    if (window.lucide) lucide.createIcons();
+    
+    // Replace the old nav/header with the new global nav
+    nav.parentNode.replaceChild(newNav, nav);
+    
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) logoutBtn.addEventListener('click', logout);
   }
-
-  function updateHeader(user) {
+function updateHeader(user) {
     const el = document.getElementById('user-name');
     if (el) el.textContent = user.name;
     const welcome = document.getElementById('welcome-name');
