@@ -469,7 +469,7 @@ git push origin main
 - Harmonized all navigation headers, mobile menus, and footers to route to `/login.html` for Sign In and `/login.html#signup` for Membership applications.
 
 ### 2. Project Name Standardization
-- Updated the featured showcase project on the homepage (`index.html`), resources database (`data/ai-club.db`), and documentation from `Mnemosyne` to `mo-Graphify` (`https://github.com/M4F-S/mo-graphify-obsidian-memory`).
+- Updated the featured showcase project on the homepage (`index.html`), resources database (`data/ai-club.db`), and documentation from `Mnemosyne` to `Gomaa` (`https://github.com/M4F-S/gomaa`).
 
 ---
 
