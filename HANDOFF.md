@@ -459,12 +459,17 @@ git push origin main
 ### Partners (0)
 ### Content (events/posts/resources: 0 — need real content)
 
-### Known things to do next
-- Real events/posts/resources need to be created via the admin panel
-- 42 Intra API integration is pending (user said they'd provide UID+SECRET)
-- ~~Member password reset flow could be improved~~ ✅ Implemented 2026-06-26
-- ~~The login page could use a "Forgot password?" feature~~ ✅ Implemented 2026-06-26
-- Stats on the homepage still show 0 for events/projects/workshops
+---
+
+## 🚀 Recent Updates (2026-08-30)
+
+### 1. Unified V5 Authentication Hub
+- Redesigned `/login.html` into a single, high-performance dual-mode authentication hub (Login ⇄ Sign Up) based on modern Framer-Motion style sliding track physics, 3D spring tilt micro-animations, and dynamic container height morphing.
+- Replaced separate `/become-member.html` with an instant seamless redirect to `/login.html#signup` to eliminate all redundancy across the site.
+- Harmonized all navigation headers, mobile menus, and footers to route to `/login.html` for Sign In and `/login.html#signup` for Membership applications.
+
+### 2. Project Name Standardization
+- Updated the featured showcase project on the homepage (`index.html`), resources database (`data/ai-club.db`), and documentation from `Mnemosyne` to `mo-Graphify` (`https://github.com/M4F-S/mo-graphify-obsidian-memory`).
 
 ---
 
