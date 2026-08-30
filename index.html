@@ -73,7 +73,7 @@
   <div class="nav-links">
     <a href="/#events" data-hover>Events</a>
     <a href="/#projects" data-hover>Projects</a>
-    <a href="/become-member.html" data-hover>Membership</a>
+    <a href="/login.html#signup" data-hover>Membership</a>
     <a href="/become-partner.html" data-hover>Partners</a>
   </div>
   <button class="nav-member" id="nav-member-btn" data-hover aria-label="Member area" onclick="window.location.href='/login.html'">
@@ -85,7 +85,7 @@
 <div class="m-nav" role="navigation" aria-label="Mobile navigation">
   <a href="/#events"><i></i>Events</a>
   <a href="/#projects"><i></i>Builds</a>
-  <a href="/become-member.html"><i></i>Membership</a>
+  <a href="/login.html#signup"><i></i>Membership</a>
   <a href="/become-partner.html"><i></i>Partners</a>
 </div>
 
@@ -237,11 +237,11 @@
     </div>
     <h2 class="s-title" data-reveal>The project <span class="accent">constellation.</span></h2>
     <div class="proj-grid">
-      <a href="https://github.com/M4F-S/mnemosyne" target="_blank" rel="noopener noreferrer" class="proj" data-reveal data-hover style="text-decoration:none;color:inherit;display:block;">
+      <a href="https://github.com/M4F-S/mo-graphify-obsidian-memory" target="_blank" rel="noopener noreferrer" class="proj" data-reveal data-hover style="text-decoration:none;color:inherit;display:block;">
         <span class="p-star" style="background:var(--violet);box-shadow:0 0 12px var(--violet)"></span>
-        <h3>Mnemosyne</h3>
-        <p>Multi-tiered cognitive memory & graph engine for autonomous AI agents — hybrid pgvector search & Obsidian vault sync.</p>
-        <div class="p-tags"><span>Python</span><span>pgvector</span><span>PostgreSQL</span><span>FastAPI</span><span>MCP</span></div>
+        <h3>mo-Graphify</h3>
+        <p>Production-grade graph memory & Obsidian knowledge engine for AI agents — semantic pgvector search, wiki-link traversal & MCP server.</p>
+        <div class="p-tags"><span>Python</span><span>pgvector</span><span>Obsidian</span><span>Graph RAG</span><span>MCP</span></div>
         <div class="p-link"><i></i>Open Source ↗</div>
       </a>
       <a href="/apobase/" target="_blank" rel="noopener noreferrer" class="proj" data-reveal data-hover style="text-decoration:none;color:inherit;display:block;">
@@ -419,7 +419,7 @@
     <a href="mailto:contact@42berlinaiclub.de" class="f-node" data-hover><span class="fn-dot"></span>Email</a>
     <a href="/#events" class="f-node" data-hover><span class="fn-dot" style="background:var(--mint);box-shadow:0 0 14px var(--mint)"></span>Events</a>
     <a href="/#projects" class="f-node" data-hover><span class="fn-dot" style="background:var(--pink);box-shadow:0 0 14px var(--pink)"></span>Projects</a>
-    <a href="/become-member.html" class="f-node" data-hover><span class="fn-dot" style="background:#5a8bff;box-shadow:0 0 14px #5a8bff"></span>Join</a>
+    <a href="/login.html#signup" class="f-node" data-hover><span class="fn-dot" style="background:#5a8bff;box-shadow:0 0 14px #5a8bff"></span>Join</a>
     <a href="/login.html" class="f-node" data-hover><span class="fn-dot" style="background:var(--violet);box-shadow:0 0 14px var(--violet)"></span>Login</a>
     <a href="/admin.html" class="f-node" data-hover><span class="fn-dot" style="background:#ff5a8b;box-shadow:0 0 14px #ff5a8b"></span>Admin</a>
     <a href="/privacy-policy.html" class="f-node" data-hover><span class="fn-dot" style="background:var(--violet);box-shadow:0 0 14px var(--violet)"></span>Privacy</a>
@@ -1703,7 +1703,7 @@ void main(){
       document.getElementById('ws-materials').innerHTML = `
         <div class="ws-doc" style="padding: 32px 24px; text-align: center; display: block; background: var(--ink1); border: 1px solid var(--line); border-radius: 16px;">
           <p style="color:var(--text); font-size: 16px; line-height: 1.6; max-width: 52ch; margin: 0 auto 24px;">${ev.desc}</p>
-          <a href="/become-member.html" class="btn btn-primary" data-hover style="display:inline-flex; margin: 0 auto;">Join Network for RSVP & Live Stream Access <span class="arr">→</span></a>
+          <a href="/login.html#signup" class="btn btn-primary" data-hover style="display:inline-flex; margin: 0 auto;">Join Network for RSVP & Live Stream Access <span class="arr">→</span></a>
         </div>
       `;
       const quizBox = document.getElementById('ws-quiz');
