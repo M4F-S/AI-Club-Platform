@@ -468,8 +468,11 @@ git push origin main
 - Replaced separate `/become-member.html` with an instant seamless redirect to `/login.html#signup` to eliminate all redundancy across the site.
 - Harmonized all navigation headers, mobile menus, and footers to route to `/login.html` for Sign In and `/login.html#signup` for Membership applications.
 
-### 2. Project Name Standardization
-- Updated the featured showcase project on the homepage (`index.html`), resources database (`data/ai-club.db`), and documentation from `Mnemosyne` to `Gomaa` (`https://github.com/M4F-S/gomaa`).
+### 2. Project Constellation Updates
+- Added **Gomaa** (`https://github.com/M4F-S/gomaa`): Autonomous Agent Memory OS with Obsidian vault integration, hybrid RRF search, and MCP server.
+- Added **CHarness** (`https://github.com/M4F-S/CHarness`): High-performance, zero-dependency autonomous AI agent runtime and security execution harness implemented in pure C99 with dynamic self-tooling and MCP client.
+- Added **PrivaC** (`https://github.com/M4F-S/PrivaC`): Ultra-fast bare-metal C reverse proxy and symbolic micro-math engine for zero-knowledge LLM privacy, data masking, and prompt sanitization.
+- Updated `index.html`, `index-sharplink.html`, `index-v2.html`, and `data/ai-club.db` SQLite resources table across local and production VPS environments.
 
 ---
 
