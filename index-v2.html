@@ -1,0 +1,1368 @@
+<!DOCTYPE html>
+<html lang="en" class="lenis lenis-smooth">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>42 Berlin AI Club — Engineering the Frontier</title>
+<link rel="stylesheet" href="/assets/new-design-system.css?v=16">
+<meta name="description" content="The student-led artificial intelligence collective at 42 Berlin. Autonomous agent swarms, hierarchical memory OS, and defensible AI engineering.">
+<meta name="theme-color" content="#000000">
+<meta property="og:title" content="42 Berlin AI Club — Engineering the Frontier">
+<meta property="og:description" content="The student-led artificial intelligence engineering collective at 42 Berlin.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://42berlinaiclub.de/">
+<meta property="og:image" content="https://42berlinaiclub.de/assets/og-card.png">
+<link rel="canonical" href="https://42berlinaiclub.de/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="42 Berlin AI Club — Engineering the Frontier">
+<meta name="twitter:description" content="Student-led AI engineering collective at 42 Berlin.">
+<meta name="twitter:image" content="https://42berlinaiclub.de/assets/og-card.png">
+<link rel="icon" type="image/png" href="/assets/favicon-64.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- GSAP + ScrollTrigger + Lenis for True SharpLink Motion -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js"></script>
+
+<style>
+  :root {
+    --shrp-black: #000000;
+    --shrp-bg: #03040a;
+    --shrp-surface: #0a0c16;
+    --shrp-card: rgba(12, 15, 30, 0.75);
+    --shrp-border: rgba(255, 255, 255, 0.09);
+    --shrp-border-glow: rgba(0, 212, 255, 0.45);
+    --shrp-cyan: #00d4ff;
+    --shrp-blue: #0077ff;
+    --shrp-mint: #4de3c1;
+    --shrp-violet: #7c6cff;
+    --shrp-pink: #ff6ec7;
+    --shrp-text-main: #ffffff;
+    --shrp-text-muted: #8e9bb0;
+    --shrp-text-faint: #4e5b72;
+    --shrp-font-display: 'Archivo', -apple-system, sans-serif;
+    --shrp-font-mono: 'Space Grotesk', monospace;
+  }
+
+  html.lenis, html.lenis body {
+    height: auto;
+  }
+
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    background: var(--shrp-black);
+    color: var(--shrp-text-main);
+    font-family: 'Archivo', system-ui, -apple-system, sans-serif;
+    overflow-x: hidden;
+    position: relative;
+    letter-spacing: -0.015em;
+  }
+
+  /* ================= 1. VIDEO HERO WITH PINNED SCRUBBING ================= */
+  .hero-pin-viewport {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    z-index: 1;
+  }
+
+  .hero-video-box {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    transform-origin: center center;
+    will-change: transform, border-radius, opacity;
+    z-index: 0;
+  }
+
+  .hero-video-box video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.65;
+    filter: contrast(1.18) brightness(0.95);
+  }
+
+  .hero-video-box .video-vignette {
+    position: absolute;
+    inset: 0;
+    background: 
+      radial-gradient(circle at center, transparent 15%, rgba(0, 0, 0, 0.75) 75%, #000000 100%),
+      linear-gradient(180deg, rgba(0, 0, 0, 0.3) 0%, transparent 35%, rgba(0, 0, 0, 0.95) 98%);
+  }
+
+  /* Shimmer / Scanline Overlay */
+  .hero-scanlines {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.15) 0px, rgba(0, 0, 0, 0.15) 1px, transparent 1px, transparent 3px);
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.5;
+  }
+
+  /* Ambient Lighting Orbs */
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(140px);
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.28;
+    will-change: transform;
+  }
+
+  .orb-1 { top: -10vw; right: -10vw; width: 55vw; height: 45vw; background: radial-gradient(circle, var(--shrp-cyan), transparent 70%); }
+  .orb-2 { top: 35vh; left: -15vw; width: 50vw; height: 45vw; background: radial-gradient(circle, var(--shrp-violet), transparent 70%); }
+  .orb-3 { bottom: -10vw; right: 15vw; width: 60vw; height: 50vw; background: radial-gradient(circle, var(--shrp-mint), transparent 70%); }
+
+  /* ================= 2. NAVBAR ================= */
+  .shrp-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    padding: 18px 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    transition: transform 0.3s, background 0.3s;
+  }
+
+  .shrp-nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    text-decoration: none;
+    color: #fff;
+  }
+
+  .shrp-brand-logo {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(124, 108, 255, 0.15);
+    border: 1.5px solid rgba(0, 212, 255, 0.4);
+    box-shadow: 0 0 18px rgba(0, 212, 255, 0.35);
+  }
+
+  .shrp-brand-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .shrp-brand-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 17px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+  }
+
+  .shrp-brand-title small {
+    font-size: 10px;
+    color: var(--shrp-cyan);
+    letter-spacing: 0.2em;
+    font-weight: 600;
+  }
+
+  .shrp-nav-menu {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+  }
+
+  .shrp-nav-link {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13.5px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--shrp-text-muted);
+    text-decoration: none;
+    position: relative;
+    transition: color 0.2s;
+  }
+
+  .shrp-nav-link:hover {
+    color: #fff;
+  }
+
+  .shrp-nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .shrp-btn-outline {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 999px;
+    padding: 10px 22px;
+    text-decoration: none;
+    transition: background 0.2s, border-color 0.2s;
+  }
+
+  .shrp-btn-outline:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: #fff;
+  }
+
+  .shrp-btn-glow {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #000;
+    background: linear-gradient(135deg, var(--shrp-cyan) 0%, var(--shrp-mint) 100%);
+    border: none;
+    border-radius: 999px;
+    padding: 10px 24px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 0 25px rgba(0, 212, 255, 0.45);
+    transition: transform 0.2s, box-shadow 0.2s, filter 0.2s;
+  }
+
+  .shrp-btn-glow:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 35px rgba(0, 212, 255, 0.7);
+    filter: brightness(1.1);
+  }
+
+  @media (max-width: 900px) {
+    .shrp-nav-menu { display: none; }
+  }
+
+  /* ================= 3. HERO CONTENT ================= */
+  .hero-content-box {
+    position: relative;
+    z-index: 2;
+    max-width: 1200px;
+    padding: 0 24px;
+    text-align: center;
+    margin: 0 auto;
+    will-change: transform, opacity;
+  }
+
+  .hero-badge-live {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(14, 18, 42, 0.85);
+    border: 1px solid rgba(0, 212, 255, 0.4);
+    border-radius: 999px;
+    padding: 8px 22px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--shrp-cyan);
+    margin-bottom: 30px;
+    box-shadow: 0 0 25px rgba(0, 212, 255, 0.25);
+  }
+
+  .hero-badge-live .radar-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--shrp-cyan);
+    box-shadow: 0 0 10px var(--shrp-cyan);
+    animation: corePulse 1.8s infinite;
+  }
+
+  /* SplitText Line Masks */
+  .text-mask-line {
+    overflow: hidden;
+    display: block;
+  }
+
+  .text-mask-inner {
+    display: inline-block;
+    will-change: transform;
+  }
+
+  .hero-main-title {
+    font-family: var(--shrp-font-display);
+    font-size: clamp(2.8rem, 8.2vw, 6.4rem);
+    font-weight: 900;
+    line-height: 0.95;
+    letter-spacing: -0.035em;
+    text-transform: uppercase;
+    margin-bottom: 32px;
+  }
+
+  .hero-main-title .gradient-shimmer {
+    background: linear-gradient(135deg, #ffffff 25%, var(--shrp-cyan) 65%, var(--shrp-mint) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .hero-sub-text {
+    font-size: clamp(1.1rem, 2.2vw, 1.4rem);
+    color: var(--shrp-text-muted);
+    max-width: 54ch;
+    margin: 0 auto 48px;
+    line-height: 1.55;
+    font-weight: 400;
+  }
+
+  .hero-btn-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  /* ================= 4. PERPETUAL TICKER MARQUEE ================= */
+  .shrp-ticker-strip {
+    position: relative;
+    width: 100%;
+    background: #060812;
+    border-top: 1px solid var(--shrp-border);
+    border-bottom: 1px solid var(--shrp-border);
+    padding: 16px 0;
+    overflow: hidden;
+    z-index: 10;
+  }
+
+  .ticker-track {
+    display: flex;
+    width: max-content;
+    animation: marqueeScroll 24s linear infinite;
+  }
+
+  .ticker-track:hover {
+    animation-play-state: paused;
+  }
+
+  @keyframes marqueeScroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  .ticker-item {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--shrp-text-muted);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 0 28px;
+    white-space: nowrap;
+  }
+
+  .ticker-item span.cyan-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--shrp-cyan);
+    box-shadow: 0 0 8px var(--shrp-cyan);
+  }
+
+  /* ================= 5. PINNED 2-COLUMN OPPORTUNITY SECTION ================= */
+  .pinned-opportunity-section {
+    position: relative;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 140px 24px;
+    z-index: 2;
+  }
+
+  .pinned-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.15fr;
+    gap: 64px;
+    align-items: start;
+  }
+
+  @media (max-width: 900px) {
+    .pinned-grid {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+  }
+
+  .sticky-video-col {
+    position: sticky;
+    top: 120px;
+    will-change: transform;
+  }
+
+  .video-frame-glow {
+    position: relative;
+    border-radius: 26px;
+    overflow: hidden;
+    border: 1.5px solid rgba(0, 212, 255, 0.4);
+    background: #000000;
+    box-shadow: 0 25px 70px rgba(0, 0, 0, 0.8), 0 0 45px rgba(0, 212, 255, 0.2);
+  }
+
+  .video-frame-glow video {
+    width: 100%;
+    display: block;
+    object-fit: cover;
+  }
+
+  /* Narrative Scrub Cards */
+  .scrolling-narrative-col {
+    display: flex;
+    flex-direction: column;
+    gap: 48px;
+  }
+
+  .narrative-card {
+    background: var(--shrp-card);
+    border: 1px solid var(--shrp-border);
+    border-radius: 24px;
+    padding: 44px 38px;
+    backdrop-filter: blur(20px);
+    transition: border-color 0.3s, transform 0.3s;
+    will-change: transform, opacity;
+  }
+
+  .narrative-card.active-scrub {
+    border-color: var(--shrp-cyan);
+    box-shadow: 0 0 35px rgba(0, 212, 255, 0.2);
+  }
+
+  .narrative-tag {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--shrp-cyan);
+    margin-bottom: 16px;
+  }
+
+  .narrative-card h3 {
+    font-family: var(--shrp-font-display);
+    font-size: clamp(1.8rem, 3.2vw, 2.6rem);
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 18px;
+  }
+
+  .narrative-card p {
+    font-size: 16px;
+    line-height: 1.65;
+    color: var(--shrp-text-muted);
+  }
+
+  /* ================= 6. FOUR PILLARS GRID WITH SCRUB ================= */
+  .section-shell-v2 {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 120px 24px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .shrp-heading-group {
+    margin-bottom: 60px;
+  }
+
+  .shrp-mini-tag {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 12.5px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--shrp-mint);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .shrp-mini-tag::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--shrp-mint);
+    box-shadow: 0 0 8px var(--shrp-mint);
+  }
+
+  .shrp-big-title {
+    font-family: var(--shrp-font-display);
+    font-size: clamp(2.4rem, 5vw, 4rem);
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    line-height: 1.02;
+    text-transform: uppercase;
+  }
+
+  .pillars-grid-v2 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+  }
+
+  .pillar-box {
+    background: var(--shrp-card);
+    border: 1px solid var(--shrp-border);
+    border-radius: 24px;
+    padding: 42px 32px;
+    backdrop-filter: blur(20px);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s, box-shadow 0.3s;
+    will-change: transform, opacity;
+  }
+
+  .pillar-box:hover {
+    transform: translateY(-8px);
+    border-color: var(--shrp-border-glow);
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 35px rgba(0, 212, 255, 0.25);
+  }
+
+  .pillar-num {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--shrp-cyan);
+    letter-spacing: 0.12em;
+    margin-bottom: 22px;
+  }
+
+  .pillar-box h4 {
+    font-family: var(--shrp-font-display);
+    font-size: 24px;
+    font-weight: 800;
+    margin-bottom: 14px;
+  }
+
+  .pillar-box p {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--shrp-text-muted);
+  }
+
+  /* ================= 7. PROJECTS SHOWCASE ================= */
+  .projects-split-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+  }
+
+  @media (max-width: 800px) {
+    .projects-split-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .project-panel-v2 {
+    background: var(--shrp-card);
+    border: 1px solid var(--shrp-border);
+    border-radius: 28px;
+    padding: 44px 38px;
+    backdrop-filter: blur(24px);
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.35s, box-shadow 0.35s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .project-panel-v2:hover {
+    transform: translateY(-8px);
+    border-color: var(--shrp-cyan);
+    box-shadow: 0 30px 70px rgba(0, 0, 0, 0.8), 0 0 40px rgba(0, 212, 255, 0.3);
+  }
+
+  .project-panel-v2 h4 {
+    font-family: var(--shrp-font-display);
+    font-size: 30px;
+    font-weight: 900;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .project-panel-v2 p {
+    font-size: 15.5px;
+    color: var(--shrp-text-muted);
+    line-height: 1.6;
+    margin-bottom: 28px;
+  }
+
+  .p-tags-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 28px;
+  }
+
+  .p-tags-row span {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--shrp-cyan);
+  }
+
+  .p-link-cta {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--shrp-mint);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  /* ================= 8. SIGNALS / WORKSHOP LIST ================= */
+  .events-v2-container {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .event-row-v2 {
+    background: var(--shrp-card);
+    border: 1px solid var(--shrp-border);
+    border-radius: 22px;
+    padding: 30px 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    cursor: pointer;
+    backdrop-filter: blur(20px);
+    transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+  }
+
+  .event-row-v2:hover {
+    transform: translateX(10px);
+    border-color: var(--shrp-cyan);
+    box-shadow: 0 15px 40px rgba(0, 212, 255, 0.25);
+  }
+
+  @media (max-width: 768px) {
+    .event-row-v2 {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+
+  .event-row-v2 h4 {
+    font-family: var(--shrp-font-display);
+    font-size: 21px;
+    font-weight: 800;
+    margin-bottom: 6px;
+  }
+
+  .event-row-v2 p {
+    font-size: 14.5px;
+    color: var(--shrp-text-muted);
+  }
+
+  .event-pill-btn {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 12.5px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 10px 20px;
+    border-radius: 999px;
+    background: rgba(0, 212, 255, 0.15);
+    border: 1px solid rgba(0, 212, 255, 0.4);
+    color: var(--shrp-cyan);
+    white-space: nowrap;
+  }
+
+  /* ================= 9. FAQ ACCORDION ================= */
+  .faq-v2-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .faq-card-v2 {
+    background: var(--shrp-card);
+    border: 1px solid var(--shrp-border);
+    border-radius: 20px;
+    overflow: hidden;
+    transition: border-color 0.3s;
+  }
+
+  .faq-card-v2.open {
+    border-color: var(--shrp-border-glow);
+  }
+
+  .faq-q-bar {
+    padding: 26px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: var(--shrp-font-display);
+    font-size: 19px;
+    font-weight: 700;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .faq-plus {
+    font-size: 22px;
+    color: var(--shrp-cyan);
+    transition: transform 0.3s;
+  }
+
+  .faq-card-v2.open .faq-plus {
+    transform: rotate(45deg);
+  }
+
+  .faq-a-body {
+    max-height: 0;
+    overflow: hidden;
+    padding: 0 32px;
+    color: var(--shrp-text-muted);
+    font-size: 15.5px;
+    line-height: 1.65;
+    transition: max-height 0.4s ease, padding 0.3s;
+  }
+
+  .faq-card-v2.open .faq-a-body {
+    max-height: 300px;
+    padding-bottom: 26px;
+  }
+
+  /* ================= 10. CLOSING FULLSCREEN CTA ================= */
+  .fullscreen-cta-v2 {
+    position: relative;
+    background: linear-gradient(135deg, rgba(14, 18, 46, 0.95) 0%, #000000 100%);
+    border: 1.5px solid rgba(0, 212, 255, 0.45);
+    border-radius: 36px;
+    padding: clamp(60px, 8vw, 100px) clamp(24px, 5vw, 60px);
+    text-align: center;
+    box-shadow: 0 0 80px rgba(0, 212, 255, 0.25);
+    overflow: hidden;
+  }
+
+  .fullscreen-cta-v2 h3 {
+    font-family: var(--shrp-font-display);
+    font-size: clamp(2.4rem, 5.5vw, 4.4rem);
+    font-weight: 900;
+    line-height: 1.02;
+    text-transform: uppercase;
+    margin-bottom: 22px;
+  }
+
+  .fullscreen-cta-v2 p {
+    font-size: clamp(1.1rem, 2vw, 1.3rem);
+    color: var(--shrp-text-muted);
+    max-width: 52ch;
+    margin: 0 auto 44px;
+    line-height: 1.6;
+  }
+
+  /* ================= 11. FOOTER ================= */
+  .footer-v2 {
+    padding: 80px 36px 40px;
+    border-top: 1px solid var(--shrp-border);
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  .footer-v2-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 24px;
+  }
+
+  .footer-v2-links {
+    display: flex;
+    gap: 28px;
+    flex-wrap: wrap;
+  }
+
+  .footer-v2-links a {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--shrp-text-muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .footer-v2-links a:hover {
+    color: var(--shrp-cyan);
+  }
+
+  .footer-v2-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 13px;
+    color: var(--shrp-text-faint);
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+</style>
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to main content</a>
+
+<!-- Ambient Lighting Orbs -->
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+
+<!-- Top Sticky Navbar -->
+<nav class="shrp-nav" id="nav-bar">
+  <a href="/" class="shrp-nav-brand">
+    <div class="shrp-brand-logo">
+      <img src="/assets/logo-gate.png" alt="42 Berlin AI Club">
+    </div>
+    <div class="shrp-brand-title">
+      42 BERLIN
+      <small>AI CLUB</small>
+    </div>
+  </a>
+
+  <div class="shrp-nav-menu">
+    <a href="#mission" class="shrp-nav-link">Mission</a>
+    <a href="#pillars" class="shrp-nav-link">Pillars</a>
+    <a href="#projects" class="shrp-nav-link">Constellation</a>
+    <a href="#events" class="shrp-nav-link">Signals</a>
+    <a href="#faq" class="shrp-nav-link">FAQ</a>
+  </div>
+
+  <div class="shrp-nav-actions">
+    <a href="/login.html" class="shrp-btn-outline">Sign In</a>
+    <a href="/login.html#signup" class="shrp-btn-glow">Apply to Join →</a>
+  </div>
+</nav>
+
+<main id="main">
+
+  <!-- ================= 1. HERO WITH PINNED SCRUB ================= -->
+  <section class="hero-pin-viewport" id="hero-pin">
+    
+    <!-- Hero Video Box (Scrubbed with GSAP) -->
+    <div class="hero-video-box" id="hero-video">
+      <video autoplay muted loop playsinline poster="/assets/og-card.png">
+        <source src="/assets/hero-loop.mp4" type="video/mp4">
+        <source src="/assets/hero-loop.webm" type="video/webm">
+      </video>
+      <div class="video-vignette"></div>
+      <div class="hero-scanlines"></div>
+    </div>
+
+    <!-- Hero Content -->
+    <div class="hero-content-box" id="hero-content">
+      <div class="hero-badge-live">
+        <span class="radar-dot"></span> 42 Berlin Campus · Autonomous AI Laboratory
+      </div>
+
+      <h1 class="hero-main-title">
+        <span class="text-mask-line"><span class="text-mask-inner">ENGINEERING THE</span></span>
+        <span class="text-mask-line"><span class="text-mask-inner gradient-shimmer">AI FRONTIER.</span></span>
+      </h1>
+
+      <p class="hero-sub-text">
+        The student-led artificial intelligence collective at 42 Berlin. We build autonomous agent swarms, fine-tune neural memory architectures, and deploy open-source intelligence to production.
+      </p>
+
+      <div class="hero-btn-row">
+        <a href="/login.html#signup" class="shrp-btn-glow" style="padding: 18px 40px; font-size: 15.5px;">
+          Apply for 42 Student Access →
+        </a>
+        <a href="#mission" class="shrp-btn-outline" style="padding: 18px 36px; font-size: 15.5px;">
+          Explore Our Directive ↓
+        </a>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ================= 2. TICKER MARQUEE ================= -->
+  <div class="shrp-ticker-strip">
+    <div class="ticker-track">
+      <div class="ticker-item"><span class="cyan-dot"></span> 42 BERLIN NETWORK ACTIVE</div>
+      <div class="ticker-item"><span class="cyan-dot"></span> 30+ ACTIVE REPOSITORIES</div>
+      <div class="ticker-item"><span class="cyan-dot"></span> GOMAA AGENT OS DEPLOYED</div>
+      <div class="ticker-item"><span class="cyan-dot"></span> 20+ WORKSHOP HOURS DELIVERED</div>
+      <div class="ticker-item"><span class="cyan-dot"></span> SEMESTER HACKATHONS IN SESSION</div>
+      <div class="ticker-item"><span class="cyan-dot"></span> ZERO PROPRIETARY LOCK-IN</div>
+      <!-- Duplicate for infinite seamless marquee loop -->
+      <div class="ticker-item"><span class="cyan-dot"></span> 42 BERLIN NETWORK ACTIVE</div>
+      <div class="ticker-item"><span class="cyan-dot"></span> 30+ ACTIVE REPOSITORIES</div>
+      <div class="ticker-item"><span class="cyan-dot"></span> GOMAA AGENT OS DEPLOYED</div>
+      <div class="ticker-item"><span class="cyan-dot"></span> 20+ WORKSHOP HOURS DELIVERED</div>
+      <div class="ticker-item"><span class="cyan-dot"></span> SEMESTER HACKATHONS IN SESSION</div>
+      <div class="ticker-item"><span class="cyan-dot"></span> ZERO PROPRIETARY LOCK-IN</div>
+    </div>
+  </div>
+
+  <!-- ================= 3. PINNED 2-COLUMN OPPORTUNITY / THESIS ================= -->
+  <section class="pinned-opportunity-section" id="mission">
+    <div class="pinned-grid">
+      
+      <!-- Sticky Pinned 3D Video on Left -->
+      <div class="sticky-video-col" id="sticky-video">
+        <div class="video-frame-glow">
+          <video autoplay muted loop playsinline>
+            <source src="/assets/opportunity-loop.mp4" type="video/mp4">
+          </video>
+        </div>
+      </div>
+
+      <!-- Scrolling Narrative Cards on Right -->
+      <div class="scrolling-narrative-col">
+        <div class="narrative-card" data-scrub>
+          <div class="narrative-tag">01 / THE DIRECTIVE</div>
+          <h3>The future belongs to builders who own the stack.</h3>
+          <p>
+            We move past brittle prompt wrappers and closed APIs. At 42 Berlin AI Club, members design high-throughput agent loops, self-hosted vector knowledge bases, local inference engines, and Model Context Protocol (MCP) integrations.
+          </p>
+        </div>
+
+        <div class="narrative-card" data-scrub>
+          <div class="narrative-tag">02 / REAL PRODUCTION CODE</div>
+          <h3>We ship live systems, not just notebook experiments.</h3>
+          <p>
+            Every workshop, sprint, and hackathon produces software deployed to high-availability VPS infrastructure with automated continuous delivery, sandboxed runtime environments, and defensible security posture.
+          </p>
+        </div>
+
+        <div class="narrative-card" data-scrub>
+          <div class="narrative-tag">03 / PEER-TO-PEER MASTERY</div>
+          <h3>The 42 pedagogy applied to frontier artificial intelligence.</h3>
+          <p>
+            No rigid lectures, no gatekeeping. Students collaborate across Common Core ranks and alumni tiers to evaluate research papers, benchmark open-weight models, and build frontier software together.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ================= 4. TECHNICAL PILLARS ================= -->
+  <section class="section-shell-v2" id="pillars">
+    <div class="shrp-heading-group">
+      <div class="shrp-mini-tag">02 / Technical Architecture</div>
+      <h2 class="shrp-big-title">Four pillars of <span style="color:var(--shrp-cyan)">defensible AI.</span></h2>
+    </div>
+
+    <div class="pillars-grid-v2">
+      <div class="pillar-box" data-scrub>
+        <div class="pillar-num">01 / SWARMS</div>
+        <h4>Autonomous Agents</h4>
+        <p>Building stateful multi-agent workflows with ReAct loops, LangGraph, tool-calling pipelines, and human-in-the-loop governance.</p>
+      </div>
+
+      <div class="pillar-box" data-scrub>
+        <div class="pillar-num">02 / MEMORY</div>
+        <h4>Hierarchical Memory OS</h4>
+        <p>Implementing pgvector search, Reciprocal Rank Fusion (RRF), Obsidian vault syncing, and Model Context Protocol (MCP) servers.</p>
+      </div>
+
+      <div class="pillar-box" data-scrub>
+        <div class="pillar-num">03 / INFERENCE</div>
+        <h4>Local & Edge Systems</h4>
+        <p>Optimizing CUDA kernels, quantized models, Ollama pipelines, and sub-millisecond local inference on dedicated servers.</p>
+      </div>
+
+      <div class="pillar-box" data-scrub>
+        <div class="pillar-num">04 / HARDENING</div>
+        <h4>Production Defensibility</h4>
+        <p>Hardening against prompt injection attacks, sandboxing untrusted code, and deploying real-world services with automated CI/CD.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 5. SHIPPED PROJECTS ================= -->
+  <section class="section-shell-v2" id="projects">
+    <div class="shrp-heading-group">
+      <div class="shrp-mini-tag">03 / Shipped by Members</div>
+      <h2 class="shrp-big-title">The project <span style="color:var(--shrp-mint)">constellation.</span></h2>
+    </div>
+
+    <div class="projects-split-grid">
+      
+      <!-- Project 1: Gomaa -->
+      <a href="https://github.com/M4F-S/gomaa" target="_blank" rel="noopener noreferrer" class="project-panel-v2" data-scrub>
+        <div>
+          <h4>
+            <span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--shrp-violet);box-shadow:0 0 12px var(--shrp-violet)"></span>
+            Gomaa
+          </h4>
+          <p>Autonomous Agent Memory OS — persistent memory system for AI agents with Obsidian vault integration, hybrid RRF search, knowledge graphs, security gates, and MCP server.</p>
+          <div class="p-tags-row">
+            <span>Python</span><span>pgvector</span><span>Obsidian</span><span>Agent OS</span><span>MCP</span>
+          </div>
+        </div>
+        <div class="p-link-cta">
+          Explore Repository ↗
+        </div>
+      </a>
+
+      <!-- Project 2: CHarness -->
+      <a href="https://github.com/M4F-S/CHarness" target="_blank" rel="noopener noreferrer" class="project-panel-v2" data-scrub>
+        <div>
+          <h4>
+            <span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--shrp-cyan);box-shadow:0 0 12px var(--shrp-cyan)"></span>
+            CHarness
+          </h4>
+          <p>High-performance, zero-dependency autonomous AI agent runtime and security execution harness implemented in pure C99 with dynamic self-tooling, sandboxed execution, and MCP client capabilities.</p>
+          <div class="p-tags-row">
+            <span>C99</span><span>Agent Sandbox</span><span>Zero-Dependency</span><span>MCP Client</span>
+          </div>
+        </div>
+        <div class="p-link-cta">
+          Explore Repository ↗
+        </div>
+      </a>
+
+      <!-- Project 3: PrivaC -->
+      <a href="https://github.com/M4F-S/PrivaC" target="_blank" rel="noopener noreferrer" class="project-panel-v2" data-scrub>
+        <div>
+          <h4>
+            <span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--shrp-pink);box-shadow:0 0 12px var(--shrp-pink)"></span>
+            PrivaC
+          </h4>
+          <p>Ultra-Fast bare-metal C reverse proxy and symbolic micro-math engine for zero-knowledge LLM privacy, data masking, and prompt sanitization.</p>
+          <div class="p-tags-row">
+            <span>C99</span><span>Zero-Knowledge</span><span>LLM Privacy</span><span>Reverse Proxy</span>
+          </div>
+        </div>
+        <div class="p-link-cta">
+          Explore Repository ↗
+        </div>
+      </a>
+
+      <!-- Project 4: Apobase -->
+      <a href="/apobase/" target="_blank" rel="noopener noreferrer" class="project-panel-v2" data-scrub>
+        <div>
+          <h4>
+            <span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--shrp-mint);box-shadow:0 0 12px var(--shrp-mint)"></span>
+            Apobase
+          </h4>
+          <p>High-speed digital knowledge terminal and AI assistant engineered for community pharmacies — sub-second dosage verification, interaction checks, and regulatory guidelines.</p>
+          <div class="p-tags-row">
+            <span>TypeScript</span><span>FastAPI</span><span>Vector DB</span><span>Clinical AI</span>
+          </div>
+        </div>
+        <div class="p-link-cta">
+          Open Live Terminal ↗
+        </div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- ================= 6. INCOMING SIGNALS (EVENTS) ================= -->
+  <section class="section-shell-v2" id="events">
+    <div class="shrp-heading-group">
+      <div class="shrp-mini-tag">04 / Incoming Signals</div>
+      <h2 class="shrp-big-title">Workshops & <span style="color:var(--shrp-cyan)">Sprint Sessions.</span></h2>
+    </div>
+
+    <div class="events-v2-container">
+      <div class="event-row-v2" onclick="openWorkshop(4)" data-scrub>
+        <div>
+          <h4>Agentic Engineering & Autonomous Architecture</h4>
+          <p>Workshop 04 · ReAct loops, LangGraph, MCP protocol, and human-in-the-loop systems.</p>
+        </div>
+        <div class="event-pill-btn">View Slides & Quiz →</div>
+      </div>
+
+      <div class="event-row-v2" onclick="openWorkshop(3)" data-scrub>
+        <div>
+          <h4>AI Structures & Hierarchical Knowledge Graphs</h4>
+          <p>Workshop 03 · Reciprocal Rank Fusion (RRF), pgvector, and Obsidian vault graph syncing.</p>
+        </div>
+        <div class="event-pill-btn">View Slides & Quiz →</div>
+      </div>
+
+      <div class="event-row-v2" onclick="openWorkshop(2)" data-scrub>
+        <div>
+          <h4>Defensible AI Architecture & Hardening</h4>
+          <p>Workshop 02 · Prompt injection defense, sandboxing code execution, and API hardening.</p>
+        </div>
+        <div class="event-pill-btn">View Slides & Quiz →</div>
+      </div>
+
+      <div class="event-row-v2" onclick="openWorkshop(1)" data-scrub>
+        <div>
+          <h4>AI Build Weekend: 48h Autonomous Agent Hackathon</h4>
+          <p>Upcoming Semester Sprint · 48h in-person build sprint at 42 Berlin with compute grants.</p>
+        </div>
+        <div class="event-pill-btn" style="background:rgba(77,227,193,0.15);border-color:var(--shrp-mint);color:var(--shrp-mint)">Priority Access →</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 7. FAQ ================= -->
+  <section class="section-shell-v2" id="faq">
+    <div class="shrp-heading-group">
+      <div class="shrp-mini-tag">05 / Common Inquiries</div>
+      <h2 class="shrp-big-title">Frequently asked <span style="color:var(--shrp-cyan)">questions.</span></h2>
+    </div>
+
+    <div class="faq-v2-grid">
+      <div class="faq-card-v2 open" onclick="toggleFaq(this)" data-scrub>
+        <div class="faq-q-bar">
+          <span>Who is eligible to join the 42 Berlin AI Club?</span>
+          <span class="faq-plus">+</span>
+        </div>
+        <div class="faq-a-body">
+          Membership is free and open to all enrolled students and alumni of 42 Berlin. Applications are reviewed within 24 hours to verify your campus Intra account.
+        </div>
+      </div>
+
+      <div class="faq-card-v2" onclick="toggleFaq(this)" data-scrub>
+        <div class="faq-q-bar">
+          <span>What compute resources and tools are provided to members?</span>
+          <span class="faq-plus">+</span>
+        </div>
+        <div class="faq-a-body">
+          Members gain access to shared VPS infrastructure, local GPU inference instances, vector database sandboxes, API compute credits, and exclusive repository templates.
+        </div>
+      </div>
+
+      <div class="faq-card-v2" onclick="toggleFaq(this)" data-scrub>
+        <div class="faq-q-bar">
+          <span>How can companies partner or sponsor compute?</span>
+          <span class="faq-plus">+</span>
+        </div>
+        <div class="faq-a-body">
+          Industry partners can support the collective through compute grants, API sponsorships, technical mentorship, and co-hosting hackathons via our <a href="/become-partner.html" style="color:var(--shrp-cyan)">Partners Portal</a>.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 8. FULLSCREEN CTA ================= -->
+  <section class="section-shell-v2">
+    <div class="fullscreen-cta-v2" data-scrub>
+      <h3>ONE NETWORK. EVERY NODE MATTERS.</h3>
+      <p>Join the student-led AI engineering collective at 42 Berlin. Access slides, quizzes, project squads, and compute resources.</p>
+      <a href="/login.html#signup" class="shrp-btn-glow" style="padding: 18px 44px; font-size: 16px;">
+        Apply for Membership →
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<!-- Footer -->
+<footer class="footer-v2">
+  <div class="footer-v2-top">
+    <a href="/" class="shrp-nav-brand">
+      <div class="shrp-brand-logo">
+        <img src="/assets/logo-gate.png" alt="42 Berlin AI Club">
+      </div>
+      <div class="shrp-brand-title">
+        42 BERLIN
+        <small>AI CLUB</small>
+      </div>
+    </a>
+
+    <div class="footer-v2-links">
+      <a href="#mission">Mission</a>
+      <a href="#events">Signals</a>
+      <a href="#projects">Constellation</a>
+      <a href="/login.html#signup">Join</a>
+      <a href="/login.html">Sign In</a>
+      <a href="/become-partner.html">Partners</a>
+      <a href="/privacy-policy.html">Privacy</a>
+    </div>
+  </div>
+
+  <div class="footer-v2-bottom">
+    <div>&copy; 2026 42 Berlin AI Club · Student-Led · Vendor-Neutral.</div>
+    <div>Brandenburg Gate Hologram · Powered by 42 Berlin Network.</div>
+  </div>
+</footer>
+
+<script>
+  /* ================================================================
+     1. LENIS SMOOTH MOMENTUM SCROLL (True SharpLink Physics)
+     ================================================================ */
+  let lenis;
+  try {
+    lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      orientation: 'vertical',
+      smoothWheel: true,
+      wheelMultiplier: 1.0,
+      touchMultiplier: 2.0
+    });
+
+    function raf(time) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
+  } catch (e) {
+    console.warn('Lenis failed to initialize, falling back to native scroll:', e);
+  }
+
+  /* ================================================================
+     2. GSAP SCROLLTRIGGER ANIMATIONS & SCRUBBING
+     ================================================================ */
+  if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+    gsap.registerPlugin(ScrollTrigger);
+
+    if (lenis) {
+      lenis.on('scroll', ScrollTrigger.update);
+      gsap.ticker.add((time) => {
+        lenis.raf(time * 1000);
+      });
+      gsap.ticker.lagSmoothing(0);
+    }
+
+    // Hero Text Staggered Entrance
+    gsap.from('.text-mask-inner', {
+      y: '105%',
+      duration: 1.2,
+      stagger: 0.15,
+      ease: 'power4.out',
+      delay: 0.2
+    });
+
+    gsap.from('.hero-badge-live, .hero-sub-text, .hero-btn-row', {
+      opacity: 0,
+      y: 30,
+      duration: 1.0,
+      stagger: 0.15,
+      ease: 'power3.out',
+      delay: 0.6
+    });
+
+    // Hero Video Scale & Blur Scrub on Scroll
+    gsap.to('#hero-video', {
+      scrollTrigger: {
+        trigger: '#hero-pin',
+        start: 'top top',
+        end: 'bottom top',
+        scrub: 1
+      },
+      scale: 0.9,
+      borderRadius: '32px',
+      opacity: 0.2,
+      ease: 'none'
+    });
+
+    gsap.to('#hero-content', {
+      scrollTrigger: {
+        trigger: '#hero-pin',
+        start: 'top top',
+        end: 'bottom top',
+        scrub: 1
+      },
+      y: -80,
+      opacity: 0,
+      ease: 'none'
+    });
+
+    // Parallax Ambient Orbs
+    gsap.to('.orb-1', {
+      scrollTrigger: { trigger: 'body', start: 'top top', end: 'bottom bottom', scrub: 2 },
+      y: 400,
+      x: -100
+    });
+    gsap.to('.orb-2', {
+      scrollTrigger: { trigger: 'body', start: 'top top', end: 'bottom bottom', scrub: 2 },
+      y: -300,
+      x: 150
+    });
+
+    // Scrub reveal on all cards and elements marked with [data-scrub]
+    document.querySelectorAll('[data-scrub]').forEach((el) => {
+      gsap.from(el, {
+        scrollTrigger: {
+          trigger: el,
+          start: 'top 85%',
+          end: 'top 60%',
+          toggleActions: 'play none none reverse'
+        },
+        y: 40,
+        opacity: 0,
+        duration: 0.8,
+        ease: 'power3.out'
+      });
+    });
+  }
+
+  // FAQ Accordion
+  function toggleFaq(item) {
+    item.classList.toggle('open');
+  }
+
+  // Workshop Modals
+  window.openWorkshop = function(id) {
+    if (id === 1) {
+      alert("AI Build Weekend Hackathon registration opens next week! Apply for club membership at /login.html#signup to secure priority RSVP.");
+      return;
+    }
+    window.location.href = `/members/quiz-interactive.html?event=${id}`;
+  };
+</script>
+</body>
+</html>
