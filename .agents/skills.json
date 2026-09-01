@@ -1,0 +1,6 @@
+{
+  "rules": [
+    "./rules/vps_architecture.md",
+    "./rules/expert_execution.md"
+  ]
+}
