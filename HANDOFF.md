@@ -474,6 +474,17 @@ git push origin main
 - Added **PrivaC** (`https://github.com/M4F-S/PrivaC`): Ultra-fast bare-metal C reverse proxy and symbolic micro-math engine for zero-knowledge LLM privacy, data masking, and prompt sanitization.
 - Updated `index.html`, `index-sharplink.html`, `index-v2.html`, and `data/ai-club.db` SQLite resources table across local and production VPS environments.
 
+### 3. Operations Dashboard & C Agent (CHarness) Integration (2026-09-02)
+- Upgraded the Operations Dashboard at `https://ops.42berlinaiclub.de/#vps` and `https://ops.42berlinaiclub.de/#overview`.
+- Integrated **CHarness (C Agent)**:
+  - Dynamically discovers the host process (`/opt/charness/c_agent_system --telegram` / `charness.service`) via `/hostproc` and `/hostroot/opt/charness`.
+  - Real-time telemetry: PID, CPU %, RSS memory (~15MB bare-metal memory footprint), uptime, and SQLite memory metrics (`c_agent_memory.sqlite`).
+  - Added dedicated cyberpunk avatar `avatar_charness.jpg` and `avatar_coin.jpg` with glowing neon styling and architecture badge (`C99 NATIVE` vs `HERMES CONTAINER`).
+  - Added full live log streaming via `journalctl -u charness.service` in the agent modal.
+  - Enabled service lifecycle controls (`systemctl restart/stop/start charness`) and backup archiving.
+  - Updated Copilot ("Flower") in `app/copilot.py` to recognize `charness` and answer queries grounded in its memory and systemd status.
+
+
 ---
 
 ## 📞 Contact

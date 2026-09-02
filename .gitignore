@@ -3,3 +3,7 @@ data/
 __pycache__/
 .DS_Store
 .env
+
+.gh_token
+*.tar.gz
+._*
