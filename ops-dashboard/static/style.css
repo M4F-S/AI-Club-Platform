@@ -580,6 +580,7 @@ canvas.pf-gauge { width: 132px; height: 132px; display: block; }
 .agent-avatar.candy { box-shadow: 0 0 22px -6px rgba(255, 105, 180, 0.7), 0 8px 20px -10px rgba(0,0,0,.7); border-color: rgba(255, 105, 180, 0.4); }
 .agent-avatar.coin { box-shadow: 0 0 22px -6px rgba(255, 215, 0, 0.7), 0 8px 20px -10px rgba(0,0,0,.7); border-color: rgba(255, 215, 0, 0.4); }
 .agent-avatar.charness { box-shadow: 0 0 24px -4px rgba(53, 224, 255, 0.9), 0 8px 20px -10px rgba(0,0,0,.7); border-color: #35E0FF; }
+.agent-avatar.belya { box-shadow: 0 0 24px -4px rgba(53, 224, 255, 0.95), 0 8px 20px -10px rgba(0,0,0,.7); border-color: #35E0FF; }
 .agent-status-dot {
   position: absolute; right: -3px; bottom: -3px;
   width: 13px; height: 13px; border-radius: 50%;
@@ -641,6 +642,7 @@ canvas.pf-gauge { width: 132px; height: 132px; display: block; }
 .agent-card.running .agent-avatar.candy ~ * .eq-bar { background: #FF69B4; }
 .agent-card.running .agent-avatar.coin ~ * .eq-bar { background: #FFD700; }
 .agent-card.running .agent-avatar.charness ~ * .eq-bar { background: #35E0FF; }
+.agent-card.running .agent-avatar.belya ~ * .eq-bar { background: #35E0FF; }
 .agent-card.running .eq-bar:nth-child(1) { animation-delay: 0s; height: 45%; }
 .agent-card.running .eq-bar:nth-child(2) { animation-delay: 0.15s; height: 90%; }
 .agent-card.running .eq-bar:nth-child(3) { animation-delay: 0.3s; height: 60%; }

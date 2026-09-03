@@ -21,9 +21,10 @@ const AGENT_IMG = {
   "hermes-pentest": "avatar_pencil.jpg",
   "hermes-marketing": "avatar_candy.jpg",
   "hermes-trader": "avatar_coin.jpg",
+  "belya": "avatar_belya.jpg",
   "charness": "avatar_charness.jpg",
-  "c-agent": "avatar_charness.jpg",
-  "c_agent": "avatar_charness.jpg",
+  "c-agent": "avatar_belya.jpg",
+  "c_agent": "avatar_belya.jpg",
 };
 
 const AGENT_COLOR = {
@@ -32,9 +33,10 @@ const AGENT_COLOR = {
   "hermes-pentest": "pencil",
   "hermes-marketing": "candy",
   "hermes-trader": "coin",
+  "belya": "belya",
   "charness": "charness",
-  "c-agent": "charness",
-  "c_agent": "charness",
+  "c-agent": "belya",
+  "c_agent": "belya",
 };
 
 async function api(path, opts={}) {
@@ -336,7 +338,7 @@ function renderFleet() {
     const imgName = AGENT_IMG[a.name] || "avatar_toy.jpg";
     const color = AGENT_COLOR[a.name] || "toy";
     const stats = fmtMem(a.stats);
-    const isNativeC = a.arch === "native_c" || a.name.includes("charness") || a.name.includes("c_agent") || a.name.includes("c-agent");
+    const isNativeC = a.arch === "native_c" || a.name.includes("belya") || a.name.includes("charness") || a.name.includes("c_agent") || a.name.includes("c-agent");
     const archBadge = isNativeC
       ? `<span class="badge-arch native-c">C99 NATIVE</span>`
       : `<span class="badge-arch hermes">HERMES</span>`;
@@ -581,7 +583,7 @@ async function openAgent(name) {
     if (titleEl) titleEl.textContent = a.friendly || a.name;
     if (subEl) subEl.textContent = `${a.name} · ${a.id || ""} · ${a.status}`;
     const stats = fmtMem(a.stats);
-    const isNativeC = a.arch === "native_c" || a.name.includes("charness");
+    const isNativeC = a.arch === "native_c" || a.name.includes("belya") || a.name.includes("charness");
 
     let extraHtml = "";
     if (a.model) {

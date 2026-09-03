@@ -33,7 +33,7 @@ APPROVAL_TTL = 600            # 10 minutes
 CHAT_RATE_LIMIT = 10          # chats / minute / operator
 HOST_REAUTH_TOOLS = {"vps_restart_service", "vps_reload_caddy"}
 
-AGENTS = ("hermes-agent", "hermes-assistant", "hermes-pentest", "hermes-marketing", "hermes-trader", "charness")
+AGENTS = ("hermes-agent", "hermes-assistant", "hermes-pentest", "hermes-marketing", "hermes-trader", "belya", "charness")
 SERVICES = {"sophia-caddy"}    # the Caddy container (label stays "caddy" für users)
 GH_OWNER = "M4F-S"
 DOCKER = dockerio.client

@@ -9,6 +9,8 @@ GATEWAY_CMD = ["gateway", "run"]
 HOSTPROC = os.environ.get("NEXUS_HOSTPROC", "/hostproc")
 HOSTROOT = os.environ.get("NEXUS_HOSTROOT", "/hostroot")
 
+NATIVE_C_NAMES = ("belya", "charness", "c-agent", "c_agent")
+
 _agent_cache = {"ts": 0.0, "items": []}
 _fleet_cache = {"ts": 0.0, "items": []}
 
@@ -18,9 +20,10 @@ FRIENDLY = {
     "hermes-pentest": "Pencil",
     "hermes-marketing": "Candy",
     "hermes-trader": "Coin",
-    "charness": "CHarness",
-    "c-agent": "CHarness",
-    "c_agent": "CHarness",
+    "belya": "Belya",
+    "charness": "Belya",
+    "c-agent": "Belya",
+    "c_agent": "Belya",
 }
 
 def friendly_name(name: str) -> str:
@@ -50,53 +53,53 @@ def _agent_containers(cache_ms: int = 1500):
     return out
 
 def get_agent(name: str):
-    if name in ("charness", "c-agent", "c_agent"):
-        return _charness_proxy_agent()
+    if name in NATIVE_C_NAMES:
+        return _belya_proxy_agent(name)
     for c in _agent_containers():
         if c.name == name:
             return c
     return None
 
-class _CHarnessProxy:
-    """Proxy object giving container-like attributes for the native C Agent."""
-    def __init__(self, pid=None):
-        self.name = "charness"
+class _BelyaProxy:
+    """Proxy object giving container-like attributes for the native C Agent (Belya / CHarness)."""
+    def __init__(self, name="belya", pid=None):
+        self.name = name
         self.pid = pid
-        self.id = f"PID {pid}" if pid else "systemd:charness"
-        self.short_id = f"pid-{pid}" if pid else "charness"
+        self.id = f"PID {pid}" if pid else f"systemd:{name}"
+        self.short_id = f"pid-{pid}" if pid else name
         self.status = "running" if pid else "stopped"
-        self.image = "C99 Native Binary (/opt/charness/c_agent_system)"
+        self.image = "C99 Native Binary (/opt/belya/belya)"
 
     def restart(self, timeout=30):
-        return control_charness("restart")
+        return control_belya("restart")
 
     def stop(self, timeout=30):
-        return control_charness("stop")
+        return control_belya("stop")
 
     def start(self):
-        return control_charness("start")
+        return control_belya("start")
 
-def _charness_proxy_agent():
-    pid, _ = _charness_pid()
-    return _CHarnessProxy(pid)
+def _belya_proxy_agent(name="belya"):
+    pid, _ = _belya_pid()
+    return _BelyaProxy(name, pid)
 
-# ---------- CHarness (C Agent) Host Inspection ----------
+# ---------- Belya (C Agent) Host Inspection ----------
 
-def _charness_pid():
-    """Find PID of running c_agent_system process via HOSTPROC."""
+def _belya_pid():
+    """Find PID of running belya or c_agent_system process via HOSTPROC."""
     for p in glob.glob(f"{HOSTPROC}/[0-9]*"):
         try:
             with open(os.path.join(p, "cmdline"), "rb") as f:
                 cmd = f.read().replace(b"\x00", b" ").decode("utf-8", "ignore")
-                if "c_agent_system" in cmd:
+                if "/opt/belya/belya" in cmd or "belya --telegram" in cmd or "c_agent_system" in cmd or "/opt/charness" in cmd:
                     return int(os.path.basename(p)), cmd.strip()
         except Exception:
             continue
     return None, None
 
-def _charness_stats():
-    """Extract real-time RSS memory and CPU for c_agent_system."""
-    pid, _ = _charness_pid()
+def _belya_stats():
+    """Extract real-time RSS memory and CPU for belya / c_agent_system."""
+    pid, _ = _belya_pid()
     if not pid:
         return None
     try:
@@ -126,9 +129,21 @@ def _charness_stats():
     except Exception as e:
         return {"error": str(e)}
 
-def charness_memory_stats():
-    """Read structured SQLite metrics from /opt/charness/c_agent_memory.sqlite."""
-    db_path = f"{HOSTROOT}/opt/charness/c_agent_memory.sqlite"
+def _belya_sqlite_path():
+    candidates = [
+        f"{HOSTROOT}/opt/belya/belya_memory.sqlite",
+        f"{HOSTROOT}/opt/charness/belya_memory.sqlite",
+        f"{HOSTROOT}/opt/belya/c_agent_memory.sqlite",
+        f"{HOSTROOT}/opt/charness/c_agent_memory.sqlite",
+    ]
+    for p in candidates:
+        if os.path.exists(p):
+            return p
+    return candidates[0]
+
+def belya_memory_stats():
+    """Read structured SQLite metrics from belya_memory.sqlite."""
+    db_path = _belya_sqlite_path()
     if not os.path.exists(db_path):
         return None
     try:
@@ -152,9 +167,12 @@ def charness_memory_stats():
     except Exception as e:
         return {"error": str(e)}
 
-def _charness_agent_dict():
-    """Construct full agent fleet entry for CHarness."""
-    pid, cmd = _charness_pid()
+# Backward compatibility alias
+charness_memory_stats = belya_memory_stats
+
+def _belya_agent_dict(name="belya"):
+    """Construct full agent fleet entry for Belya (C Agent)."""
+    pid, cmd = _belya_pid()
     uptime_s = None
     if pid:
         try:
@@ -163,7 +181,7 @@ def _charness_agent_dict():
         except Exception:
             uptime_s = None
 
-    db_path = f"{HOSTROOT}/opt/charness/c_agent_memory.sqlite"
+    db_path = _belya_sqlite_path()
     hb_ts = None
     if os.path.exists(db_path):
         try:
@@ -173,28 +191,28 @@ def _charness_agent_dict():
     if not hb_ts and pid:
         hb_ts = int(time.time())
 
-    stats = _charness_stats() if pid else None
+    stats = _belya_stats() if pid else None
     return {
-        "name": "charness",
-        "friendly": "CHarness",
-        "id": f"PID {pid}" if pid else "charness",
+        "name": name,
+        "friendly": "Belya",
+        "id": f"PID {pid}" if pid else name,
         "status": "running" if pid else "stopped",
         "uptime_s": uptime_s,
-        "image": "C99 Native Binary (/opt/charness/c_agent_system)",
+        "image": "C99 Native Binary (/opt/belya/belya)",
         "restart_policy": "always (systemd)",
         "arch": "native_c",
         "type": "native_c",
         "stats": stats,
         "heartbeat_ts": hb_ts,
-        "home": "/opt/charness",
-        "color": "cyan",
+        "home": "/opt/belya",
+        "color": "belya",
     }
 
-def control_charness(action: str):
-    """Execute start/stop/restart for charness.service via docker runner."""
+def control_belya(action: str):
+    """Execute start/stop/restart for belya.service (or charness.service) via docker runner."""
     if action not in ("start", "stop", "restart"):
         raise ValueError(f"Invalid action {action}")
-    cmd = f"chroot /hostroot systemctl {action} charness"
+    cmd = f"chroot /hostroot sh -c 'systemctl {action} belya.service 2>/dev/null || systemctl {action} charness.service'"
     try:
         res = client.containers.run(
             ALPINE_IMAGE,
@@ -208,10 +226,13 @@ def control_charness(action: str):
     except Exception as e:
         return {"ok": False, "error": str(e)}
 
+# Backward compatibility alias
+control_charness = control_belya
+
 # ---------- Fleet payload ----------
 
 def fleet(cache_ms: int = 6000):
-    """Agent fleet payload with both Docker Hermes agents and native CHarness."""
+    """Agent fleet payload with both Docker Hermes agents and native Belya C agent."""
     now = time.time()
     if cache_ms > 0 and _fleet_cache["items"] and \
        (now - _fleet_cache["ts"]) * 1000 < cache_ms:
@@ -232,9 +253,9 @@ def fleet(cache_ms: int = 6000):
             "type": "container",
         })
 
-    # Add CHarness native C agent
-    ch_dict = _charness_agent_dict()
-    agents.append(ch_dict)
+    # Add Belya native C agent
+    belya_dict = _belya_agent_dict("belya")
+    agents.append(belya_dict)
 
     out = sorted(agents, key=lambda a: a["name"])
     if cache_ms > 0:
@@ -253,8 +274,8 @@ def _uptime(c):
         return None
 
 def agent_stats(name: str):
-    if name in ("charness", "c-agent", "c_agent"):
-        return _charness_stats()
+    if name in NATIVE_C_NAMES:
+        return _belya_stats()
     c = get_agent(name)
     if not c or getattr(c, "status", None) != "running":
         return None
@@ -311,11 +332,11 @@ def exec_agent(name: str, cmd: str, timeout=20):
     c = get_agent(name)
     if not c or getattr(c, "status", None) != "running":
         return None, "agent not running"
-    if name in ("charness", "c-agent", "c_agent"):
+    if name in NATIVE_C_NAMES:
         try:
             res = client.containers.run(
                 ALPINE_IMAGE,
-                ["sh", "-c", f"cd /hostopt/charness && {cmd}"],
+                ["sh", "-c", f"cd /hostopt/belya 2>/dev/null || cd /hostopt/charness && {cmd}"],
                 remove=True,
                 volumes={"/opt": {"bind": "/hostopt", "mode": "ro"}},
                 stdout=True, stderr=True
@@ -336,16 +357,17 @@ def read_agent_file(name: str, path: str):
 
 def agent_bot_info(name: str):
     """Telegram bot handle via getMe."""
-    if name in ("charness", "c-agent", "c_agent"):
+    if name in NATIVE_C_NAMES:
         try:
             res = client.containers.run(
                 ALPINE_IMAGE,
-                ["sh", "-c", "grep -E '^TELEGRAM_BOT_TOKEN=' /hostroot/opt/charness/.env 2>/dev/null | cut -d= -f2-"],
+                ["sh", "-c", "grep -E '^TELEGRAM_BOT_TOKEN=' /hostroot/opt/belya/.env 2>/dev/null || grep -E '^TELEGRAM_BOT_TOKEN=' /hostroot/opt/charness/.env 2>/dev/null | cut -d= -f2-"],
                 remove=True,
                 volumes={"/": {"bind": "/hostroot", "mode": "ro"}},
                 stdout=True, stderr=True
             )
-            token = res.decode("utf-8", "replace").strip()
+            raw = res.decode("utf-8", "replace").strip()
+            token = raw.split("=")[-1].strip() if "=" in raw else raw
             if not token:
                 return {"ok": False, "error": "no token"}
             req = urllib.request.Request(f"https://api.telegram.org/bot{token}/getMe")
@@ -373,17 +395,17 @@ def agent_bot_info(name: str):
 
 def agent_gateway_log(name: str, tail: int = 200):
     """Read gateway or systemd log lines."""
-    if name in ("charness", "c-agent", "c_agent"):
+    if name in NATIVE_C_NAMES:
         try:
             res = client.containers.run(
                 ALPINE_IMAGE,
-                ["sh", "-c", f"chroot /hostroot journalctl -u charness.service -n {tail} --no-pager 2>/dev/null"],
+                ["sh", "-c", f"chroot /hostroot journalctl -u belya.service -u charness.service -n {tail} --no-pager 2>/dev/null"],
                 remove=True,
                 volumes={"/": {"bind": "/hostroot", "mode": "ro"}},
                 stdout=True, stderr=True
             )
             out = res.decode("utf-8", "replace") if isinstance(res, bytes) else str(res)
-            return out or "no charness logs"
+            return out or "no belya logs"
         except Exception as e:
             return f"[error] {str(e)}"
 
@@ -393,8 +415,8 @@ def agent_gateway_log(name: str, tail: int = 200):
     return data or ""
 
 def agent_gateway_log_mtime(name: str):
-    if name in ("charness", "c-agent", "c_agent"):
-        db_path = f"{HOSTROOT}/opt/charness/c_agent_memory.sqlite"
+    if name in NATIVE_C_NAMES:
+        db_path = _belya_sqlite_path()
         if os.path.exists(db_path):
             try:
                 return int(os.path.getmtime(db_path))
@@ -409,22 +431,23 @@ def agent_gateway_log_mtime(name: str):
         return 0
 
 def agent_version(name: str):
-    if name in ("charness", "c-agent", "c_agent"):
-        return "CHarness Evolution 3.0 (C99 Native Autonomous Engine)"
+    if name in NATIVE_C_NAMES:
+        return "Belya Harness Evolution 4.0 (Pure C99 Autonomous Engine)"
     data, _ = exec_agent(name, "cd /opt/hermes 2>/dev/null && HERMES_HOME=/opt/data bin/hermes --version 2>/dev/null || echo unknown")
     return (data or "unknown").strip().splitlines()[0][:80] if data else "unknown"
 
 def agent_model(name: str):
-    if name in ("charness", "c-agent", "c_agent"):
+    if name in NATIVE_C_NAMES:
         try:
             res = client.containers.run(
                 ALPINE_IMAGE,
-                ["sh", "-c", "grep -E '^MODEL_NAME=' /hostroot/opt/charness/.env 2>/dev/null | cut -d= -f2-"],
+                ["sh", "-c", "grep -E '^MODEL_NAME=' /hostroot/opt/belya/.env 2>/dev/null || grep -E '^MODEL_NAME=' /hostroot/opt/charness/.env 2>/dev/null | cut -d= -f2-"],
                 remove=True,
                 volumes={"/": {"bind": "/hostroot", "mode": "ro"}},
                 stdout=True, stderr=True
             )
-            m = res.decode("utf-8", "replace").strip()
+            raw = res.decode("utf-8", "replace").strip()
+            m = raw.split("=")[-1].strip() if "=" in raw else raw
             return m or "deepseek/deepseek-v4-flash"
         except Exception:
             return "deepseek/deepseek-v4-flash"
@@ -438,7 +461,9 @@ def agent_model(name: str):
     return data.strip().splitlines()[0][:90] if data.strip() else "n/a"
 
 def agent_home(name: str):
-    if name in ("charness", "c-agent", "c_agent"):
+    if name in NATIVE_C_NAMES:
+        if os.path.exists(f"{HOSTROOT}/opt/belya"):
+            return "/opt/belya"
         return "/opt/charness"
     try:
         c = get_agent(name)
@@ -450,8 +475,8 @@ def agent_home(name: str):
     return ""
 
 def agent_cron(name: str):
-    if name in ("charness", "c-agent", "c_agent"):
-        db_path = f"{HOSTROOT}/opt/charness/c_agent_memory.sqlite"
+    if name in NATIVE_C_NAMES:
+        db_path = _belya_sqlite_path()
         if os.path.exists(db_path):
             try:
                 conn = sqlite3.connect(db_path, timeout=5)
@@ -486,8 +511,8 @@ def latest_hermes_release():
         return {"error": str(e)[:100]}
 
 def image_created(image_ref: str):
-    if "C99" in str(image_ref):
-        return "2026-09-01"
+    if "C99" in str(image_ref) or "belya" in str(image_ref):
+        return "2026-09-03"
     try:
         img = client.images.get(image_ref)
         return img.attrs.get("Created", "")[:10]
@@ -508,7 +533,7 @@ def backup_agent(name: str) -> dict:
     src = os.path.basename(home.rstrip("/"))
     parent = os.path.dirname(home.rstrip("/"))
 
-    if name in ("charness", "c-agent", "c_agent"):
+    if name in NATIVE_C_NAMES:
         cmd = (f"mkdir -p /hostroot{bdir} && cd /hostroot{parent} && "
                f"tar czf /hostroot{target} --exclude='*.o' --exclude='*.bak*' {src} 2>/dev/null; echo RC=$?")
     else:
@@ -540,9 +565,9 @@ def list_backups():
 def restore_agent(name: str, backup_file: str) -> dict:
     if not backup_file.startswith("/root/backups-") or not backup_file.endswith(".tar.gz"):
         return {"ok": False, "error": "bad backup path"}
-    if name in ("charness", "c-agent", "c_agent"):
+    if name in NATIVE_C_NAMES:
         try:
-            control_charness("stop")
+            control_belya("stop")
             cmd = (f"cd /hostroot/opt && tar xzf /hostroot{backup_file} 2>&1 | tail -3; "
                    f"echo DONE")
             res = client.containers.run(ALPINE_IMAGE, ["sh", "-lc", cmd],
@@ -550,10 +575,10 @@ def restore_agent(name: str, backup_file: str) -> dict:
                                         volumes={"/": {"bind": "/hostroot", "mode": "rw"}},
                                         stdout=True, stderr=True)
             out = res.decode("utf-8", "replace") if isinstance(res, bytes) else str(res)
-            control_charness("start")
+            control_belya("start")
             return {"ok": True, "detail": out.strip()[:200]}
         except Exception as e:
-            control_charness("start")
+            control_belya("start")
             return {"ok": False, "error": f"restore failed: {str(e)[:200]}"}
 
     c = get_agent(name)

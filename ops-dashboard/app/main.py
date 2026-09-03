@@ -111,13 +111,13 @@ def agent_detail(name: str, request: Request):
         "name": c.name,
         "id": c.id,
         "status": status,
-        "arch": getattr(c, "arch", "native_c" if name in ("charness", "c-agent", "c_agent") else "container"),
+        "arch": getattr(c, "arch", "native_c" if name in dockerio.NATIVE_C_NAMES else "container"),
         "version": dockerio.agent_version(name) if status == "running" else None,
         "model": dockerio.agent_model(name) if status == "running" else None,
         "bot": dockerio.agent_bot_info(name) if status == "running" else None,
         "home": dockerio.agent_home(name),
         "cron": dockerio.agent_cron(name) if status == "running" else [],
-        "memory_stats": dockerio.charness_memory_stats() if name in ("charness", "c-agent", "c_agent") else None,
+        "memory_stats": dockerio.belya_memory_stats() if name in dockerio.NATIVE_C_NAMES else None,
         "stats": dockerio.agent_stats(name) if status == "running" else None,
     }
     return detail
