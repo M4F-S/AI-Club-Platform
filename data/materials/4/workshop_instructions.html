@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Agent Workshop Practical Guide — 42 Berlin AI Club</title>
+    <link rel="stylesheet" href="/assets/new-design-system.css">
+    <link rel="stylesheet" href="/members/members.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <meta name="theme-color" content="#060612">
+    <style>
+        :root {
+            --doc-bg: #060612;
+            --doc-card: rgba(13, 16, 32, 0.95);
+            --doc-border: rgba(0, 212, 255, 0.25);
+            --doc-text-main: #F1F5F9;
+            --doc-text-sub: #CBD5E1;
+            --doc-text-muted: #94A3B8;
+            --doc-cyan: #00D4FF;
+            --doc-mint: #4DE3C1;
+            --doc-violet: #7C6CFF;
+            --doc-code-bg: #070914;
+        }
+
+        body {
+            background: var(--doc-bg) !important;
+            color: var(--doc-text-main) !important;
+            font-family: 'Satoshi', system-ui, -apple-system, sans-serif;
+            line-height: 1.7;
+            padding: 30px 16px;
+            margin: 0;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .instructions-container {
+            background: var(--doc-card) !important;
+            padding: clamp(24px, 5vw, 48px);
+            border-radius: 24px;
+            border: 1px solid var(--doc-border) !important;
+            max-width: 960px;
+            margin: 0 auto;
+            color: var(--doc-text-main) !important;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.8), 0 0 35px rgba(0, 212, 255, 0.12);
+        }
+
+        .back-nav-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 28px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .back-nav-link {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--doc-cyan) !important;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: color 0.2s;
+        }
+
+        .back-nav-link:hover {
+            color: var(--doc-mint) !important;
+            text-decoration: underline;
+        }
+
+        .doc-badge {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            padding: 4px 12px;
+            border-radius: 999px;
+            background: rgba(77, 227, 193, 0.12);
+            border: 1px solid rgba(77, 227, 193, 0.35);
+            color: var(--doc-mint);
+        }
+
+        .instructions-container h1 {
+            font-family: 'Archivo', system-ui, sans-serif;
+            font-size: clamp(2rem, 4vw, 2.7rem);
+            font-weight: 900;
+            line-height: 1.15;
+            letter-spacing: -0.02em;
+            margin-bottom: 24px;
+            color: #FFFFFF !important;
+            background: linear-gradient(135deg, #FFFFFF 30%, var(--doc-cyan) 75%, var(--doc-mint) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .instructions-container h2 {
+            font-family: 'Archivo', system-ui, sans-serif;
+            font-size: clamp(1.4rem, 2.5vw, 1.75rem);
+            font-weight: 800;
+            margin-top: 44px;
+            margin-bottom: 18px;
+            color: var(--doc-mint) !important;
+            border-bottom: 1px solid rgba(77, 227, 193, 0.25);
+            padding-bottom: 10px;
+        }
+
+        .instructions-container h3 {
+            font-family: 'Archivo', system-ui, sans-serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-top: 30px;
+            margin-bottom: 14px;
+            color: var(--doc-cyan) !important;
+        }
+
+        .instructions-container p,
+        .instructions-container li {
+            color: var(--doc-text-main) !important;
+            font-size: 15.5px;
+            line-height: 1.75;
+            margin-bottom: 14px;
+        }
+
+        .instructions-container strong {
+            color: #FFFFFF !important;
+            font-weight: 700;
+        }
+
+        .instructions-container em {
+            display: block;
+            font-style: normal;
+            background: rgba(124, 108, 255, 0.08);
+            border-left: 3px solid var(--doc-violet);
+            padding: 12px 16px;
+            border-radius: 0 8px 8px 0;
+            margin: 12px 0 16px;
+            color: var(--doc-text-sub) !important;
+            font-size: 14.5px;
+            line-height: 1.6;
+        }
+
+        .instructions-container a {
+            color: var(--doc-cyan) !important;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+            font-weight: 600;
+        }
+
+        .instructions-container a:hover {
+            color: var(--doc-mint) !important;
+        }
+
+        .instructions-container p code,
+        .instructions-container li code {
+            font-family: 'JetBrains Mono', 'Space Grotesk', monospace;
+            background: rgba(0, 212, 255, 0.12) !important;
+            border: 1px solid rgba(0, 212, 255, 0.35) !important;
+            color: #00E5FF !important;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 13.5px;
+            font-weight: 600;
+        }
+
+        .instructions-container pre {
+            position: relative;
+            background: var(--doc-code-bg) !important;
+            border: 1px solid rgba(0, 212, 255, 0.3) !important;
+            border-radius: 14px;
+            padding: 22px 20px;
+            overflow-x: auto;
+            margin: 18px 0 24px;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.7);
+        }
+
+        .instructions-container pre code {
+            display: block;
+            background: transparent !important;
+            border: none !important;
+            padding: 0 !important;
+            font-family: 'JetBrains Mono', Consolas, Monaco, monospace;
+            font-size: 13.5px;
+            line-height: 1.65;
+            color: #F8FAFC !important;
+            font-weight: 400;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 212, 255, 0.15);
+            border: 1px solid rgba(0, 212, 255, 0.4);
+            color: var(--doc-cyan);
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-family: 'Space Grotesk', monospace;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+        }
+
+        .copy-btn:hover {
+            background: rgba(0, 212, 255, 0.35);
+            color: #FFFFFF;
+            border-color: var(--doc-cyan);
+        }
+
+        .instructions-container hr {
+            border: none;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin: 40px 0;
+        }
+    </style>
+</head>
+<body class="loaded">
+    <div class="container">
+        <div class="instructions-container">
+            <div class="back-nav-bar">
+                <a href="/members/event.html?id=4" class="back-nav-link">← Return to Workshop Hub</a>
+                <span class="doc-badge">Workshop 04 · Practical Guide</span>
+            </div>
+            <h1>Unlocking AI Agents: From Architecture to Action</h1>
+<h2>Part 1: Project Setup &amp; Environment</h2>
+<h3>1. Setup Directory &amp; Virtual Environment</h3>
+<p><em>Explanation: We start by creating a dedicated folder for our project. Then we initialize a Python Virtual Environment (<code>venv</code>), which is a sandboxed area that prevents the libraries we install from conflicting with other Python projects on your computer. Finally, we use <code>pip</code> to install LangChain and LangGraph.</em></p>
+<p><strong>macOS / Linux:</strong></p>
+<pre><code class="language-bash">mkdir agent-workshop &amp;&amp; cd agent-workshop
+python3 -m venv venv
+source venv/bin/activate
+./venv/bin/python3 -m pip install -U langchain-core langchain-openai langgraph python-dotenv
+</code></pre>
+<p><strong>Windows (PowerShell):</strong></p>
+<pre><code class="language-powershell">mkdir agent-workshop
+cd agent-workshop
+python -m venv venv
+.\venv\Scripts\Activate.ps1
+python -m pip install -U langchain-core langchain-openai langgraph python-dotenv
+</code></pre>
+<h3>2. Get OpenRouter API Key &amp; Configure .env</h3>
+<p><em>Explanation: To communicate with an AI model, we need an API Key. We use OpenRouter because it provides access to many models (including free ones) through a unified API. We store this key in a hidden <code>.env</code> file so it is safely loaded into our program without being hardcoded into our scripts.</em></p>
+<p>Go to <a href="https://openrouter.ai/">openrouter.ai</a> -&gt; Settings -&gt; Keys -&gt; Create Key.
+Create your <code>.env</code> file in the <code>agent-workshop</code> folder:</p>
+<p><strong>macOS / Linux:</strong></p>
+<pre><code class="language-bash">echo &quot;OPENROUTER_API_KEY=sk-or-v1-your-key-here&quot; &gt; .env
+</code></pre>
+<p><strong>Windows:</strong></p>
+<pre><code class="language-powershell">Set-Content -Path .env -Value &quot;OPENROUTER_API_KEY=sk-or-v1-your-key-here&quot;
+</code></pre>
+<h2>Part 2: The Agent Code (agent.py)</h2>
+<p><em>Explanation: This is the core logic of our AI Agent. We define custom tools (Python functions annotated with <code>@tool</code>) that the LLM can use to perform actions. We then create a LangGraph agent that uses a "ReAct" (Reasoning + Acting) loop: it thinks about what to do, calls a tool, observes the result, and loops until it answers the user.</em></p>
+<p>Create <code>agent.py</code> in your folder and paste the complete implementation:</p>
+<pre><code class="language-python">import os
+import sys
+from dotenv import load_dotenv
+from langchain_core.tools import tool
+from langchain_openai import ChatOpenAI
+from langgraph.checkpoint.memory import MemorySaver
+from langgraph.prebuilt import create_react_agent
+
+# 1. Load API Key
+load_dotenv()
+api_key = os.environ.get(&quot;OPENROUTER_API_KEY&quot;)
+if not api_key:
+    sys.exit(&quot;❌ Error: OPENROUTER_API_KEY is not set in your .env file.&quot;)
+
+# 2. Define Deterministic Tools
+@tool
+def calculate(expression: str) -&gt; str:
+    &quot;&quot;&quot;Safely evaluates basic arithmetic expressions like '42 * 1024' or '(100 - 25) / 5'.&quot;&quot;&quot;
+    try:
+        allowed = set(&quot;0123456789+-*/(). %&quot;)
+        if not set(expression).issubset(allowed):
+            return &quot;Error: Expression contains forbidden characters.&quot;
+        return str(eval(expression, {&quot;__builtins__&quot;: None}, {}))
+    except Exception as e:
+        return f&quot;Calculation error: {e}&quot;
+
+@tool
+def get_system_info() -&gt; str:
+    &quot;&quot;&quot;Returns local operating system details and active directory path.&quot;&quot;&quot;
+    import platform
+    return f&quot;OS: {platform.system()} {platform.release()}, Current Path: {os.getcwd()}&quot;
+
+# Register available tools
+tools = [calculate, get_system_info]
+
+# 3. Configure Model with OpenRouter API
+llm = ChatOpenAI(
+    base_url=&quot;https://openrouter.ai/api/v1&quot;,
+    api_key=api_key,
+    model=&quot;google/gemini-2.0-flash-lite-preview-02-05:free&quot;, # Reliable free model for tool-calling
+    temperature=0,
+    default_headers={
+        &quot;HTTP-Referer&quot;: &quot;http://localhost:3000&quot;,
+        &quot;X-Title&quot;: &quot;42 Berlin AI Workshop&quot;,
+    }
+)
+
+# 4. Compile ReAct Graph with Checkpointer Memory
+memory = MemorySaver()
+agent = create_react_agent(
+    model=llm,
+    tools=tools,
+    checkpointer=memory,
+    prompt=&quot;You are a helpful AI assistant with access to local tools. Always verify computations and system details using your tools before answering.&quot;
+)
+
+# 5. Interactive Chat REPL Loop
+def run_interactive_session():
+    config = {&quot;configurable&quot;: {&quot;thread_id&quot;: &quot;session_42_berlin&quot;}}
+    print(&quot;=&quot; * 60)
+    print(&quot;🤖 Agent Ready! (Connected to OpenRouter Free Tier)&quot;)
+    print(&quot;Type your message, or type 'exit' / 'q' to quit.&quot;)
+    print(&quot;=&quot; * 60)
+
+    while True:
+        try:
+            user_input = input(&quot;\nYou &gt; &quot;).strip()
+            if user_input.lower() in (&quot;exit&quot;, &quot;quit&quot;, &quot;q&quot;):
+                print(&quot;👋 Exiting workshop session...&quot;)
+                break
+            if not user_input:
+                continue
+
+            print(&quot;\n⚙️ Processing (Streaming Graph Steps)...&quot;)
+            # Stream and inspect intermediate message steps
+            for event in agent.stream(
+                {&quot;messages&quot;: [(&quot;user&quot;, user_input)]},
+                config=config,
+                stream_mode=&quot;values&quot;
+            ):
+                latest = event[&quot;messages&quot;][-1]
+                # Only print new agent responses and tool executions
+                if latest.type in (&quot;ai&quot;, &quot;tool&quot;) and latest.content != user_input:
+                    latest.pretty_print()
+
+        except KeyboardInterrupt:
+            print(&quot;\nSession stopped.&quot;)
+            break
+        except Exception as err:
+            print(f&quot;⚠️ Error: {err}&quot;)
+
+if __name__ == &quot;__main__&quot;:
+    run_interactive_session()
+</code></pre>
+<h2>Part 3: Running the Agent &amp; The 3 Core Verification Tests</h2>
+<p><em>Explanation: In this step, we execute the agent script to start our interactive terminal session. The verification tests prove that our agent isn't just generating text, but actually running live Python code (calculate tool) and checking the real underlying hardware (get_system_info tool).</em></p>
+<p>Run the agent in your terminal:</p>
+<p><strong>macOS / Linux:</strong></p>
+<pre><code class="language-bash">./venv/bin/python3 agent.py
+</code></pre>
+<p><strong>Windows:</strong></p>
+<pre><code class="language-powershell">python agent.py
+</code></pre>
+<p>Below are the 3 verification prompts, their exact terminal behavior, and the engineering mechanisms driving them:</p>
+<h3>Test 1: Parallel Multi-Tool Invocation</h3>
+<p><strong>Query:</strong>
+<code>You &gt; what os am i running and what is 5342 multipied by 18</code></p>
+<p><strong>Expected Terminal Stream:</strong></p>
+<pre><code class="language-text">⚙️ Processing (Streaming Graph Steps)...
+================================== Ai Message ==================================
+Tool Calls:
+  get_system_info (call_01)
+  calculate (call_02)
+    Args:
+      expression: 5342 * 18
+================================= Tool Message =================================
+Name: get_system_info
+OS: Darwin 23.4.0 (macOS), Current Path: /Users/.../agent-workshop
+================================= Tool Message =================================
+Name: calculate
+96156
+================================== Ai Message ==================================
+You are running macOS (Darwin 23.4.0), and 5342 multiplied by 18 is 96,156.
+</code></pre>
+<p><strong>What just happened under the hood:</strong>
+1. The LLM (a probabilistic next-token generator) recognized it cannot access hardware or do deterministic math.
+2. It generated structured tool requests (<code>get_system_info</code> and <code>calculate</code>) and paused.
+3. The deterministic Python host intercepted the <code>tool_use</code> stop reason, ran both Python functions locally, and appended the raw results to the context.
+4. The model received the new context, saw <code>end_turn</code>, and synthesized the final natural language answer.</p>
+<h3>Test 2: State Persistence &amp; Context Retention</h3>
+<p><strong>Query:</strong>
+<code>You &gt; what was that multiplication result again?</code></p>
+<p><strong>Expected Terminal Stream:</strong></p>
+<pre><code class="language-text">⚙️ Processing (Streaming Graph Steps)...
+================================== Ai Message ==================================
+The result of the multiplication (5342 * 18) was 96,156.
+</code></pre>
+<p><strong>What just happened under the hood:</strong>
+1. No tools were invoked.
+2. LangGraph's MemorySaver retrieved the previous message history associated with thread_id: "session_42_berlin" and passed it into the model's working context.
+3. The model answered directly from its conversational working memory.</p>
+<h3>Test 3: Direct Synthesis (Bypassing Tools)</h3>
+<p><strong>Query:</strong>
+<code>You &gt; Explain what an AI agent is in one concise sentence.</code></p>
+<p><strong>Expected Terminal Stream:</strong></p>
+<pre><code class="language-text">⚙️ Processing (Streaming Graph Steps)...
+================================== Ai Message ==================================
+An AI agent is a system where a language model operates inside a deterministic control loop to reason, choose actions, and execute external tools to accomplish a multi-step goal.
+</code></pre>
+<p><strong>What just happened under the hood:</strong>
+1. The model evaluated its tool definitions (<code>calculate</code>, <code>get_system_info</code>) and determined neither was necessary.
+2. It emitted raw text directly, triggering the <code>end_turn</code> condition immediately without extra loop iterations.</p>
+<hr />
+<h2>Part 4: Challenges - Hacking Phase Guide</h2>
+<p>Here is the complete Hacking Phase Guide with the 4 progressive challenges, exact solution code, and expected behavior.</p>
+<h3>Challenge 1: The Local File Explorer (Context Selection &amp; Read Truncation)</h3>
+<p><strong>Goal &amp; Engineering Concept:</strong>
+Give the agent the ability to inspect the local file system. Emphasize why dumping entire large files directly into the context window triggers context rot and degrades reasoning. We mitigate this by reading only a truncated slice (e.g., first 500 characters).</p>
+<p><strong>Solution Code to Add to <code>agent.py</code>:</strong></p>
+<pre><code class="language-python">@tool
+def list_directory(path: str = &quot;.&quot;) -&gt; str:
+    &quot;&quot;&quot;Lists files and folders in a given directory path.&quot;&quot;&quot;
+    try:
+        items = os.listdir(path)
+        return &quot;\n&quot;.join(items) if items else &quot;Directory is empty.&quot;
+    except Exception as e:
+        return f&quot;Error listing directory: {e}&quot;
+
+@tool
+def read_file_preview(filepath: str, max_chars: int = 500) -&gt; str:
+    &quot;&quot;&quot;Reads the first N characters of a text file to prevent context window overload.&quot;&quot;&quot;
+    try:
+        with open(filepath, &quot;r&quot;, encoding=&quot;utf-8&quot;) as f:
+            content = f.read(max_chars)
+        return f&quot;--- Content of {filepath} (first {max_chars} chars) ---\n{content}&quot;
+    except Exception as e:
+        return f&quot;Error reading file: {e}&quot;
+
+# Update tool registry:
+tools = [calculate, get_system_info, list_directory, read_file_preview]
+</code></pre>
+<p><strong>Test Query &amp; Expected Output:</strong>
+<code>You &gt; List files in the current folder, find agent.py, and give me a brief summary of its first few lines.</code></p>
+<p><strong>Expected Behavior:</strong>
+1. The agent calls <code>list_directory(".")</code>.
+2. The agent observes <code>agent.py</code> in the returned file list.
+3. The agent calls <code>read_file_preview("agent.py", max_chars=500)</code>.
+4. The agent summarizes the imports and header setup.</p>
+<h3>Challenge 2: The External Scratchpad (The "Write" Strategy &amp; Side Effects)</h3>
+<p><strong>Goal &amp; Engineering Concept:</strong>
+In Level 3 AI Engineering, tools start read-only before granting mutation/destructive access. This implements the Write context strategy: giving the agent a way to save notes to a persistent disk scratchpad rather than cluttering its working memory.</p>
+<p><strong>Solution Code to Add to <code>agent.py</code>:</strong></p>
+<pre><code class="language-python">@tool
+def save_scratchpad_note(filename: str, content: str) -&gt; str:
+    &quot;&quot;&quot;Writes or appends an important summary or finding to an external text file.&quot;&quot;&quot;
+    try:
+        # Enforce writing to a safe .txt file only
+        if not filename.endswith(&quot;.txt&quot;):
+            filename += &quot;.txt&quot;
+        with open(filename, &quot;a&quot;, encoding=&quot;utf-8&quot;) as f:
+            f.write(content + &quot;\n&quot;)
+        return f&quot;Successfully saved note to {filename}.&quot;
+    except Exception as e:
+        return f&quot;Error writing note: {e}&quot;
+
+# Update tool registry:
+tools = [calculate, get_system_info, list_directory, read_file_preview, save_scratchpad_note]
+</code></pre>
+<p><strong>Test Query &amp; Expected Output:</strong>
+<code>You &gt; Calculate 9999 * 42, write the result and a note saying 'Batch Complete' into my_notes.txt.</code></p>
+<p><strong>Expected Behavior:</strong>
+1. Agent invokes <code>calculate("9999 * 42")</code> -&gt; receives <code>419958</code>.
+2. Agent invokes <code>save_scratchpad_note("my_notes.txt", "Calculation: 419958 - Batch Complete")</code>.
+3. File <code>my_notes.txt</code> is created on the student's laptop.
+4. Discussion Point: Highlight the security implications when agents are given write access versus read-only access without a human in the loop.</p>
+<h3>Challenge 3: Breaking the Loop (Infinite ReAct Cycles &amp; Failure Handling)</h3>
+<p><strong>Goal &amp; Engineering Concept:</strong>
+Demonstrate how the ReAct loop breaks down when tool outputs provide ambiguous errors. Non-deterministic models will attempt to re-prompt and hallucinate parameter adjustments, burning token limits.</p>
+<p><strong>Solution Code to Add to <code>agent.py</code>:</strong></p>
+<pre><code class="language-python">@tool
+def flaky_network_fetch(endpoint: str) -&gt; str:
+    &quot;&quot;&quot;Simulates an unreliable external API that always fails with an ambiguous error.&quot;&quot;&quot;
+    return &quot;HTTP 500: Internal Server Error. Syntax rejected, try another format.&quot;
+
+# Update tool registry:
+tools = [calculate, get_system_info, flaky_network_fetch]
+</code></pre>
+<p><strong>Test Query &amp; Expected Output:</strong>
+<code>You &gt; Fetch data from endpoint 'user_profile_data' and extract the username.</code></p>
+<p><strong>Expected Behavior:</strong>
+1. The agent calls <code>flaky_network_fetch(endpoint="user_profile_data")</code>.
+2. It receives "HTTP 500: Internal Server Error...".
+3. Instead of exiting immediately, the model enters a retry loop, altering the payload (e.g., <code>flaky_network_fetch(endpoint="/api/v1/user_profile_data")</code>).
+4. Students will observe the console executing multiple consecutive tool turns until context builds up or it hits recursion limits.</p>
+<h3>Challenge 4: Build a Deterministic Eval Harness (Testing over Vibes)</h3>
+<p><strong>Goal &amp; Engineering Concept:</strong>
+Level 3/4 Agentic Engineering requires moving from "eval by vibes" to an automated testing harness. Instead of interactive terminal chatting, create a standalone test script <code>eval_agent.py</code> that evaluates the agent against verifiable criteria using plain code assertions and token logging.</p>
+<p><strong>New File: <code>eval_agent.py</code></strong>
+Create <code>eval_agent.py</code> in the same directory:</p>
+<pre><code class="language-python">import time
+from agent import agent
+
+# Define benchmark tasks with deterministic ground truth assertions
+EVAL_SUITE = [
+    {
+        &quot;id&quot;: &quot;eval_math&quot;,
+        &quot;input&quot;: &quot;Calculate 1024 * 64 exactly.&quot;,
+        &quot;expected_tool&quot;: &quot;calculate&quot;,
+        &quot;expected_substring&quot;: &quot;65536&quot;
+    },
+    {
+        &quot;id&quot;: &quot;eval_system&quot;,
+        &quot;input&quot;: &quot;What OS am I running?&quot;,
+        &quot;expected_tool&quot;: &quot;get_system_info&quot;,
+        &quot;expected_substring&quot;: &quot;Darwin&quot;  # Or &quot;Windows&quot; / &quot;Linux&quot; depending on the laptop
+    },
+    {
+        &quot;id&quot;: &quot;eval_pure_reasoning&quot;,
+        &quot;input&quot;: &quot;What is the capital of France? Answer in one word.&quot;,
+        &quot;expected_tool&quot;: None,  # Should NOT invoke tools
+        &quot;expected_substring&quot;: &quot;Paris&quot;
+    }
+]
+
+def run_evals():
+    print(&quot;================ RUNNING AGENT EVALUATION SUITE ================&quot;)
+    passed = 0
+
+    for test in EVAL_SUITE:
+        print(f&quot;\n[Test ID]: {test['id']}&quot;)
+        print(f&quot; Query: {test['input']}&quot;)
+
+        tools_called = []
+        final_answer = &quot;&quot;
+        config = {&quot;configurable&quot;: {&quot;thread_id&quot;: f&quot;eval_{test['id']}_{time.time()}&quot;}}
+
+        # Execute agent stream
+        for event in agent.stream(
+            {&quot;messages&quot;: [(&quot;user&quot;, test[&quot;input&quot;])]}, 
+            config=config, 
+            stream_mode=&quot;values&quot;
+        ):
+            msg = event[&quot;messages&quot;][-1]
+            if msg.type == &quot;ai&quot; and msg.tool_calls:
+                for call in msg.tool_calls:
+                    tools_called.append(call[&quot;name&quot;])
+            elif msg.type == &quot;ai&quot; and not msg.tool_calls:
+                final_answer = msg.content
+
+        # 1. Deterministic Tool Assertion
+        tool_passed = True
+        if test[&quot;expected_tool&quot;]:
+            tool_passed = test[&quot;expected_tool&quot;] in tools_called
+        else:
+            tool_passed = len(tools_called) == 0
+
+        # 2. Output Fact Assertion
+        content_passed = test[&quot;expected_substring&quot;].lower() in final_answer.lower()
+
+        test_success = tool_passed and content_passed
+        if test_success:
+            passed += 1
+            print(f&quot; -&gt; Result: PASS ✅ (Tools: {tools_called})&quot;)
+        else:
+            print(f&quot; -&gt; Result: FAIL ❌ (Tools: {tools_called}, Expected Substring: '{test['expected_substring']}')&quot;)
+            print(f&quot;    Agent Output: {final_answer}&quot;)
+
+    success_rate = (passed / len(EVAL_SUITE)) * 100
+    print(&quot;\n================ EVALUATION SUMMARY ================&quot;)
+    print(f&quot;Total Passed: {passed}/{len(EVAL_SUITE)} ({success_rate:.1f}%)&quot;)
+
+if __name__ == &quot;__main__&quot;:
+    run_evals()
+</code></pre>
+<p><strong>Run the Eval Script</strong></p>
+<pre><code class="language-bash">./venv/bin/python3 eval_agent.py
+</code></pre>
+<p><strong>Expected Output:</strong></p>
+<pre><code class="language-text">================ RUNNING AGENT EVALUATION SUITE ================
+
+[Test ID]: eval_math
+ Query: Calculate 1024 * 64 exactly.
+ -&gt; Result: PASS ✅ (Tools: ['calculate'])
+
+[Test ID]: eval_system
+ Query: What OS am I running?
+ -&gt; Result: PASS ✅ (Tools: ['get_system_info'])
+
+[Test ID]: eval_pure_reasoning
+ Query: What is the capital of France? Answer in one word.
+ -&gt; Result: PASS ✅ (Tools: [])
+
+================ EVALUATION SUMMARY ================
+Total Passed: 3/3 (100.0%)
+</code></pre>
+<p><strong>Discussion Wrap-up:</strong> 
+Explain how compound failure rates ($0.95^{20} \approx 35\%$) make continuous regression testing in CI/CD mandatory for production agents.</p>
+        </div>
+    </div>
+    <script>
+        document.querySelectorAll('pre').forEach(function(pre) {
+            var button = document.createElement('button');
+            button.className = 'copy-btn';
+            button.textContent = 'Copy';
+            pre.appendChild(button);
+
+            button.addEventListener('click', function() {
+                var code = pre.querySelector('code');
+                var text = code ? code.innerText : pre.innerText.replace('Copy', '');
+                navigator.clipboard.writeText(text.trim()).then(function() {
+                    button.textContent = 'Copied!';
+                    setTimeout(function() {
+                        button.textContent = 'Copy';
+                    }, 2000);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
