@@ -106,9 +106,9 @@
       this.padL = padL;
       const iw = W - padL - padR;
       const ih = this.H - padT - padB;
-      this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       this.canvas.width = Math.round(W * dpr);
       this.canvas.height = Math.round(this.H * dpr);
+      this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       this.ctx.clearRect(0, 0, W, this.H);
 
       const pts = this.points;

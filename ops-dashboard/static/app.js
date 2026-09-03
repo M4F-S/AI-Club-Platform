@@ -86,37 +86,59 @@ function fmtMem(stats) {
 
 /* ---------------- auth ---------------- */
 function showLogin() {
-  $("#login-view").classList.remove("hidden");
-  $("#shell").classList.add("hidden");
-  $("#modal").classList.add("hidden");
+  $("#login-view")?.classList.remove("hidden");
+  $("#shell")?.classList.add("hidden");
+  $("#modal")?.classList.add("hidden");
+  $("#copilot-fab")?.classList.add("hidden");
 }
 
 async function showShell() {
   state.me = await api("/api/me");
-  $("#login-view").classList.add("hidden");
-  $("#shell").classList.remove("hidden");
-  $("#copilot-fab").classList.remove("hidden");
-  $("#page-title").textContent = "Fleet";
-  refreshAll();
+  $("#login-view")?.classList.add("hidden");
+  $("#shell")?.classList.remove("hidden");
+  $("#copilot-fab")?.classList.remove("hidden");
+
+  const rawHash = (location.hash || "").replace(/^#/, "").trim();
+  const validViews = ["overview", "vps", "containers", "cron", "backups", "updates", "audit", "users"];
+  const initialView = validViews.includes(rawHash) ? rawHash : "overview";
+
+  goView(initialView);
   initPfGauges();
+  await refreshAll();
+
   setInterval(refreshFleet, 10000);
   setInterval(refreshTopbar, 5000);
-  window.addEventListener("resize", () => Object.values(__pfGauges).forEach((g) => g.resize()));
+
+  window.addEventListener("resize", () => {
+    Object.values(__pfGauges).forEach((g) => g.resize());
+    if ($("#view-overview")?.classList.contains("active") || $("#view-vps")?.classList.contains("active")) {
+      drawHistory();
+    }
+  });
+
+  window.addEventListener("hashchange", () => {
+    const h = (location.hash || "").replace(/^#/, "").trim();
+    if (validViews.includes(h)) goView(h);
+  });
 }
 
-$("#login-form").addEventListener("submit", async (e) => {
+$("#login-form")?.addEventListener("submit", async (e) => {
   e.preventDefault();
   const err = $("#login-error");
-  err.classList.add("hidden");
+  if (err) err.classList.add("hidden");
   const btn = $("#login-btn"), lbl = $("#login-btn-label");
   const ld = $("#login-loader");
-  btn.disabled = true; lbl.textContent = "Sign in"; ld.classList.remove("hidden");
+  if (btn) btn.disabled = true;
+  if (lbl) lbl.textContent = "Sign in";
+  if (ld) ld.classList.remove("hidden");
   try {
-    await api("/api/login", { method: "POST", body: JSON.stringify({ username: $("#u-name").value.trim(), password: $("#u-pass").value }) });
+    await api("/api/login", { method: "POST", body: JSON.stringify({ username: $("#u-name")?.value.trim() || "", password: $("#u-pass")?.value || "" }) });
     await showShell();
   } catch (x) {
-    err.textContent = x.message; err.classList.remove("hidden");
-    btn.disabled = false; lbl.textContent = "Sign in"; ld.classList.add("hidden");
+    if (err) { err.textContent = x.message; err.classList.remove("hidden"); }
+    if (btn) btn.disabled = false;
+    if (lbl) lbl.textContent = "Sign in";
+    if (ld) ld.classList.add("hidden");
   }
 });
 
@@ -130,10 +152,12 @@ $("#logout-btn3")?.addEventListener("click", async () => {
   location.reload();
 });
 
-$("#refresh-btn").addEventListener("click", () => {
+$("#refresh-btn")?.addEventListener("click", () => {
   const b = $("#refresh-btn");
-  b.classList.remove("spinning"); void b.offsetWidth; b.classList.add("spinning");
-  setTimeout(() => b.classList.remove("spinning"), 700);
+  if (b) {
+    b.classList.remove("spinning"); void b.offsetWidth; b.classList.add("spinning");
+    setTimeout(() => b.classList.remove("spinning"), 700);
+  }
   refreshAll();
 });
 
@@ -142,7 +166,7 @@ setInterval(() => {
   if (c) c.textContent = new Date().toLocaleTimeString("en-GB", { hour12: false });
 }, 1000);
 
-$("#theme-toggle").addEventListener("click", () => {
+$("#theme-toggle")?.addEventListener("click", () => {
   state.theme = state.theme === "dark" ? "light" : "dark";
   document.body.dataset.theme = state.theme;
 });
@@ -152,24 +176,33 @@ function goView(view) {
   $$(".mn-item[data-view]").forEach(b => b.classList.toggle("active", b.dataset.view === view));
   $$(".side-item[data-view]").forEach(b => b.classList.toggle("active", b.dataset.view === view));
   $$(".view").forEach(v => v.classList.remove("active"));
-  const el = $("#view-" + view);
+  const el = $("#view-" + view) || $("#view-overview");
   if (el) el.classList.add("active");
   const names = { overview: "Fleet", vps: "VPS", containers: "Containers", cron: "Cron", backups: "Backups", updates: "Updates", audit: "Audit", users: "Users" };
-  $("#page-title").textContent = names[view] || view;
-  $("#more-sheet").classList.add("hidden");
-  if (view === "overview" || view === "vps") { refreshVps(); if (view === "vps") setTimeout(() => Object.values(__pfGauges).forEach(g => g.resize()), 50); }
+  const titleEl = $("#page-title");
+  if (titleEl) titleEl.textContent = names[view] || (view.charAt(0).toUpperCase() + view.slice(1));
+  $("#more-sheet")?.classList.add("hidden");
+  if (view === "overview" || view === "vps") {
+    refreshVps();
+    setTimeout(() => {
+      Object.values(__pfGauges).forEach(g => g.resize());
+      drawHistory();
+    }, 50);
+  }
   if (view === "containers") refreshContainers();
   if (view === "cron") refreshCron();
   if (view === "backups") refreshBackups();
   if (view === "updates") refreshUpdates();
   if (view === "audit") refreshAudit();
   if (view === "users") refreshUsers();
-  if (history.replaceState) { try { history.replaceState(null, "", "#" + view); } catch {} }
+  if (history.replaceState && location.hash !== "#" + view) {
+    try { history.replaceState(null, "", "#" + view); } catch {}
+  }
 }
 
 $$(".mn-item[data-view]").forEach(btn => btn.addEventListener("click", () => goView(btn.dataset.view)));
 $$(".side-item[data-view]").forEach(btn => btn.addEventListener("click", () => goView(btn.dataset.view)));
-$("#mn-more")?.addEventListener("click", () => $("#more-sheet").classList.toggle("hidden"));
+$("#mn-more")?.addEventListener("click", () => $("#more-sheet")?.classList.toggle("hidden"));
 $$(".more-sheet .nav-item[data-view]").forEach(btn => btn.addEventListener("click", () => goView(btn.dataset.view)));
 
 /* ---------------- refresh loop ---------------- */
@@ -178,10 +211,12 @@ async function refreshAll() {
   refreshSummary();
   try {
     const h = await api("/api/metrics/history?hours=24");
-    state.history = h.points;
+    state.history = h.points || [];
     drawSparklines();
   } catch {}
-  if ($("#view-overview").classList.contains("active") || $("#view-vps").classList.contains("active")) drawHistory();
+  if ($("#view-overview")?.classList.contains("active") || $("#view-vps")?.classList.contains("active")) {
+    drawHistory();
+  }
 }
 
 async function refreshTopbar() {
@@ -217,8 +252,9 @@ async function refreshTopbar() {
 function setPill(id, v, total) {
   const p = $("#" + id);
   if (!p) return;
-  const txt = v == null ? "—" : total != null ? `${v}/${total}` : (Math.round(v) + "%");
   const b = p.querySelector("b");
+  if (!b) return;
+  const txt = v == null ? "—" : total != null ? `${v}/${total}` : (Math.round(v) + "%");
   if (b.textContent !== txt) {
     b.textContent = txt;
     p.classList.remove("ppulse");
@@ -241,6 +277,7 @@ const __pfGauges = {};
 function initPfGauges() {
   document.querySelectorAll("canvas.pf-gauge").forEach((cv) => {
     if (__pfGauges[cv.id]) return;
+    if (typeof DonutRingGauge === "undefined") return;
     const metric = cv.dataset.metric || "cpu";
     const suffix = metric === "ram" ? "mem" : metric;
     __pfGauges[cv.id] = new DonutRingGauge(cv, {
@@ -331,9 +368,9 @@ function renderFleet() {
 /* ---------------- sparklines (SVG path from history) ---------------- */
 function drawSparklines() {
   const pts = state.history;
-  if (!pts.length) return;
+  if (!pts || !pts.length) return;
   const toPath = (vals) => {
-    if (vals.length < 2) return "";
+    if (!vals || vals.length < 2) return "";
     const min = Math.min(...vals), max = Math.max(...vals);
     const span = (max - min) || 1;
     const step = 50 / (vals.length - 1);
@@ -347,9 +384,15 @@ function drawSparklines() {
     return d;
   };
   const cpu = pts.map(p => p.cpu).filter(v => v != null).slice(-24);
-  const ram = pts.map(p => p.mem_total ? p.mem_used/p.mem_total*100 : null).filter(v => v != null).slice(-24);
-  const disk = pts.map(p => p.disk_total ? p.disk_used/p.disk_total*100 : null).filter(v => v != null).slice(-24);
-  const sp = (id, vals) => { const el = $("#" + id); if (el) el.querySelector("path").setAttribute("d", toPath(vals) || "M0 5 L50 5"); };
+  const ram = pts.map(p => p.mem_total ? (p.mem_used / p.mem_total) * 100 : null).filter(v => v != null).slice(-24);
+  const disk = pts.map(p => p.disk_total ? (p.disk_used / p.disk_total) * 100 : null).filter(v => v != null).slice(-24);
+  const sp = (id, vals) => {
+    const el = $("#" + id);
+    if (el) {
+      const path = el.querySelector("path");
+      if (path) path.setAttribute("d", toPath(vals) || "M0 5 L50 5");
+    }
+  };
   sp("spark-cpu", cpu); sp("spark-ram", ram); sp("spark-disk", disk);
 }
 
@@ -368,20 +411,21 @@ async function refreshVps() {
   drawHistory();
 }
 
-/* ---- history chart: 3D glass tube lines (matching reference video) ---- */
+/* ---- history chart: 3D glass tube lines ---- */
 let __tubeChart = null;
 function drawHistory() {
   const c = $("#chart-history");
   if (!c) return;
-  if (!__tubeChart) __tubeChart = new TubeChart(c);
-  
+  if (!__tubeChart && typeof TubeChart !== "undefined") __tubeChart = new TubeChart(c);
+  if (!__tubeChart) return;
+
   const wrap = c.parentElement;
   let W = wrap ? wrap.clientWidth : 1100;
   if (W === 0) W = 1100;
   W = Math.max(280, Math.min(1100, W - 8));
-  
-  const H = c.height || 200;
-  
+
+  const H = 280;
+
   __tubeChart.render(state.history, W, H);
 }
 
@@ -390,6 +434,7 @@ async function refreshContainers() {
   try {
     const r = await api("/api/containers");
     const tb = $("#cont-table tbody");
+    if (!tb) return;
     const list = Array.isArray(r.containers) ? r.containers : (Array.isArray(r) ? r : []);
     tb.innerHTML = list.map(c => {
       let ports = "—";
@@ -415,9 +460,10 @@ async function refreshCron() {
   try {
     const r = await api("/api/cron");
     const grid = $("#cron-grid");
+    if (!grid) return;
     grid.innerHTML = Object.entries(r).map(([agent, jobs]) => `
       <div class="glass-card cron-agent liquidGL"><h3>${esc(agent)}</h3>
-        ${jobs.length ? jobs.map(j => `<div class="cron-job">
+        ${(jobs && jobs.length) ? jobs.map(j => `<div class="cron-job">
             <div class="jname">${esc(j.name || "?")} ${j.enabled ? "" : "(disabled)"}</div>
             <div class="jmeta">⏱ ${esc(j.schedule && (j.schedule.display || j.schedule.expr) || j.schedule || "—")} · last ${esc(j.last_run||"—")} · next ${esc(j.next_run||"—")}</div>
           </div>`).join("") : `<div class="muted" style="font-size:12px">no jobs</div>`}
@@ -430,19 +476,24 @@ async function refreshBackups() {
   try {
     const r = await api("/api/backups");
     const tb = $("#backup-table tbody");
-    const list = Array.isArray(r.backups) ? r.backups : [];
-    tb.innerHTML = list.length ? list.map(f => `<tr><td style="font-size:11px">${esc(f)}</td></tr>`).join("")
-      : `<tr><td class="muted">none yet</td></tr>`;
-    $("#backup-actions").innerHTML = state.fleet.map(a => `
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(30,41,59,.6)">
-        <b style="font-size:13px">${esc(a.friendly || a.name)}</b>
-        <button class="btn btn-sm" data-bk="${a.name}">Backup</button>
-      </div>`).join("");
-    $$("[data-bk]").forEach(b => b.addEventListener("click", async () => {
-      if (!confirm(`Back up ${b.dataset.bk}?`)) return;
-      try { const x = await api("/api/backups/run", { method: "POST", body: JSON.stringify({ agent: b.dataset.bk }) });
-        toast(x.file || "done", "ok"); refreshBackups(); } catch (e) { toast(e.message, "err"); }
-    }));
+    if (tb) {
+      const list = Array.isArray(r.backups) ? r.backups : [];
+      tb.innerHTML = list.length ? list.map(f => `<tr><td style="font-size:11px">${esc(f)}</td></tr>`).join("")
+        : `<tr><td class="muted">none yet</td></tr>`;
+    }
+    const actions = $("#backup-actions");
+    if (actions) {
+      actions.innerHTML = state.fleet.map(a => `
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(30,41,59,.6)">
+          <b style="font-size:13px">${esc(a.friendly || a.name)}</b>
+          <button class="btn btn-sm" data-bk="${a.name}">Backup</button>
+        </div>`).join("");
+      $$("[data-bk]").forEach(b => b.addEventListener("click", async () => {
+        if (!confirm(`Back up ${b.dataset.bk}?`)) return;
+        try { const x = await api("/api/backups/run", { method: "POST", body: JSON.stringify({ agent: b.dataset.bk }) });
+          toast(x.file || "done", "ok"); refreshBackups(); } catch (e) { toast(e.message, "err"); }
+      }));
+    }
   } catch {}
 }
 
@@ -450,10 +501,14 @@ async function refreshBackups() {
 async function refreshUpdates() {
   try {
     const r = await api("/api/updates");
-    $("#latest-release").textContent = r.latest && r.latest.tag ? `· latest: ${r.latest.tag}` : (r.latest && r.latest.error ? `· ${r.latest.error}` : "");
-    $("#update-table tbody").innerHTML = r.agents.map(a => `<tr>
-      <td><b>${esc(a.name)}</b></td><td>${esc(a.image)}</td><td>${esc(a.image_created || "—")}</td>
-    </tr>`).join("");
+    const relEl = $("#latest-release");
+    if (relEl) relEl.textContent = r.latest && r.latest.tag ? `· latest: ${r.latest.tag}` : (r.latest && r.latest.error ? `· ${r.latest.error}` : "");
+    const tb = $("#update-table tbody");
+    if (tb) {
+      tb.innerHTML = (r.agents || []).map(a => `<tr>
+        <td><b>${esc(a.name)}</b></td><td>${esc(a.image)}</td><td>${esc(a.image_created || "—")}</td>
+      </tr>`).join("");
+    }
   } catch {}
 }
 
@@ -462,11 +517,14 @@ async function refreshAudit() {
   try {
     const r = await api("/api/audit");
     const rows = Array.isArray(r) ? r : (r.audit || r.entries || []);
-    $("#audit-table tbody").innerHTML = rows.slice(0, 50).map(a => `<tr>
-      <td>${esc(new Date((a.ts || 0) * 1000).toLocaleString())}</td>
-      <td>${esc(a.user || "")}</td><td>${esc(a.action || "")}</td><td>${esc(a.target || "")}</td>
-      <td style="font-size:11px">${esc(a.detail || "")}</td>
-    </tr>`).join("");
+    const tb = $("#audit-table tbody");
+    if (tb) {
+      tb.innerHTML = rows.slice(0, 50).map(a => `<tr>
+        <td>${esc(new Date((a.ts || 0) * 1000).toLocaleString())}</td>
+        <td>${esc(a.user || "")}</td><td>${esc(a.action || "")}</td><td>${esc(a.target || "")}</td>
+        <td style="font-size:11px">${esc(a.detail || "")}</td>
+      </tr>`).join("");
+    }
   } catch {}
 }
 
@@ -475,31 +533,41 @@ async function refreshUsers() {
   try {
     const r = await api("/api/users");
     const rows = Array.isArray(r) ? r : (r.users || []);
-    $("#user-table tbody").innerHTML = rows.map(u => `<tr>
-      <td>${esc(u.id)}</td><td><b>${esc(u.username)}</b></td><td>${esc(u.role)}</td>
-      <td>${esc(new Date((u.created_at || 0) * 1000).toLocaleDateString())}</td>
-      <td>${u.username !== state.me?.username ? `<button class="btn btn-sm" data-del="${u.id}">Delete</button>` : ""}</td>
-    </tr>`).join("");
-    $$("[data-del]").forEach(b => b.addEventListener("click", async () => {
-      if (!confirm("Delete user?")) return;
-      try { await api("/api/users/" + b.dataset.del, { method: "DELETE" }); refreshUsers(); } catch (e) { toast(e.message, "err"); }
-    }));
+    const tb = $("#user-table tbody");
+    if (tb) {
+      tb.innerHTML = rows.map(u => `<tr>
+        <td>${esc(u.id)}</td><td><b>${esc(u.username)}</b></td><td>${esc(u.role)}</td>
+        <td>${esc(new Date((u.created_at || 0) * 1000).toLocaleDateString())}</td>
+        <td>${u.username !== state.me?.username ? `<button class="btn btn-sm" data-del="${u.id}">Delete</button>` : ""}</td>
+      </tr>`).join("");
+      $$("[data-del]").forEach(b => b.addEventListener("click", async () => {
+        if (!confirm("Delete user?")) return;
+        try { await api("/api/users/" + b.dataset.del, { method: "DELETE" }); refreshUsers(); } catch (e) { toast(e.message, "err"); }
+      }));
+    }
   } catch {}
 }
 
 $("#user-form")?.addEventListener("submit", async (e) => {
   e.preventDefault();
   try {
-    await api("/api/users", { method: "POST", body: JSON.stringify({ username: $("#u-name2").value.trim(), password: $("#u-pass2").value, role: $("#u-role").value }) });
-    toast("User created", "ok"); $("#u-name2").value = ""; $("#u-pass2").value = ""; refreshUsers();
+    await api("/api/users", { method: "POST", body: JSON.stringify({ username: $("#u-name2")?.value.trim() || "", password: $("#u-pass2")?.value || "", role: $("#u-role")?.value || "operator" }) });
+    toast("User created", "ok");
+    const u2 = $("#u-name2"), p2 = $("#u-pass2");
+    if (u2) u2.value = "";
+    if (p2) p2.value = "";
+    refreshUsers();
   } catch (x) { toast(x.message, "err"); }
 });
 
 $("#pw-form")?.addEventListener("submit", async (e) => {
   e.preventDefault();
   try {
-    await api("/api/password", { method: "POST", body: JSON.stringify({ old: $("#pw-old").value, new: $("#pw-new").value }) });
-    toast("Password changed", "ok"); $("#pw-old").value = ""; $("#pw-new").value = "";
+    await api("/api/password", { method: "POST", body: JSON.stringify({ old: $("#pw-old")?.value || "", new: $("#pw-new")?.value || "" }) });
+    toast("Password changed", "ok");
+    const po = $("#pw-old"), pn = $("#pw-new");
+    if (po) po.value = "";
+    if (pn) pn.value = "";
   } catch (x) { toast(x.message, "err"); }
 });
 
@@ -509,11 +577,12 @@ async function openAgent(name) {
     const r = await api("/api/agents/" + name);
     const a = r.agent || r;
     state.currentAgent = name;
-    $("#modal-title").textContent = a.friendly || a.name;
-    $("#modal-sub").textContent = `${a.name} · ${a.id || ""} · ${a.status}`;
+    const titleEl = $("#modal-title"), subEl = $("#modal-sub");
+    if (titleEl) titleEl.textContent = a.friendly || a.name;
+    if (subEl) subEl.textContent = `${a.name} · ${a.id || ""} · ${a.status}`;
     const stats = fmtMem(a.stats);
     const isNativeC = a.arch === "native_c" || a.name.includes("charness");
-    
+
     let extraHtml = "";
     if (a.model) {
       extraHtml += `<div><b>Model:</b> <span class="badge-model">${esc(a.model)}</span></div>`;
@@ -532,28 +601,36 @@ async function openAgent(name) {
         </div>`;
     }
 
-    $("#modal-meta").innerHTML = `
-      <div><b>Status:</b> <span class="status-tag ${esc(a.status)}">${esc(a.status)}</span></div>
-      <div><b>Uptime:</b> ${fmtDur(a.uptime_s)}</div>
-      <div><b>RAM Footprint:</b> ${stats}</div>
-      <div><b>Engine / Image:</b> <span style="font-size:11.5px;color:var(--text-2);">${esc(a.image || "—")}</span></div>
-      ${extraHtml}`;
-    const canAct = state.me.role !== "readonly";
-    $("#modal-controls").innerHTML = canAct ? `
-      <button class="btn btn-sm btn-primary" data-act="restart">Restart</button>
-      <button class="btn btn-sm btn-ghost" data-act="stop">Stop</button>
-      <button class="btn btn-sm btn-ghost" data-act="start">Start</button>` : "";
-    $$("#modal-controls [data-act]").forEach(b => b.addEventListener("click", async () => {
-      const act = b.dataset.act;
-      if (["stop","restart"].includes(act) && !confirm(`Confirm ${act} of ${name}?`)) return;
-      try { await api(`/api/agents/${name}/control?action=${act}`, { method: "POST" }); toast(`${name} ${act} OK`, "ok"); setTimeout(() => refreshFleet(), 2500); } catch (x) { toast(x.message, "err"); }
-    }));
-    $("#modal").classList.remove("hidden");
+    const meta = $("#modal-meta");
+    if (meta) {
+      meta.innerHTML = `
+        <div><b>Status:</b> <span class="status-tag ${esc(a.status)}">${esc(a.status)}</span></div>
+        <div><b>Uptime:</b> ${fmtDur(a.uptime_s)}</div>
+        <div><b>RAM Footprint:</b> ${stats}</div>
+        <div><b>Engine / Image:</b> <span style="font-size:11.5px;color:var(--text-2);">${esc(a.image || "—")}</span></div>
+        ${extraHtml}`;
+    }
+
+    const canAct = state.me && state.me.role !== "readonly";
+    const ctrl = $("#modal-controls");
+    if (ctrl) {
+      ctrl.innerHTML = canAct ? `
+        <button class="btn btn-sm btn-primary" data-act="restart">Restart</button>
+        <button class="btn btn-sm btn-ghost" data-act="stop">Stop</button>
+        <button class="btn btn-sm btn-ghost" data-act="start">Start</button>` : "";
+      $$("#modal-controls [data-act]").forEach(b => b.addEventListener("click", async () => {
+        const act = b.dataset.act;
+        if (["stop","restart"].includes(act) && !confirm(`Confirm ${act} of ${name}?`)) return;
+        try { await api(`/api/agents/${name}/control?action=${act}`, { method: "POST" }); toast(`${name} ${act} OK`, "ok"); setTimeout(() => refreshFleet(), 2500); } catch (x) { toast(x.message, "err"); }
+      }));
+    }
+
+    $("#modal")?.classList.remove("hidden");
     startLogs(name);
   } catch (x) { toast(x.message, "err"); }
 }
 
-$("#modal-close")?.addEventListener("click", () => { $("#modal").classList.add("hidden"); stopLogs(); });
+$("#modal-close")?.addEventListener("click", () => { $("#modal")?.classList.add("hidden"); stopLogs(); });
 
 function startLogs(name) {
   stopLogs();
@@ -585,8 +662,8 @@ function startLogs(name) {
 }
 
 function stopLogs() { if (state.logStream) { clearInterval(state.logStream); state.logStream = null; } }
-$("#log-pause")?.addEventListener("click", () => { state.logPaused = !state.logPaused; $("#log-pause").textContent = state.logPaused ? "Resume" : "Pause"; });
-$("#log-clear")?.addEventListener("click", () => { $("#log-view").textContent = ""; });
+$("#log-pause")?.addEventListener("click", () => { state.logPaused = !state.logPaused; const p = $("#log-pause"); if (p) p.textContent = state.logPaused ? "Resume" : "Pause"; });
+$("#log-clear")?.addEventListener("click", () => { const v = $("#log-view"); if (v) v.textContent = ""; });
 
 /* ---------------- copilot (v4) ---------------- */
 const copilot = { history: [], busy: false, pending: [] };
@@ -595,8 +672,11 @@ function cpMsg(html, cls = "cmsg-bot") {
   const d = document.createElement("div");
   d.className = `cmsg ${cls}`;
   d.innerHTML = html;
-  $("#copilot-msgs").appendChild(d);
-  $("#copilot-msgs").scrollTop = $("#copilot-msgs").scrollHeight;
+  const msgs = $("#copilot-msgs");
+  if (msgs) {
+    msgs.appendChild(d);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
   return d;
 }
 
@@ -610,11 +690,11 @@ function cpTable(t) {
 }
 
 $("#copilot-fab")?.addEventListener("click", () => {
-  $("#copilot-drawer-wrap").classList.toggle("hidden");
-  if (!$("#copilot-drawer-wrap").classList.contains("hidden")) { setTimeout(() => $("#copilot-text").focus(), 50); pendingRefresh(); }
+  $("#copilot-drawer-wrap")?.classList.toggle("hidden");
+  if (!$("#copilot-drawer-wrap")?.classList.contains("hidden")) { setTimeout(() => $("#copilot-text")?.focus(), 50); pendingRefresh(); }
 });
 
-$("#copilot-close")?.addEventListener("click", () => $("#copilot-drawer-wrap").classList.add("hidden"));
+$("#copilot-close")?.addEventListener("click", () => $("#copilot-drawer-wrap")?.classList.add("hidden"));
 $("#copilot-send")?.addEventListener("click", copilotSend);
 $("#copilot-text")?.addEventListener("keydown", e => { if (e.key === "Enter") copilotSend(); });
 
@@ -646,6 +726,7 @@ async function pendingRefresh() {
 
 async function copilotSend() {
   const inp = $("#copilot-text");
+  if (!inp) return;
   const msg = inp.value.trim();
   if (!msg || copilot.busy) return;
   inp.value = "";
@@ -653,7 +734,7 @@ async function copilotSend() {
   copilot.history.push({ role: "user", content: msg });
   copilot.busy = true;
   const sendBtn = $("#copilot-send");
-  sendBtn.disabled = true; sendBtn.textContent = "…";
+  if (sendBtn) { sendBtn.disabled = true; sendBtn.textContent = "…"; }
   let answer = null, pending = null, tables = [];
   try {
     try {
@@ -682,7 +763,12 @@ async function copilotSend() {
           got = true;
           if (ev.type === "pending") { pending = ev.pending; tables = ev.tables || []; }
           else if (ev.type === "tool_result") { tables = ev.tables || []; }
-          else if (ev.type === "delta") { acc += ev.text; bodyDiv.innerHTML = esc(acc).replace(/\n/g, "<br>"); $("#copilot-msgs").scrollTop = $("#copilot-msgs").scrollHeight; }
+          else if (ev.type === "delta") {
+            acc += ev.text;
+            if (bodyDiv) bodyDiv.innerHTML = esc(acc).replace(/\n/g, "<br>");
+            const msgs = $("#copilot-msgs");
+            if (msgs) msgs.scrollTop = msgs.scrollHeight;
+          }
           else if (ev.type === "done") { answer = acc || null; }
         }
       }
@@ -705,7 +791,7 @@ async function copilotSend() {
     copilot.history.pop();
   }
   copilot.busy = false;
-  sendBtn.disabled = false; sendBtn.textContent = "Send";
+  if (sendBtn) { sendBtn.disabled = false; sendBtn.textContent = "Send"; }
   pendingRefresh();
 }
 
