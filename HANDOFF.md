@@ -478,15 +478,23 @@ git push origin main
 - Upgraded the Operations Dashboard at `https://ops.42berlinaiclub.de/#vps` and `https://ops.42berlinaiclub.de/#overview`.
 - Integrated **Belya (Pure C99 Autonomous Agent & Telegram Daemon)**:
   - Dynamically discovers the host process (`/opt/belya/belya --telegram` / `belya.service`) via `/hostproc` and `/hostroot/opt/belya`.
-  - Real-time telemetry: PID, CPU %, RSS memory (~15.8MB bare-metal memory footprint), uptime, and SQLite memory metrics (`belya_memory.sqlite`).
-  - Added dedicated cyberpunk avatar `avatar_belya.jpg` with glowing neon cyan styling and architecture badge (`C99 NATIVE` vs `HERMES CONTAINER`).
-  - Added full live log streaming via `journalctl -u belya.service` in the agent modal.
-  - Enabled service lifecycle controls (`systemctl restart/stop/start belya`) and backup archiving.
-  - Updated Copilot ("Flower") in `app/copilot.py` to recognize `belya` and answer queries grounded in its memory and systemd status.
+### 4. Comprehensive SEO, AEO & GEO Optimization (2026-09-08)
+- **Leadership & Claude Ambassador Alignment**:
+  - Authoritatively established **Mohamed Fathy** as Manager & Lead Organizer of 42 Berlin AI Club across all page headers, visible content, meta tags, and structured schemas.
+  - Highlighted the club's active alignment with Anthropic, Claude 3.5/3.7 Sonnet, and Model Context Protocol (MCP) in agent architectures (Belya, Gomaa).
+- **SEO (Search Engine Optimization)**:
+  - Upgraded `<title>`, `<meta name="description">`, `<meta name="author">`, `<meta name="keywords">`, and OpenGraph/Twitter card tags across `index.html`, `login.html`, `become-partner.html`, and `index-sharplink.html`.
+  - Updated `sitemap.xml` with current timestamps (`2026-09-08`) and high-priority crawl targets.
+- **AEO (Answer Engine Optimization)**:
+  - Built and deployed `/llms.txt` and `/llms-full.txt` (standardized context files for LLM crawlers like Claude, Perplexity, SearchGPT).
+  - Added an accessible native FAQ accordion section (`07 / Frequently asked questions`) answering core natural-language queries.
+  - Deployed `FAQPage` JSON-LD schema matching visible answers directly for snippet extraction.
+- **GEO (Generative Engine Optimization)**:
+  - Architected a unified linked Schema.org `@graph` connecting `EducationalOrganization` (42 Berlin AI Club), parent `42 Berlin`, `Person` (Mohamed Fathy), `SoftwareSourceCode` (Gomaa, Belya, PrivaC), and `FAQPage`.
+- **Search Engine Directives**:
+  - Updated `robots.txt` to explicitly grant access to AI engine crawlers (`ClaudeBot`, `anthropic-ai`, `PerplexityBot`, `GPTBot`, `Google-Extended`).
+  - Tested and deployed to production VPS (`/opt/42berlinaiclub/` and `/opt/caddy/landing/ai-club/`).
 
-
-
----
 
 ## 📞 Contact
 

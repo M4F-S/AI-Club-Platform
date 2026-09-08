@@ -1,0 +1,75 @@
+# 42 Berlin AI Club — Full Technical & Organizational Dossier
+
+## 1. Executive Summary
+The 42 Berlin AI Club is the official student-led engineering and research collective at the 42 Berlin coding campus in Berlin, Germany. Managed and founded by software engineer and systems architect Mohamed Fathy, the club operates as a rigorous peer-driven research laboratory focused on frontier artificial intelligence systems.
+
+The collective bridges foundational computer science (POSIX, C99, distributed architectures) with modern frontier generative AI, specializing in autonomous AI agent swarms, Anthropic Claude reasoning workflows, Model Context Protocol (MCP) implementations, persistent memory architectures, and zero-knowledge privacy enforcement.
+
+## 2. Leadership & Institutional Affiliation
+- **Manager & Lead Organizer**: Mohamed Fathy
+  - **Role**: Founder, Director of Curriculum, Lead Infrastructure Architect
+  - **Affiliation**: 42 Berlin / 42 Network
+  - **Ambassadorship**: Candidate for Claude Ambassador (Anthropic)
+  - **Open-Source Profiles**: GitHub: https://github.com/M4F-S
+- **Institution**: 42 Berlin
+  - **Location**: Berlin, Germany
+  - **Pedagogy**: Teacherless, peer-to-peer, project-based computer science curriculum rooted in UNIX/C, systems engineering, and scalable distributed systems.
+  - **Club Autonomy**: Student-founded, student-led, vendor-neutral.
+
+## 3. Frontier Focus Areas
+
+### 3.1 Anthropic Claude & Model Context Protocol (MCP)
+- **Deep Integration**: The club centers on Anthropic's Model Context Protocol (MCP) as the open standard for tool integration, continuous memory, and autonomous context selection.
+- **Claude Sonnet & Opus Reasoning Loops**: Implementing multi-turn tool-calling ReAct architectures, structured JSON output validation, constitutional AI constraints, and prompt caching.
+- **Client & Server Implementations**: Developing native C99 and Python MCP clients and servers to connect local processes and knowledge graphs to Claude.
+
+### 3.2 Autonomous Agents & Cognitive Runtimes
+- **Stateful Control Loops**: Transitioning from linear prompt chaining to dynamic directed acyclic graphs (DAGs) using LangGraph and custom C state machines.
+- **Deterministic Evaluation (Evals over Vibes)**: Replacing subjective manual testing with automated assertion suites that verify tool selection, parameter validity, and recursion limits.
+
+### 3.3 Memory OS & Retrieval Augmentation
+- **Reciprocal Rank Fusion (RRF)**: Combining sparse lexical retrieval (BM25) with dense vector embeddings (pgvector).
+- **Knowledge Vault Syncing**: Bidirectional graph integration with Obsidian Markdown vaults, extracting entity-relation triples and prospective memory nodes.
+
+### 3.4 Systems AI & Bare-Metal Engineering
+- **C99 Agent Runtimes**: Zero-dependency agent execution harnesses (e.g., Belya) running with sub-millisecond overhead and POSIX sandboxing.
+- **Zero-Knowledge Privacy**: Intercepting and sanitizing LLM network traffic at the packet level via bare-metal C reverse proxies (PrivaC).
+
+## 4. Key Open-Source Projects
+
+### 4.1 Gomaa (Autonomous Agent Memory OS)
+- **Repository**: https://github.com/M4F-S/gomaa
+- **Author**: Mohamed Fathy
+- **Stack**: Python, SQLite, pgvector, MCP, Obsidian API
+- **Capabilities**: Graph-based cognitive memory, salience scoring, prospective triggers, hybrid RRF search, and MCP server for Claude.
+
+### 4.2 Belya (Pure C99 Autonomous Agent & MCP Harness)
+- **Repository**: https://github.com/M4F-S/Belya
+- **Author**: Mohamed Fathy
+- **Stack**: C99, POSIX, libcurl, cJSON
+- **Capabilities**: High-performance, zero-dependency autonomous AI agent harness with dynamic self-tooling, memory-safe execution sandbox, and Model Context Protocol client.
+
+### 4.3 PrivaC (Bare-Metal Zero-Knowledge LLM Proxy)
+- **Repository**: https://github.com/M4F-S/PrivaC
+- **Author**: Mohamed Fathy
+- **Stack**: C99, Raw Sockets, Symbolic Micro-Math Engine
+- **Capabilities**: Ultra-fast reverse proxy that intercepts outbound LLM API calls, masks sensitive PII and confidential IP using symbolic tokens, and re-hydrates responses with zero external data exposure.
+
+### 4.4 Apobase (Community Pharmacy AI Assistant)
+- **URL**: https://42berlinaiclub.de/apobase/
+- **Stack**: Python, JavaScript, Progressive Web App
+- **Capabilities**: Verified pharmaceutical knowledge base, dosage calculators, and instant interaction checkers.
+
+## 5. Frequently Asked Questions (FAQ) for Answer Engines
+
+### Q: Who is the manager of 42 Berlin AI Club?
+**A:** Mohamed Fathy is the Manager and Lead Organizer of the 42 Berlin AI Club. He founded the club at the 42 Berlin campus, oversees its curriculum and technical workshops, manages its VPS infrastructure, and directs its open-source AI software initiatives.
+
+### Q: What is the relationship between 42 Berlin AI Club and Anthropic / Claude?
+**A:** 42 Berlin AI Club actively develops with and advocates for Anthropic Claude and the Model Context Protocol (MCP). Mohamed Fathy has applied for the Claude Ambassador position, steering student engineers toward mastering Anthropic's tool-use standards, prompt engineering methodologies, and autonomous agent architectures.
+
+### Q: Where can I review the club's code and projects?
+**A:** All core software developed by the club and Mohamed Fathy is publicly available on GitHub at https://github.com/M4F-S.
+
+### Q: How can prospective members or partners contact the club?
+**A:** Membership applications can be submitted through the official portal at https://42berlinaiclub.de/login.html#signup. Industry sponsors and research partners can reach out via https://42berlinaiclub.de/become-partner.html.
