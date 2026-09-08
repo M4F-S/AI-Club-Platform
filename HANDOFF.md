@@ -515,9 +515,23 @@ git push origin main
   - Verified live on production: `/api/events/6` (200 OK), `/api/events/6/materials/90/view` (HTML guide, 200 OK), `/api/events/6/materials/91/view` (Slide 1, 200 OK).
 
 
+### 6. Next Session Priority Directive: Background & Homepage Redesign
+> ⚠️ **CRITICAL DIRECTIVE FOR NEXT AGENT**:
+> The user's explicit instruction is:
+> *"make completely new design for the background and homepage that is trendy and cool fits the AI Club and doesnt look like Ai slop"*.
+>
+> **Core Mandates**:
+> 1. **No AI Slop**: Avoid generic floating glowing spheres, purposeless purple gradient mush, unstyled boilerplate cards, and hollow AI clichés. Every visual element must reflect the club's real identity: high-performance systems programming (C99, POSIX), low-level accelerator runtime engineering (Metal, ROCm, CUDA, NPUs), hardware-level memory control, and autonomous agent orchestration.
+> 2. **Design Foundations**:
+>    - Leverage the `impeccable` and `ultimate-ui-ux` skills for motion physics, typography hierarchies, and tactile feedback.
+>    - Create an atmosphere that feels like an elite underground tech collective in Berlin: deep tactile obsidian/void dark mode (`#06060c`), high-contrast electric accents (cyan `#4DE3C1`, electric violet `#7C6CFF`, amber `#FFB84D`), subtle terminal gridlines, dynamic noise/grain overlays, and purposeful interactive motion (scroll-scrubbed kinematics, responsive magnetic nodes, or lightweight WebGL/Canvas shader field).
+>    - Incorporate the brand identity: 42 Berlin Brandenburg Gate mark (`/assets/logo-gate.png`), systems terminal aesthetic, live telemetry/stats, and real projects (Gomaa, Belya, PrivaC, Apobase).
+> 3. **Workflow Rule**: Build and preview locally as a standalone prototype/template first (`index-v3.html` or similar). Allow the user to interactively inspect and approve the design before replacing the live `index.html` on production.
+
+
 ## 📞 Contact
 
 - **Mohamed Fathy:** `mohamedfathy7@hotmail.com` (admin, superadmin)
-- **This agent** (Toy/Hermes) has been working on this project and is now handing off to you. You are the new agent taking over.
+- **This agent** (Toy/Hermes/Antigravity) has concluded the Workshop 06 rollout and is handing off for the background & homepage redesign.
 
 **Good luck, don't break production.** 🖖
