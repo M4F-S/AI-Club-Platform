@@ -10,12 +10,15 @@
 | Item | Value |
 |------|-------|
 | **Project** | 42 Berlin AI Club — membership platform, public landing pages, admin panel, partner inquiries |
-| **Live URL** | https://mysophia.tech/ai-club/ |
-| **Admin panel** | https://mysophia.tech/ai-club/admin.html |
-| **Login portal** | https://mysophia.tech/ai-club/login.html |
-| **Health endpoint** | https://mysophia.tech/ai-club/api/health → should return `{"status":"ok"}` |
-| **GitHub repo** | https://github.com/M4F-S/AI-Club-Platform.git |
-| **Last commit** | `21dec6f` — feat: add delete buttons for members and partner inquiries |
+| **Primary Live URL** | https://42berlinaiclub.de/ |
+| **VPS Alias URL** | https://mysophia.tech/ai-club/ |
+| **Admin panel** | https://42berlinaiclub.de/admin.html (or https://mysophia.tech/ai-club/admin.html) |
+| **Login portal** | https://42berlinaiclub.de/login.html (or https://mysophia.tech/ai-club/login.html) |
+| **Health endpoint** | https://42berlinaiclub.de/api/health → returns `{"status":"ok"}` |
+| **Local Workspace** | `/Users/mohamedfathy/vps-master-project` |
+| **VPS Static Webroot** | `/opt/caddy/landing/ai-club/` (Served directly by Caddy) |
+| **VPS API Code / Repo** | `/opt/42berlinaiclub/` (Mounted to `ai-club-42berlin` container) |
+| **GitHub repo** | https://github.com/M4F-S/AI-Club-Platform.git (branch `feat/design-migration-2026-08`) |
 | **Owner** | Mohamed Fathy (mfathy) — `mohamedfathy7@hotmail.com` |
 
 ---
@@ -545,7 +548,14 @@ git push origin main
 >      - Native Accessible FAQ accordion with Schema.org `FAQPage` metadata.
 >      - Canonical footer with privacy policy and network links.
 >    - Preserve backend API hooks (`/api/events`, `/api/resources`, `/api/stats`, `/api/member/me`).
-> 5. **Workflow & Approval**:
+> 5. **Where is the Website & Ecosystem**:
+>    - **Local Workspace**: `/Users/mohamedfathy/vps-master-project`
+>    - **Live Production Site**: https://42berlinaiclub.de/ (and VPS alias https://mysophia.tech/ai-club/)
+>    - **Production VPS**: `187.124.2.26` (root / `AaSsDd#12345678`)
+>    - **VPS Static Webroot (Caddy)**: `/opt/caddy/landing/ai-club/`
+>    - **VPS Backend API & Repo**: `/opt/42berlinaiclub/` (Docker container: `ai-club-42berlin`)
+>    - **Local Testing**: Run `python3 -m http.server 8080` in the local workspace to preview at `http://127.0.0.1:8080/`
+> 6. **Workflow & Approval**:
 >    - Build as a local template first (e.g. `index-v3.html` or scratch preview) and serve it locally for interactive review.
 >    - Test responsiveness across mobile viewports (375px, 768px, 1200px+).
 >    - Only deploy to production `index.html` after explicit user review and sign-off.
