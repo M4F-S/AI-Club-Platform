@@ -518,15 +518,37 @@ git push origin main
 ### 6. Next Session Priority Directive: Background & Homepage Redesign
 > ⚠️ **CRITICAL DIRECTIVE FOR NEXT AGENT**:
 > The user's explicit instruction is:
-> *"make completely new design for the background and homepage that is trendy and cool fits the AI Club and doesnt look like Ai slop"*.
+> *"make completely new design for the background and homepage that is trendy and cool fits the AI Club and doesnt look like Ai slop, use new colors and the Club logo, animation on scrolling, and most important respect the website pages and structure"*.
 >
-> **Core Mandates**:
-> 1. **No AI Slop**: Avoid generic floating glowing spheres, purposeless purple gradient mush, unstyled boilerplate cards, and hollow AI clichés. Every visual element must reflect the club's real identity: high-performance systems programming (C99, POSIX), low-level accelerator runtime engineering (Metal, ROCm, CUDA, NPUs), hardware-level memory control, and autonomous agent orchestration.
-> 2. **Design Foundations**:
->    - Leverage the `impeccable` and `ultimate-ui-ux` skills for motion physics, typography hierarchies, and tactile feedback.
->    - Create an atmosphere that feels like an elite underground tech collective in Berlin: deep tactile obsidian/void dark mode (`#06060c`), high-contrast electric accents (cyan `#4DE3C1`, electric violet `#7C6CFF`, amber `#FFB84D`), subtle terminal gridlines, dynamic noise/grain overlays, and purposeful interactive motion (scroll-scrubbed kinematics, responsive magnetic nodes, or lightweight WebGL/Canvas shader field).
->    - Incorporate the brand identity: 42 Berlin Brandenburg Gate mark (`/assets/logo-gate.png`), systems terminal aesthetic, live telemetry/stats, and real projects (Gomaa, Belya, PrivaC, Apobase).
-> 3. **Workflow Rule**: Build and preview locally as a standalone prototype/template first (`index-v3.html` or similar). Allow the user to interactively inspect and approve the design before replacing the live `index.html` on production.
+> **Design & Architecture Mandates**:
+> 1. **New Modern Color System**:
+>    - Break away from tired, blurry purple/pink gradient blobs.
+>    - Introduce a sharp, cutting-edge palette fit for an elite technical collective:
+>      - **Base**: Ultra-deep titanium carbon / space void (`#06080E`, `#0B0F19`, panel `#111625`).
+>      - **Primary Signals**: Electric Cyber Emerald / Neon Lime (`#00F5A0` or `#CCFF00`) and Supersonic Hyper-Blue (`#0066FF` / `#2979FF`).
+>      - **Secondary Accents**: Signal Amber (`#FFB800` / `#FF5500`) for latency/status telemetry and Crisp Polished White (`#F5F7FC`) for typography.
+> 2. **Club Logo as Visual Centerpiece**:
+>    - Center and highlight the **42 Berlin Brandenburg Gate** emblem (`/assets/logo-gate.png`).
+>    - Seamlessly integrate it into the hero architecture, navigation brand identity, or layered behind interactive geometric/circuit coordinates rather than generic stock icons.
+> 3. **Fluid Scroll-Driven Animations**:
+>    - Implement true scroll-driven choreography: smooth scroll scrub transitions, velocity-aware reveal physics, parallax background depth (e.g. lightweight Canvas grid/particles or SVG vectors), and reactive timeline progress lines.
+>    - Must be buttery smooth (60fps/120fps), respecting `prefers-reduced-motion` and mobile touch devices.
+> 4. **Strictly Respect Existing Website Structure & Pages**:
+>    - **Do NOT break or remove existing sections, IDs, or data bindings**:
+>      - Fixed Navigation & Mobile drawer (Home, Workshops, Projects, Membership, About, FAQ, Sign In).
+>      - Hero title, description, and live event ticker (`data-ticker="next-event"`).
+>      - Live Stats telemetry grid (Club members, workshops held, lines of code, partner labs).
+>      - Core Engineering Pillars (Systems Programming in C99, Heterogeneous Inference across NPUs/GPUs, Autonomous Agents, Zero-Knowledge Privacy).
+>      - Interactive Workshop Timeline (`#events`, supporting `loadTimeline()` and `openWorkshop()`).
+>      - Project Constellation grid (Gomaa, Belya, PrivaC, Apobase with GitHub / launch terminal links).
+>      - Membership callout routing cleanly to `/login.html#signup`.
+>      - Native Accessible FAQ accordion with Schema.org `FAQPage` metadata.
+>      - Canonical footer with privacy policy and network links.
+>    - Preserve backend API hooks (`/api/events`, `/api/resources`, `/api/stats`, `/api/member/me`).
+> 5. **Workflow & Approval**:
+>    - Build as a local template first (e.g. `index-v3.html` or scratch preview) and serve it locally for interactive review.
+>    - Test responsiveness across mobile viewports (375px, 768px, 1200px+).
+>    - Only deploy to production `index.html` after explicit user review and sign-off.
 
 
 ## 📞 Contact
