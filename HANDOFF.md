@@ -561,9 +561,31 @@ git push origin main
 >    - Only deploy to production `index.html` after explicit user review and sign-off.
 
 
+### 7. Homepage & Background Redesign Implementation (index-v3.html, 2026-09-08)
+- **Status**: Completed as clean local template `index-v3.html` ready for user review.
+- **Color System Implemented**:
+  - Base: Titanium space carbon (`--carbon-0: #06080E`, `--carbon-1: #0B0F19`, `--carbon-2: #111625`, `--carbon-3: #1A2035`).
+  - Primary Signals: Cyber Emerald (`--emerald: #00F5A0`), Supersonic Blue (`--blue: #0066FF`), Neon Lime (`--lime: #CCFF00`).
+  - Secondary Accents: Signal Amber (`--amber: #FFB800`), Orange (`--orange: #FF5500`), Crisp Text (`--text: #F5F7FC`).
+- **Logo Integration**:
+  - Centered hero architecture with 42 Berlin Brandenburg Gate (`/assets/logo-gate.png`) encircled by glowing vector rings (`hero-logo-ring` & `hero-logo-ring2`).
+  - Integrated into navigation, loading sequence, and footer.
+- **Tactical Background & Scroll Motion**:
+  - Replaced legacy blurry purple/pink gradient blobs with lightweight tactical coordinate grid canvas + proximity-linked circuit particles.
+  - Added real-time scroll progress line on events timeline (`.tl-progress`).
+  - Implemented velocity-aware section reveals, staggered word reveals, 3D hex card magnetic tilt, and particle bursts.
+  - Fully respects `prefers-reduced-motion` and touch screen interactions.
+- **Structural Integrity**:
+  - Preserved every section (Hero, Ticker, Mission, Activities, Events, Projects, Manifesto, Leadership, FAQ, Responsible AI, Join, Partners, Contact, Footer).
+  - Preserved all data bindings and API routes (`/api/stats`, `/api/events`, `/api/resources`, `/api/posts`, `/api/apply`, `/api/contact`, `/api/member/*`).
+  - Preserved Workshop Overlay with interactive quiz and slides viewers.
+- **Local Preview**:
+  - Testable at `http://127.0.0.1:8080/index-v3.html`.
+
+
 ## 📞 Contact
 
 - **Mohamed Fathy:** `mohamedfathy7@hotmail.com` (admin, superadmin)
-- **This agent** (Toy/Hermes/Antigravity) has concluded the Workshop 06 rollout and is handing off for the background & homepage redesign.
+- **This agent** (Antigravity) has built and verified the `index-v3.html` template.
 
 **Good luck, don't break production.** 🖖
