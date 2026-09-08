@@ -650,6 +650,8 @@ p,li,.section-subtitle {color:#9A94C7 !important}
   .form-row{grid-template-columns:1fr;gap:0}
   .form-row .form-group{margin-bottom:18px}
   .form-wrapper{padding:24px}
+  .ws-doc{flex-wrap:wrap;padding:16px}
+  .ws-doc .d-act{margin-left:0;width:100%;justify-content:flex-start;margin-top:6px}
 }
 /* ---- hero social-proof chip ---- */
 .hero-proof{display:inline-flex;align-items:center;gap:12px;margin-top:22px;padding:9px 16px;border:1px solid var(--line);border-radius:99px;background:rgba(18,16,43,.45);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);font-size:13.5px;color:var(--muted)}
