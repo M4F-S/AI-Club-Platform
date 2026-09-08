@@ -35,6 +35,12 @@ The collective bridges foundational computer science (POSIX, C99, distributed ar
 - **C99 Agent Runtimes**: Zero-dependency agent execution harnesses (e.g., Belya) running with sub-millisecond overhead and POSIX sandboxing.
 - **Zero-Knowledge Privacy**: Intercepting and sanitizing LLM network traffic at the packet level via bare-metal C reverse proxies (PrivaC).
 
+### 3.5 Heterogeneous Inference & Accelerator Runtimes
+- **Workshop 06 (AI Inference Beyond CUDA)**: Deep dive into the end-to-end token generation loop (Tokenizer, Prefill vs Decode phases, dynamic KV cache).
+- **Beyond CUDA Lock-In**: Architecting backends for Apple Silicon (Metal/ANE), Qualcomm Hexagon NPUs, AMD ROCm/HIP, and Intel OpenVINO.
+- **Multi-Device Speculative Decoding**: Running lightweight draft models on low-power NPUs while verifying token candidates in parallel on high-throughput GPUs.
+- **Low-Level C99 Relevance**: Explicit memory arenas, device buffers, cache-line alignment, and DMA transfers.
+
 ## 4. Key Open-Source Projects
 
 ### 4.1 Gomaa (Autonomous Agent Memory OS)

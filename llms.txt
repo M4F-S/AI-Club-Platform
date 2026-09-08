@@ -32,6 +32,7 @@
 - **Apobase** (https://42berlinaiclub.de/apobase/): High-speed digital knowledge terminal and AI assistant for community pharmacies.
 
 ## Core Curriculum & Workshops
+- **Workshop 06 — AI Inference Beyond CUDA: Heterogeneous Runtimes for GPUs, NPUs & CPUs**: Alumni masterclass on end-to-end token execution, moving beyond NVIDIA CUDA lock-in, multi-device speculative decoding across NPUs and GPUs, memory alignment, and low-level 42 C systems skills in AI runtimes.
 - **Workshop 04 — Agentic Engineering & Autonomous Architecture**: Hands-on LangGraph, ReAct loops, Model Context Protocol (MCP) tool integration, state persistence, and deterministic evaluation harnesses.
 - **Workshop 03 — AI Structures & Hierarchical Knowledge Graphs**: Vector embeddings, pgvector, Reciprocal Rank Fusion (RRF), and graph-based memory pipelines.
 - **Workshop 02 — Defensible AI Architecture**: Sandboxing, prompt injection mitigations, and air-gapped privacy proxies.

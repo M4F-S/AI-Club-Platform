@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Inference Beyond CUDA — Technical Guide | 42 Berlin AI Club</title>
+    <link rel="stylesheet" href="/assets/new-design-system.css">
+    <link rel="stylesheet" href="/members/members.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <meta name="theme-color" content="#060612">
+    <style>
+        :root {
+            --doc-bg: #060612;
+            --doc-card: rgba(13, 16, 32, 0.95);
+            --doc-border: rgba(0, 212, 255, 0.25);
+            --doc-text-main: #F1F5F9;
+            --doc-text-sub: #CBD5E1;
+            --doc-text-muted: #94A3B8;
+            --doc-cyan: #00D4FF;
+            --doc-mint: #4DE3C1;
+            --doc-violet: #7C6CFF;
+            --doc-code-bg: #070914;
+        }
+
+        body {
+            background: var(--doc-bg) !important;
+            color: var(--doc-text-main) !important;
+            font-family: 'Satoshi', system-ui, -apple-system, sans-serif;
+            line-height: 1.7;
+            padding: 30px 16px;
+            margin: 0;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .instructions-container {
+            background: var(--doc-card) !important;
+            padding: clamp(24px, 5vw, 48px);
+            border-radius: 24px;
+            border: 1px solid var(--doc-border) !important;
+            max-width: 960px;
+            margin: 0 auto;
+            color: var(--doc-text-main) !important;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.8), 0 0 35px rgba(0, 212, 255, 0.12);
+        }
+
+        .back-nav-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 28px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .back-nav-link {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--doc-cyan) !important;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: color 0.2s;
+        }
+
+        .back-nav-link:hover {
+            color: var(--doc-mint) !important;
+            text-decoration: underline;
+        }
+
+        .doc-badge {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            padding: 4px 12px;
+            border-radius: 999px;
+            background: rgba(77, 227, 193, 0.12);
+            border: 1px solid rgba(77, 227, 193, 0.35);
+            color: var(--doc-mint);
+        }
+
+        .instructions-container h1 {
+            font-family: 'Archivo', system-ui, sans-serif;
+            font-size: clamp(2rem, 4vw, 2.6rem);
+            font-weight: 900;
+            line-height: 1.15;
+            letter-spacing: -0.02em;
+            margin-bottom: 24px;
+            color: #FFFFFF !important;
+            background: linear-gradient(135deg, #FFFFFF 30%, var(--doc-cyan) 75%, var(--doc-mint) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .instructions-container h2 {
+            font-family: 'Archivo', system-ui, sans-serif;
+            font-size: clamp(1.35rem, 2.5vw, 1.7rem);
+            font-weight: 800;
+            margin-top: 40px;
+            margin-bottom: 18px;
+            color: var(--doc-mint) !important;
+            border-bottom: 1px solid rgba(77, 227, 193, 0.25);
+            padding-bottom: 8px;
+        }
+
+        .instructions-container h3 {
+            font-family: 'Archivo', system-ui, sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-top: 28px;
+            margin-bottom: 12px;
+            color: var(--doc-cyan) !important;
+        }
+
+        .instructions-container p,
+        .instructions-container li {
+            color: var(--doc-text-main) !important;
+            font-size: 15.5px;
+            line-height: 1.75;
+            margin-bottom: 14px;
+        }
+
+        .instructions-container strong {
+            color: #FFFFFF !important;
+            font-weight: 700;
+        }
+
+        .instructions-container em {
+            display: block;
+            font-style: normal;
+            background: rgba(124, 108, 255, 0.08);
+            border-left: 3px solid var(--doc-violet);
+            padding: 12px 16px;
+            border-radius: 0 8px 8px 0;
+            margin: 12px 0 16px;
+            color: var(--doc-text-sub) !important;
+            font-size: 14.5px;
+            line-height: 1.6;
+        }
+
+        .callout-box {
+            background: rgba(0, 212, 255, 0.06);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 12px;
+            padding: 18px 22px;
+            margin: 20px 0;
+        }
+
+        .instructions-container pre {
+            position: relative;
+            background: var(--doc-code-bg) !important;
+            border: 1px solid rgba(0, 212, 255, 0.3) !important;
+            border-radius: 14px;
+            padding: 20px;
+            overflow-x: auto;
+            margin: 18px 0 24px;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.7);
+        }
+
+        .instructions-container pre code {
+            display: block;
+            background: transparent !important;
+            border: none !important;
+            padding: 0 !important;
+            font-family: 'JetBrains Mono', Consolas, Monaco, monospace;
+            font-size: 13.5px;
+            line-height: 1.65;
+            color: #F8FAFC !important;
+        }
+
+        .key-concept-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .key-concept-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 18px;
+        }
+
+        .key-concept-card h4 {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 14px;
+            color: var(--doc-cyan);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .key-concept-card p {
+            font-size: 13.5px;
+            color: var(--doc-text-sub) !important;
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body class="loaded">
+    <div class="container">
+        <div class="instructions-container">
+            <div class="back-nav-bar">
+                <a href="/members/event.html?id=6" class="back-nav-link">← Return to Workshop Hub</a>
+                <span class="doc-badge">Workshop 06 · Alumni Masterclass</span>
+            </div>
+            
+            <h1>AI Inference Beyond CUDA: Building Heterogeneous Runtimes for GPUs, NPUs &amp; CPUs</h1>
+            
+            <div class="callout-box">
+                <p style="margin-bottom:0;">
+                    <strong>Core Takeaway:</strong> <em>"Inference engineering is systems programming applied to model execution."</em> 
+                    Moving past NVIDIA CUDA lock-in requires deep mastery of memory alignment, device buffers, tensor arenas, multi-device speculative decoding, and low-level C99 runtime backends.
+                </p>
+            </div>
+
+            <h2>1. One Token, End to End: The Generation Control Loop</h2>
+            <p>
+                Every generated token in an LLM runs through a strictly deterministic software pipeline:
+            </p>
+            <pre><code class="language-text">Raw Text 
+  ➔ Tokenizer ➔ Token IDs
+  ➔ Memory Allocator & Tensor Arena
+  ➔ Model Graph Execution (Compute Kernels)
+  ➔ Logits [Vocab Size]
+  ➔ Sampler (Temperature, Top-p, Min-p)
+  ➔ Next Token ID
+  ➔ Detokenizer & Stream Buffer
+  (Repeat loop for every generated token until EOS)</code></pre>
+            <p>
+                The serving engine's primary responsibility is not the mathematical matrix multiplication itself, but the <strong>orchestration plane</strong>: scheduling, dynamic continuous batching, memory arenas, and managing the growing Key-Value (KV) cache.
+            </p>
+
+            <h2>2. Why Aren't vLLM or llama.cpp Enough?</h2>
+            <p>
+                Existing engines optimize existing, first-class hardware backends:
+            </p>
+            <div class="key-concept-grid">
+                <div class="key-concept-card">
+                    <h4>NVIDIA GPU</h4>
+                    <p>CUDA Runtime, cuBLAS, TensorRT-LLM, CUTLASS custom kernels.</p>
+                </div>
+                <div class="key-concept-card">
+                    <h4>Apple Silicon</h4>
+                    <p>Metal Performance Shaders (MPS), MLX, Apple Neural Engine (ANE).</p>
+                </div>
+                <div class="key-concept-card">
+                    <h4>Qualcomm / ARM</h4>
+                    <p>Hexagon NPU SDK, QNN, ExecuTorch, Android NNAPI.</p>
+                </div>
+                <div class="key-concept-card">
+                    <h4>AMD / Intel</h4>
+                    <p>ROCm / HIP, OpenVINO, Intel NPU compiler, oneDNN.</p>
+                </div>
+            </div>
+            <p>
+                An engine can only optimize silicon whose runtime API, memory layout, and execution graph lowerings its backend understands. When introducing a new accelerator, systems engineers must implement custom graph partitioners and kernel wrappers.
+            </p>
+
+            <h2>3. Prefill vs. Decode Phase Tensor Mechanics</h2>
+            <p>
+                Understanding tensor shapes is the difference between an algorithm designer and an inference systems engineer:
+            </p>
+            <ul>
+                <li>
+                    <strong>Prefill Phase (Prompt Evaluation):</strong> Ingests the entire prompt of length <em>S</em> simultaneously. 
+                    Tensor shape: <code>Q [B, Hq, S, D]</code>. Compute-bound (high arithmetic intensity, saturating GPU tensor cores).
+                </li>
+                <li>
+                    <strong>Decode Phase (Token Generation):</strong> Generates exactly one token at each iteration step. 
+                    Tensor shape: <code>Q [B, Hq, 1, D]</code> against <code>KV Cache [L, B, Hkv, T, D]</code>. Memory-bandwidth-bound (bottlenecked by VRAM read speeds).
+                </li>
+            </ul>
+
+            <h2>4. Multi-Device Speculative Decoding</h2>
+            <p>
+                Speculative decoding bypasses the memory-bandwidth bottleneck by running a lightweight draft model on a low-power NPU to speculate <em>K</em> candidate tokens in parallel, which are then verified in a single step by the full target model on the GPU.
+            </p>
+            <div class="callout-box">
+                <strong>Placement Objective:</strong> Minimize <em>end-to-end token latency</em>, not isolated device compute time. Transferring tensors across the PCIe bus can easily negate raw accelerator gains if fallback operators are misplaced.
+            </div>
+
+            <h2>5. Where 42 Systems Skills Fit</h2>
+            <p>
+                The foundational curriculum at 42 Berlin maps 1:1 to modern high-performance inference engine development:
+            </p>
+            <ul>
+                <li><strong><code>malloc</code> &amp; Memory Alignment:</strong> Managing device buffers and custom tensor arenas without triggering host-device synchronization pauses.</li>
+                <li><strong>POSIX &amp; Systems Programming:</strong> Zero-copy DMA transfers, socket communication between scheduler planes, and thread pool orchestration.</li>
+                <li><strong>C99 &amp; C++:</strong> Writing custom hardware kernels (e.g. for AMD ROCm, Apple Metal, or embedded NPUs) where Python APIs lack low-level bindings.</li>
+                <li><strong>Graph Optimization &amp; Compilers:</strong> Lowering ONNX/Safetensors computation graphs into device binaries with explicit buffer reuse.</li>
+            </ul>
+
+            <h2>6. Open Source Entry Points for Students</h2>
+            <ul>
+                <li><a href="https://github.com/ggerganov/llama.cpp" target="_blank" rel="noopener noreferrer" style="color:var(--doc-mint);font-weight:600;">llama.cpp</a>: Pure C/C++ inference, quantization kernels, and hardware backends (start here).</li>
+                <li><a href="https://github.com/microsoft/onnxruntime" target="_blank" rel="noopener noreferrer" style="color:var(--doc-mint);font-weight:600;">ONNX Runtime</a>: Graph partitioning and execution providers.</li>
+                <li><a href="https://github.com/pytorch/executorch" target="_blank" rel="noopener noreferrer" style="color:var(--doc-mint);font-weight:600;">ExecuTorch</a>: PyTorch edge deployment and NPU delegation on mobile hardware.</li>
+                <li><a href="https://github.com/vllm-project/vllm" target="_blank" rel="noopener noreferrer" style="color:var(--doc-mint);font-weight:600;">vLLM</a>: PagedAttention, continuous batching, and production serving engines.</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

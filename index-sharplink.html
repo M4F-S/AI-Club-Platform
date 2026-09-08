@@ -1185,6 +1185,14 @@
     </div>
 
     <div class="events-v2-container">
+      <div class="event-row-v2" onclick="openWorkshop(6)" data-scrub>
+        <div>
+          <h4>AI Inference Beyond CUDA: Heterogeneous Runtimes for GPUs, NPUs & CPUs</h4>
+          <p>Workshop 06 · Multi-device speculative decoding, memory alignment, and low-level C99 backends.</p>
+        </div>
+        <div class="event-pill-btn">View Slides & Quiz →</div>
+      </div>
+
       <div class="event-row-v2" onclick="openWorkshop(4)" data-scrub>
         <div>
           <h4>Agentic Engineering & Autonomous Architecture</h4>
@@ -1424,7 +1432,7 @@
       alert("AI Build Weekend Hackathon registration opens next week! Apply for club membership at /login.html#signup to secure priority RSVP.");
       return;
     }
-    window.location.href = `/members/quiz-interactive.html?event=${id}`;
+    window.location.href = `/members/event.html?id=${id}`;
   };
 </script>
 </body>

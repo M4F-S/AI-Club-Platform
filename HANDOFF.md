@@ -495,6 +495,25 @@ git push origin main
   - Updated `robots.txt` to explicitly grant access to AI engine crawlers (`ClaudeBot`, `anthropic-ai`, `PerplexityBot`, `GPTBot`, `Google-Extended`).
   - Tested and deployed to production VPS (`/opt/42berlinaiclub/` and `/opt/caddy/landing/ai-club/`).
 
+### 5. Workshop 06: AI Inference Beyond CUDA (2026-09-08)
+- **Event Added**: Added Workshop 06 (`id=6`) to database:
+  - **Title**: `AI Inference Beyond CUDA: Heterogeneous Runtimes for GPUs, NPUs & CPUs`
+  - **Date**: September 8, 2026, 19:00 CEST at 42 Berlin Campus Library.
+  - **Speaker/Curriculum**: Alumni masterclass covering end-to-end token generation loops, prefill vs. decode tensor mechanics, multi-device speculative decoding across NPUs and GPUs, memory alignment, dynamic KV cache, and applying 42 C systems programming skills to AI runtime engineering.
+- **Assets & Materials Processed**:
+  - Downloaded source PowerPoint deck (`AI_Inference_Beyond_CUDA_42_Berlin_v5.pptx`).
+  - Converted to PDF (`AI_Inference_Beyond_CUDA.pdf`, 2.6 MB) and rendered all 28 slides to high-res JPGs (`slide_01.jpg` to `slide_28.jpg`).
+  - Authored cyberpunk-styled interactive technical summary guide (`workshop_summary.html`).
+  - Inserted 31 materials and 5 comprehensive interactive quiz questions into SQLite `data/ai-club.db`.
+  - Deployed assets to `/opt/42berlinaiclub/data/materials/6/` and `/opt/caddy/landing/ai-club/data/materials/6/`.
+- **Frontend & Navigation Updates**:
+  - Enhanced `index.html` `loadMaterials()` to support rendering `html` technical guides with dedicated icons and direct "Read Guide" actions.
+  - Pre-rendered Workshop 06 card in static timeline HTML (`index.html`).
+  - Added Workshop 06 to `index-sharplink.html` and `index-v2.html` events lists.
+  - Updated `members/event.html` with support for `html` material types (`📘` icon and "Read Guide" button).
+  - Updated `llms.txt` and `llms-full.txt` curriculum sections.
+  - Verified live on production: `/api/events/6` (200 OK), `/api/events/6/materials/90/view` (HTML guide, 200 OK), `/api/events/6/materials/91/view` (Slide 1, 200 OK).
+
 
 ## 📞 Contact
 
