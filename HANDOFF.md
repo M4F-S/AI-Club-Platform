@@ -383,6 +383,9 @@ cp /opt/sophia-shopper/landing/ai-club/api/app.py /root/backups-$(date +%s)/
 4. **Do NOT expose admin/member email addresses in HTML/JS/CSS.** Mohamed Fathy's email should never appear in frontend code.
 5. **Do NOT use fake/static numbers for stats** — the landing page reads real data from `/stats`.
 6. **Do NOT delete the last superadmin account.**
+7. **Do NOT hardcode container internal IPs (`172.16.x.x`) in Hermes configs or MCP scripts.** Always use Docker bridge DNS hostnames (e.g. `postgres:5432`) because Docker bridge IP allocation is non-deterministic upon container restarts.
+8. **Do NOT place backup copies of skills inside the `skills/` directory** of Hermes agents (even as hidden dotfiles/dot-directories). Hermes scans recursively for any `SKILL.md` and crashes/collides if duplicates are found. Store backups outside `skills/` (e.g. in `/root/backups-skills-stale/`).
+9. **Do NOT include SQLite database files (`*.sqlite`) in `clean:` targets of C99 Makefiles.** Always keep persistent agent conversation memory safe from build cleanup scripts.
 
 ### 🔧 Known Issues
 1. **CSI check `_origin_ok()`** blocks non-browser API requests. The `test_client` in Python tests fails because it doesn't send an Origin header. When testing with Python, override: `app_mod._origin_ok = lambda: True`.
@@ -581,6 +584,33 @@ git push origin main
   - Preserved Workshop Overlay with interactive quiz and slides viewers.
 - **Local Preview**:
   - Testable at `http://127.0.0.1:8080/index-v3.html`.
+
+
+### 8. Fleet-Wide AI Agent & Gomaa Memory Audit & Remediation (2026-09-12)
+- **Scope**: Comprehensive audit and repair of all 7 deployed autonomous agents on VPS `187.124.2.26`:
+  - **2 C99 POSIX Daemons**: Belya (`/opt/charness` / `/opt/belya`, `belya.service`, Telegram `@AgentCthe_bot`) and Almaz (`/opt/almaz`, `almaz.service`, Telegram `@AlmaztheBot`).
+  - **5 Hermes Docker Agents**: Toy (`hermes-agent`), Old (`hermes-assistant`), Candy (`hermes-marketing`), Pencil (`hermes-pentest`), Coin (`hermes-trader`).
+  - **Central Memory Engine**: Gomaa (PostgreSQL `pgvector` container `mo-graphify-obsidian-memory-postgres-1`, database `postgres`, storing 327 memory notes).
+- **Root Causes Diagnosed**:
+  1. **Postgres Dynamic IP Drift (Hermes Amnesia)**: An old script (`/root/scripts/rotate-dsn.sh`) hardcoded `172.16.8.2:5432` into `mcp-servers/obsidian_memory_mcp.py` and `config.yaml`. Following container reboots, Docker reassigned `172.16.8.2` to `hermes-trader` and moved Postgres to `172.16.8.7`. All 5 Hermes agents failed socket connections to Postgres and experienced total memory recall amnesia.
+  2. **Hermes Skill Collisions**: Stale duplicate directories (such as `.mo-graphify-obsidian-memory.stale_bak` and old `mo-graphify-obsidian-memory`) were retained inside `skills/`. Hermes' `iter_skill_index_files()` recursively discovered multiple `SKILL.md` definitions with identical or clashing tool signatures, causing skill loading failures.
+  3. **Hermes-Assistant Model Provider Failure (HTTP 400)**: `hermes-assistant` was configured against a defunct OpenCode Go endpoint, throwing `400 Bad Request` on every message.
+  4. **C99 Compound Shell Commands (`cd`)**: `belya_harness.c` executed `chdir()` on the first space-delimited token (`cd /dir && ls`), failing compound operators (`&&` or `;`) and executing follow-up commands in the previous working directory.
+  5. **C99 Telegram Session Amnesia**: Telegram adapter re-initialized transient sessions per run without auto-resuming from persistent storage across daemon restarts.
+  6. **Makefile Clean Target Memory Wipe Hazard**: `clean:` in both `/opt/charness/Makefile` and `/opt/almaz/Makefile` contained `rm -f ... belya_memory.sqlite`, risking permanent loss of persistent SQLite memory on any standard build cleanup.
+  7. **Almaz Binary Build Target Mismatch**: `/opt/almaz/Makefile` compiled `TARGET = belya`, while `almaz.service` executed `/opt/almaz/almaz`, meaning rebuilds did not update the running daemon binary.
+- **Remediation & Fixes Implemented**:
+  1. **Standardized Gomaa DSN**: Updated `mcp-servers/obsidian_memory_mcp.py` and `config.yaml` across all 5 Hermes agent environments to use Docker bridge DNS hostname `postgres:5432`. Updated `/root/.hermes/scripts/nightly_consolidation.py` with current credentials and `PgVectorStore` import. Executed `/root/.hermes/scripts/run-nightly-consolidation.sh` with 100% success across all 5 databases (195 notes decayed, 0 archived).
+  2. **Purged Skill Collisions**: Relocated stale skill directories to `/root/backups-skills-stale/` (outside `skills/` search tree). Standardized `mnemosyne-memory/SKILL.md` (v3.4.0) with mandatory recall-first rules across all 5 Hermes instances. Verified zero collisions with Hermes CLI.
+  3. **Migrated Hermes-Assistant Model**: Switched `hermes-assistant` to `openrouter` with `deepseek/deepseek-v4-flash`, restoring full conversational responsiveness.
+  4. **Fixed Compound `cd` in C99 Daemons**: Refactored `execute_bash_command()` in `belya_harness.c` across both Belya and Almaz to parse `cd <dir> && <cmd>` and `cd <dir>; <cmd>`, updating `g_harness->cwd` and executing remaining commands in the target directory. Added unit test to `test_suite.c`.
+  5. **Added Session Persistence**: Enhanced `telegram_adapter.c` and `main.c` across Belya and Almaz to automatically serialize state to `telegram_active` and resume session on startup.
+  6. **Sanitized Makefiles & Fixed Almaz Target**: Removed `belya_memory.sqlite` from `clean:` in both repos. Updated `/opt/almaz/Makefile` to `TARGET = almaz`. Compiled with zero warnings (`-Wall -Wextra`).
+  7. **Verified & Committed**:
+     - All 33/33 unit tests passed in both `/opt/charness` (`./belya_test`) and `/opt/almaz` (`./almaz_test`).
+     - Committed changes in `/opt/charness` (commit `a8ddddf`) and `/opt/almaz` (commit `bc92ab5`).
+     - Restarted `belya.service` and `almaz.service`; verified active status and Telegram long polling.
+     - Restarted all 5 Hermes containers; verified MCP `obsidian_memory` is `✓ enabled` across the fleet.
 
 
 ## 📞 Contact
