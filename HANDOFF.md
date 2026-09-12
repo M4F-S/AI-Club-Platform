@@ -594,7 +594,7 @@ git push origin main
 - **Root Causes Diagnosed**:
   1. **Postgres Dynamic IP Drift (Hermes Amnesia)**: An old script (`/root/scripts/rotate-dsn.sh`) hardcoded `172.16.8.2:5432` into `mcp-servers/obsidian_memory_mcp.py` and `config.yaml`. Following container reboots, Docker reassigned `172.16.8.2` to `hermes-trader` and moved Postgres to `172.16.8.7`. All 5 Hermes agents failed socket connections to Postgres and experienced total memory recall amnesia.
   2. **Hermes Skill Collisions**: Stale duplicate directories (such as `.mo-graphify-obsidian-memory.stale_bak` and old `mo-graphify-obsidian-memory`) were retained inside `skills/`. Hermes' `iter_skill_index_files()` recursively discovered multiple `SKILL.md` definitions with identical or clashing tool signatures, causing skill loading failures.
-  3. **Hermes-Assistant Model Provider Failure (HTTP 400)**: `hermes-assistant` was configured against a defunct OpenCode Go endpoint, throwing `400 Bad Request` on every message.
+  3. **Hermes Model Provider & Header Serialization Failure (HTTP 400)**: OpenCode Go's API gateway mandates the `x-opencode-session` header (`MissingSessionID`). In addition, previous configurations had serialized `extra_headers` as a JSON string (`'{"x-opencode-session": "..."}'`) rather than a YAML dictionary, causing Hermes' `normalize_extra_headers()` to drop the header and trigger `400 Bad Request`.
   4. **C99 Compound Shell Commands (`cd`)**: `belya_harness.c` executed `chdir()` on the first space-delimited token (`cd /dir && ls`), failing compound operators (`&&` or `;`) and executing follow-up commands in the previous working directory.
   5. **C99 Telegram Session Amnesia**: Telegram adapter re-initialized transient sessions per run without auto-resuming from persistent storage across daemon restarts.
   6. **Makefile Clean Target Memory Wipe Hazard**: `clean:` in both `/opt/charness/Makefile` and `/opt/almaz/Makefile` contained `rm -f ... belya_memory.sqlite`, risking permanent loss of persistent SQLite memory on any standard build cleanup.
@@ -602,7 +602,7 @@ git push origin main
 - **Remediation & Fixes Implemented**:
   1. **Standardized Gomaa DSN**: Updated `mcp-servers/obsidian_memory_mcp.py` and `config.yaml` across all 5 Hermes agent environments to use Docker bridge DNS hostname `postgres:5432`. Updated `/root/.hermes/scripts/nightly_consolidation.py` with current credentials and `PgVectorStore` import. Executed `/root/.hermes/scripts/run-nightly-consolidation.sh` with 100% success across all 5 databases (195 notes decayed, 0 archived).
   2. **Purged Skill Collisions**: Relocated stale skill directories to `/root/backups-skills-stale/` (outside `skills/` search tree). Standardized `mnemosyne-memory/SKILL.md` (v3.4.0) with mandatory recall-first rules across all 5 Hermes instances. Verified zero collisions with Hermes CLI.
-  3. **Migrated Hermes-Assistant Model**: Switched `hermes-assistant` to `openrouter` with `deepseek/deepseek-v4-flash`, restoring full conversational responsiveness.
+  3. **Standardized OpenCode Go Primary & OpenRouter Fallback**: Configured all 5 Hermes containers with **OpenCode Go as Primary** (`deepseek-v4-flash`, `base_url: https://opencode.ai/zen/go/v1`) with native `x-opencode-session` dictionary headers in `model.extra_headers` and `providers.opencode-go`, and **OpenRouter as Fallback** (`deepseek/deepseek-v4-flash`, `base_url: https://openrouter.ai/api/v1`). Verified end-to-end inference and title generation across all containers with 0 HTTP 400 errors.
   4. **Fixed Compound `cd` in C99 Daemons**: Refactored `execute_bash_command()` in `belya_harness.c` across both Belya and Almaz to parse `cd <dir> && <cmd>` and `cd <dir>; <cmd>`, updating `g_harness->cwd` and executing remaining commands in the target directory. Added unit test to `test_suite.c`.
   5. **Added Session Persistence**: Enhanced `telegram_adapter.c` and `main.c` across Belya and Almaz to automatically serialize state to `telegram_active` and resume session on startup.
   6. **Sanitized Makefiles & Fixed Almaz Target**: Removed `belya_memory.sqlite` from `clean:` in both repos. Updated `/opt/almaz/Makefile` to `TARGET = almaz`. Compiled with zero warnings (`-Wall -Wextra`).
@@ -610,7 +610,7 @@ git push origin main
      - All 33/33 unit tests passed in both `/opt/charness` (`./belya_test`) and `/opt/almaz` (`./almaz_test`).
      - Committed changes in `/opt/charness` (commit `a8ddddf`) and `/opt/almaz` (commit `bc92ab5`).
      - Restarted `belya.service` and `almaz.service`; verified active status and Telegram long polling.
-     - Restarted all 5 Hermes containers; verified MCP `obsidian_memory` is `✓ enabled` across the fleet.
+     - Restarted all 5 Hermes containers; verified OpenCode Go primary + OpenRouter fallback and MCP `obsidian_memory` is `✓ enabled` across the fleet.
 
 
 ## 📞 Contact
