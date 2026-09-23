@@ -613,6 +613,22 @@ git push origin main
      - Restarted all 5 Hermes containers; verified OpenCode Go primary + OpenRouter fallback and MCP `obsidian_memory` is `✓ enabled` across the fleet.
 
 
+### 9. Agent Candy (`hermes-marketing`) WooCommerce 403 Resolution (2026-09-23)
+- **Context**: Agent Candy (`hermes-marketing`, `@thecandy_bot`) manages commerce and marketing operations for *Shaikha's Luxury Closet* (`shaikhascloset.com`). While ERPNext (`http://slc-erp-frontend-1:8080`) was fully functional, WooCommerce REST endpoints had been failing with HTTP 403 since August 2026.
+- **Root Cause Diagnosed**:
+  - Hostinger CDN/WAF (`hcdn`) serves `shaikhascloset.com` and presents an automated JavaScript proof-of-work challenge to IP `187.124.2.26`.
+  - The VPS host has native IPv6 (`2a02:4780:41:c2f::1`), which bypasses the Hostinger bot challenge and receives HTTP 200 with live products and orders.
+  - The Docker container `hermes-marketing`, however, egresses through IPv4 NAT (`187.124.2.26`), causing all WooCommerce API calls from inside the container to fail with 403.
+- **Remediation & Architecture**:
+  1. **IPv6 Egress Forwarder (`candy-ipv6-proxy.service`)**: Created `/opt/candy-proxy/proxy.py` and systemd unit `/etc/systemd/system/candy-ipv6-proxy.service`. Listens on `172.16.1.1:19999` (Docker bridge only) and tunnels HTTP CONNECT requests prioritizing IPv6 upstream connections.
+  2. **UFW Rule**: Permitted TCP port 19999 for Docker subnet `172.16.0.0/20` (`ufw allow from 172.16.0.0/20 to any port 19999 proto tcp comment "candy ipv6 forwarder"`).
+  3. **BaseClient Proxy Support**: Updated `/opt/hermes-marketing/mkt/clients/base.py` to check for `self._env("PROXY")` and populate `session.proxies`. Configured `WOO_PROXY=http://172.16.1.1:19999` in `/opt/hermes-marketing/.env`.
+  4. **Live Validation**:
+     - `check_live.py` returns HTTP 200 for both WooCommerce and ERPNext.
+     - `daily_briefing` dynamically samples live catalog products (e.g. Valentino earrings ID 53382) and recent orders (e.g. order 53377, processing).
+     - 6/6 unit tests in `/opt/data/mkt/tests` pass cleanly.
+
+
 ## 📞 Contact
 
 - **Mohamed Fathy:** `mohamedfathy7@hotmail.com` (admin, superadmin)
