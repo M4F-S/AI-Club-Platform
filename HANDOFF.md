@@ -629,6 +629,18 @@ git push origin main
      - 6/6 unit tests in `/opt/data/mkt/tests` pass cleanly.
 
 
+### 10. Agent Candy (`hermes-marketing`) MCP & Skill Readiness Remediation (2026-10-12)
+- **Root Causes Diagnosed**:
+  1. **Hermes PM Environment Missing `mcp` Extra**: When Hermes synced its package manager environment (`/opt/data/installs/.../venv`), only the `telegram` extra was enabled (`feature_list: ["telegram"]`), leaving `mcp==2.0.0` out of the activated `sys.path`. As a result, `_ensure_mcp_sdk()` returned `False` inside the gateway process, preventing `obsidian_memory`, `dataforseo`, and `buffer` MCP servers from registering their 25 tools at gateway startup.
+  2. **MCP Venv Missing `gomaa` Package**: `/opt/data/mcp-servers/venv` had been recreated without `gomaa` installed (`ModuleNotFoundError: No module named 'gomaa'`).
+  3. **Outdated `woocommerce-ops/SKILL.md` Guidance**: The skill file still warned that `hcdn` blocks headless requests, causing Candy during interactive self-audits to run bare `curl https://shaikhascloset.com` (bypassing `WOO_PROXY=http://172.16.1.1:19999`) and falsely report that headless WooCommerce access was blocked, even while her automated daily cron job (`candy-daily-briefing`, 53 runs) was pulling live orders and products via `WOO_PROXY`.
+- **Remediation & Verification**:
+  1. Installed `gomaa` (`-e /opt/data/gomaa`) and pre-warmed `sentence-transformers/all-MiniLM-L6-v2` in `/opt/data/mcp-servers/venv`.
+  2. Ran `/opt/hermes/bin/hermes pm install --extra mcp --extra telegram` inside `hermes-marketing` (`✓ venv +mcp +telegram`).
+  3. Updated `/opt/hermes-marketing/skills/candy/woocommerce-ops/SKILL.md` (v1.1.0) to document `WOO_PROXY=http://172.16.1.1:19999` and instruct Candy to always use `WooCommerceClient` or `curl -x http://172.16.1.1:19999`.
+  4. Restarted `gateway-default` via `s6-svc -r /run/service/gateway-default` and verified in `/opt/data/logs/agent.log` that all 3 MCP servers (`obsidian_memory` 13 tools, `dataforseo` 6 tools, `buffer` 6 tools — 25 tools total) are registered and live.
+
+
 ## 📞 Contact
 
 - **Mohamed Fathy:** `mohamedfathy7@hotmail.com` (admin, superadmin)
