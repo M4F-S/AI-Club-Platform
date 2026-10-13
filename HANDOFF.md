@@ -641,6 +641,21 @@ git push origin main
   4. Restarted `gateway-default` via `s6-svc -r /run/service/gateway-default` and verified in `/opt/data/logs/agent.log` that all 3 MCP servers (`obsidian_memory` 13 tools, `dataforseo` 6 tools, `buffer` 6 tools — 25 tools total) are registered and live.
 
 
+### 11. Fleet-Wide Hermes Agent Audit & Agent Old (`hermes-assistant`) Upgrade to v0.21.6 (2026-10-14)
+- **Context**: Full fleet audit requested across all 5 autonomous Hermes agents on VPS `187.124.2.26` (`hermes-agent`, `hermes-assistant`, `hermes-marketing`, `hermes-pentest`, `hermes-trader`).
+- **Audit Findings**:
+  1. **Fleet Health**: All 5 agents actively running with zero fatal errors.
+  2. **Telegram Polling**: All 5 Telegram bots (`@Toy_the_bot`, `@Old_7_bot`, `@thecandy_bot`, `@Pencilz_bot`, `@Cointhe_bot`) verified active and responding.
+  3. **Inference**: 5/5 agents tested end-to-end via OpenCode Go (`deepseek-v4.1-flash`) with instant `PONG` responses.
+  4. **Vector Memory**: All 5 agent vector databases (`toy_db`: 258 notes, `old_db`: 133 notes, `candy_db`: 13 notes, `pencil_db`: 43 notes, `trader_db`: 45 notes) verified connected on `postgres:5432`.
+  5. **Version Discrepancy**: While 4 agents (`hermes-agent`, `hermes-marketing`, `hermes-pentest`, `hermes-trader`) had been updated to `nousresearch/hermes-agent:v0.21.6` on Oct 11, `hermes-assistant` (Old / `MO_The_Agent`) was still running the legacy `v0.20.0` image (`2d15f922a538`) with config schema v33.
+- **Remediation for `hermes-assistant`**:
+  1. Created full pre-upgrade snapshot in `/root/backups-hermes-assistant/pre-upgrade-v0216/` preserving `config.yaml`, `.env`, `state.db`, `kanban.db`, `cron/`, `skills/`, and `scripts/`.
+  2. Pre-tested config schema migration (33 -> 50) in an isolated container environment to verify no loss of model routes, providers, or custom MCP bindings.
+  3. Recreated `hermes-assistant` container using `nousresearch/hermes-agent:v0.21.6` attached to both `old-isolated` and `mo-graphify-obsidian-memory_default` networks.
+  4. Verified boot sequence: config migrated cleanly to v50, MCP `obsidian_memory` registered 13 tools (`✓ enabled`), `@Old_7_bot` connected to Telegram polling, all 6 cron jobs active (`old-backup`, `Daily Morning Briefing`, `Weekly Vault Review`, `Agent-Fleet Health`, `Mnemosyne Ingester`, `Daily German Studies`), live inference passed (`PONG`), and Postgres memory recall verified (133 notes in `old_db`). Fleet is now 100% unified on `v0.21.6`.
+
+
 ## 📞 Contact
 
 - **Mohamed Fathy:** `mohamedfathy7@hotmail.com` (admin, superadmin)
