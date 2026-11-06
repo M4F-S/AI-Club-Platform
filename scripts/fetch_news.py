@@ -69,7 +69,7 @@ def fetch(name, url, limit):
                     link = le.get("href", "")
                     break
         dt = parse_date(n)
-        if title and link.startswith("http"):
+        if len(title) >= 20 and link.startswith("http"):
             out.append({
                 "title": title[:180],
                 "link": link,
