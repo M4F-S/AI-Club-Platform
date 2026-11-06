@@ -62,3 +62,19 @@ async function ask(e) {
 
 setTimeout(function(){ document.body.classList.add("loaded"); }, 5000);
 
+/* Auth-aware member button: send signed-in users to their real home */
+document.addEventListener('click', async (e) => {
+  const btn = e.target.closest && e.target.closest('#nav-member-btn');
+  if (!btn) return;
+  e.preventDefault();
+  try {
+    const r = await fetch('/api/member/me', { credentials: 'same-origin' });
+    if (r.ok) {
+      const d = await r.json().catch(() => ({}));
+      const role = d.user && d.user.role;
+      window.location.href = (role === 'admin' || role === 'superadmin') ? '/admin.html' : '/members/index.html';
+      return;
+    }
+  } catch (err) {}
+  window.location.href = '/login.html';
+}, true);

@@ -76,6 +76,23 @@
     
     const logoutBtn = document.getElementById('logout-btn');
     if (logoutBtn) logoutBtn.addEventListener('click', logout);
+
+    /* member-mobile-dock: the desktop nav is hidden under 900px, so phones had no way to navigate */
+    const isAdmin = user.role === 'superadmin' || user.role === 'admin';
+    document.querySelectorAll('.m-nav').forEach(n => n.remove());
+    const dock = document.createElement('div');
+    dock.className = 'm-nav';
+    dock.setAttribute('role', 'navigation');
+    dock.setAttribute('aria-label', 'Member navigation');
+    dock.innerHTML = `
+      <a href="${MEMBER_BASE}index.html"><i></i>Dashboard</a>
+      <a href="${MEMBER_BASE}events.html"><i></i>Workshops</a>
+      <a href="${MEMBER_BASE}resources.html"><i></i>Resources</a>
+      ${isAdmin
+        ? `<a href="/admin.html"><i></i>Admin</a>`
+        : `<a href="${MEMBER_BASE}perks.html"><i></i>Perks</a>`}
+      <a href="${MEMBER_BASE}profile.html"><i></i>Profile</a>`;
+    document.body.appendChild(dock);
   }
 function updateHeader(user) {
     const el = document.getElementById('user-name');

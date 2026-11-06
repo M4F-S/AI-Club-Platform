@@ -159,3 +159,9 @@
 .stagger-2 { transition-delay: 0.16s; }
 .stagger-3 { transition-delay: 0.24s; }
 
+/* member dock clearance (2026-11-06) */
+@media (max-width: 900px){
+  body { padding-bottom: 74px; }
+  body .m-nav a { font-size: 9.5px !important; letter-spacing: .04em !important; padding: 0 3px !important; min-height: 44px;
+             display: inline-flex; align-items: center; }
+}

@@ -136,7 +136,11 @@ def _hash_password(password: str) -> str:
 
 
 def _check_password(password: str, hashed: str) -> bool:
-    return bcrypt.checkpw(password.encode("utf-8"), hashed.encode("utf-8"))
+    try:
+        return bcrypt.checkpw(password.encode("utf-8"), (hashed or "").encode("utf-8"))
+    except (ValueError, TypeError):
+        # malformed / legacy hash must read as a failed login, never a 500
+        return False
 
 
 def _generate_password(length: int = 16) -> str:
