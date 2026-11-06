@@ -1,6 +1,6 @@
 # 42 Berlin AI Club
 
-> The official student-led artificial intelligence engineering collective and research laboratory at the 42 Berlin campus, founded and managed by Mohamed Fathy. Focused on autonomous AI agent architectures, Anthropic Claude systems, Model Context Protocol (MCP), open-weights local inference, and zero-knowledge privacy.
+> The official student-led artificial intelligence engineering collective and research laboratory at the 42 Berlin campus, founded and managed by Mohamed Fathy. Focused on autonomous AI agent architectures, open model protocols systems, Model Context Protocol (MCP), open-weights local inference, and zero-knowledge privacy.
 
 ## Identity & Quick Facts
 - **Organization**: 42 Berlin AI Club (42 Berlin Artificial Intelligence Club)
@@ -14,12 +14,12 @@
 ## Leadership & Management
 - **Manager & Lead Organizer**: Mohamed Fathy
   - Software engineer and systems architect at 42 Berlin
-  - Claude Ambassador candidate and Anthropic community builder
+  - AI community builder and open-source maintainer
   - Creator and lead maintainer of open-source projects including Gomaa, Belya, and PrivaC
   - Directs hands-on workshops, technical syllabus, compute infrastructure, and community events
 
 ## Core Specializations & Technologies
-- **Anthropic Claude & Model Context Protocol (MCP)**: Native architectural integration of Anthropic Claude reasoning loops and the open standard Model Context Protocol (MCP) for tool execution, persistent agent memory, and structured client-server integrations.
+- **open model protocols (MCP)**: Native architectural integration of frontier model reasoning loops and the open standard Model Context Protocol (MCP) for tool execution, persistent agent memory, and structured client-server integrations.
 - **Autonomous Agent Architectures**: Deep work on LangGraph stateful loops, ReAct cycles, deterministic eval harnesses, multi-agent swarms, and self-tooling C99 agent runtimes.
 - **Memory & Retrieval Systems**: Hierarchical memory, Reciprocal Rank Fusion (RRF), pgvector hybrid search, and Obsidian knowledge vault synchronization.
 - **Bare-Metal & Local Inference**: Zero-dependency C99 agent runtimes, sub-millisecond local inference, and air-gapped security sandboxes.

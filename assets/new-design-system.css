@@ -807,3 +807,56 @@ body.news-on nav{top:0}
 .ns-close:hover{color:#fff}
 @media(max-width:640px){body.news-on{--news-h:32px}#news-strip{gap:10px;padding:0 6px 0 12px}.ns-title{font-size:11px}.ns-sep{margin:0 10px}}
 @media(prefers-reduced-motion:reduce){.ns-track{animation:none}.ns-viewport{overflow-x:auto;scrollbar-width:none}}
+
+/* ===== Mobile polish (2026-11-06) ===== */
+@media (max-width: 768px){
+  /* iOS zooms any input under 16px on focus — this breaks the layout after typing */
+  input:not([type=checkbox]):not([type=radio]):not([type=range]),
+  select, textarea { font-size: 16px !important; }
+
+  /* news strip: 9/11px was unreadable on a phone */
+  body.news-on { --news-h: 34px; }
+  #news-strip { gap: 8px; padding: 0 8px 0 12px; }
+  .ns-src { font-size: 9.5px; letter-spacing: .12em; }
+  .ns-title { font-size: 12.5px; line-height: 1.25; }
+  .ns-item { padding: 6px 0; min-height: 26px; }
+  .ns-sep { font-size: 7px; margin: 0 12px; }
+
+  /* bottom dock: 35px rows were below the 44px touch target */
+  .m-nav { padding: 4px 6px; }
+  .m-nav a { min-height: 44px; display: inline-flex; align-items: center; }
+
+  /* long-form copy: keep measure readable on small screens */
+  .section-sub, .lede, .hero-sub { font-size: 15px; line-height: 1.65; }
+}
+
+/* ===== Subpage consistency (2026-11-06) ===== */
+/* One heading scale for every non-homepage page */
+.page-title{
+  font-family:var(--font-d);
+  font-size:clamp(36px, 4.8vw, 58px);
+  font-weight:600; color:var(--text);
+  line-height:1.05; letter-spacing:-.03em;
+  margin-bottom:18px;
+}
+/* Subpages were using slate (#E2E8F0) for body copy while the homepage uses the brand muted */
+.p-card p, .p-card li,
+.legal-section p, .legal-section li, .legal-section ul{
+  color:var(--muted) !important;
+  font-size:15px;
+  line-height:1.7;
+}
+/* Card headings: homepage uses text colour, partner page forced mint */
+.p-card h3{ color:var(--text) !important; }
+.p-card{ border-radius:20px; padding:32px; }
+/* Partner page container was 960 while the homepage uses 1126 */
+.partner-shell{ max-width:1126px; }
+/* Legal keeps a reading measure, but the same type system */
+.legal-section h2{ font-size:1.5rem; letter-spacing:-.01em; }
+/* dock + ticker mobile fit (2026-11-06b) */
+@media (max-width: 768px){
+  .ns-track{ animation-delay: 3s; }
+  .ns-viewport{ -webkit-mask-image:linear-gradient(90deg,transparent,#000 34px,#000 calc(100% - 34px),transparent);
+                mask-image:linear-gradient(90deg,transparent,#000 34px,#000 calc(100% - 34px),transparent); }
+  .m-nav a{ font-size:10px; letter-spacing:.06em; padding:0 8px; }
+}
