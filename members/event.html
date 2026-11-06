@@ -217,15 +217,17 @@
         html += `<h2 class="page-title animate-on-scroll" style="font-size: 1.5rem; margin: 32px 0 16px;">Materials</h2>`;
         html += `<div class="materials-grid animate-on-scroll">`;
         [...pdfs, ...quizzes, ...other].forEach(m => {
-          const icon = m.file_type === 'pdf' ? '📄' : m.file_type === 'quiz' ? '🎯' : '📎';
+          const icon = m.file_type === 'pdf' ? '📄' : m.file_type === 'quiz' ? '🎯' : m.file_type === 'html' ? '📘' : '📎';
           const viewUrl = `/api/events/${event.id}/materials/${m.id}/view`;
           const downloadUrl = `/api/events/${event.id}/materials/${m.id}/download`;
           let actions = '';
           if (m.file_type === 'quiz') {
             actions = `<a href="quiz-interactive.html?event=${event.id}" class="btn btn-primary">Take Quiz</a>`;
           } else {
-            actions = `<a href="${viewUrl}" target="_blank" class="btn btn-secondary">View</a>`;
-            actions += `<a href="${downloadUrl}" class="btn btn-primary" download style="margin-left:8px;">Download</a>`;
+            actions = `<a href="${viewUrl}" target="_blank" class="btn btn-secondary">${m.file_type === 'html' ? 'Read Guide' : 'View'}</a>`;
+            if (m.is_downloadable) {
+              actions += `<a href="${downloadUrl}" class="btn btn-primary" download style="margin-left:8px;">Download</a>`;
+            }
           }
           html += `
             <div class="material-card">

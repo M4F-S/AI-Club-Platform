@@ -1,5 +1,8 @@
 User-agent: *
 Allow: /
+Allow: /llms.txt
+Allow: /llms-full.txt
+Allow: /sitemap.xml
 Allow: /become-member.html
 Allow: /become-partner.html
 Allow: /login.html
@@ -8,5 +11,37 @@ Allow: /reset-password.html
 Disallow: /admin.html
 Disallow: /members/
 Disallow: /api/
+
+# Explicit permissions for Anthropic Claude, Perplexity, OpenAI, and Google AI crawlers
+User-agent: ClaudeBot
+Allow: /
+Allow: /llms.txt
+Allow: /llms-full.txt
+
+User-agent: anthropic-ai
+Allow: /
+Allow: /llms.txt
+Allow: /llms-full.txt
+
+User-agent: PerplexityBot
+Allow: /
+Allow: /llms.txt
+Allow: /llms-full.txt
+
+User-agent: GPTBot
+Allow: /
+Allow: /llms.txt
+Allow: /llms-full.txt
+
+User-agent: Google-Extended
+Allow: /
+Allow: /llms.txt
+Allow: /llms-full.txt
+
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
 
 Sitemap: https://42berlinaiclub.de/sitemap.xml
