@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resources — 42 Berlin AI Club</title>
+    <link rel="stylesheet" href="/members/members.css">
+    <link rel="stylesheet" href="/assets/new-design-system.css?v=15">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#060612">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  
+  
+  
+  
+  
+</head>
+<body>
+  <header class="member-header">
+    <div class="container member-header-inner">
+      <a href="/members/index.html" class="logo" aria-label="Dashboard">
+        <img src="/assets/logo-gate.png" alt="42 Berlin AI Club" style="height:32px;width:auto;border-radius:8px;">
+        <span style="margin-left:10px;font-family:var(--font-d);font-size:18px;letter-spacing:-.02em;color:var(--text)">42 Berlin AI Club</span>
+      </a>
+      <div class="user-menu">
+        <span class="user-name" id="user-name">Loading...</span>
+        <button class="logout-btn" id="logout-btn">Log out</button>
+      </div>
+    </div>
+  </header>
+
+<div class="container member-layout">
+    <aside class="member-nav"></aside>
+    <main class="member-main">
+
+      <h1 class="page-title animate-on-scroll">Resources</h1>
+      <p class="page-subtitle animate-on-scroll">Curated tools, papers, and tutorials for learning AI.</p>
+      <div id="resources-list" class="animate-on-scroll"><p>Loading...</p></div>
+      <script>document.addEventListener("DOMContentLoaded", async () => {
+
+          (async () => {
+            const { api } = window.MemberAPI;
+            const res = await api('/resources');
+            const list = document.getElementById('resources-list');
+            if (!res.ok || !res.data.length) {
+              list.innerHTML = '<div class="card animate-on-scroll"><p>No resources posted yet.</p></div>';
+              return;
+            }
+            list.innerHTML = res.data.map((r, i) => `
+              <div class="card animate-on-scroll stagger-${Math.min(i % 4 + 1, 4)}">
+                <h2>${escapeHtml(r.title)} ${r.category ? `<span style="font-size:0.8rem;color:var(--text-muted);font-weight:500;">(${escapeHtml(r.category)})</span>` : ''}</h2>
+                <p>${escapeHtml(r.description || '')}</p>
+                ${r.url ? `<a href="${escapeHtml(r.url)}" target="_blank" rel="noopener" class="btn btn-primary" style="margin-top:10px;">Open resource</a>` : ''}
+              </div>
+            `).join('');
+          })();
+          function escapeHtml(t) { const d=document.createElement('div'); d.textContent=t; return d.innerHTML; }
+      
+});
+</script>
+    </main>
+</div>
+
+
+<button id="orb" class="orb" aria-label="Open Synapse AI agent" onclick="toggle()">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2.5"/><path d="M12 8v4"/><path d="M12 14h.01"/><circle cx="12" cy="17" r="2.5"/><circle cx="5" cy="12" r="2.5"/><circle cx="19" cy="12" r="2.5"/></svg>
+</button>
+<div id="agent-panel" role="dialog" aria-label="Synapse AI chat">
+  <div class="ap-head">
+    <span class="ap-name"><span class="dot"></span> Synapse AI</span>
+    <button class="ap-close" onclick="toggle()" aria-label="Close">&times;</button>
+  </div>
+  <div class="ap-body" id="agent-messages">
+    <div class="ap-msg agent">Hi, I am Synapse — the club's AI assistant. Ask me anything about workshops, events, membership, or the community.</div>
+  </div>
+  <form class="ap-inp" id="agent-form" onsubmit="return ask(event)">
+    <input type="text" id="agent-input" placeholder="Ask Synapse anything…" autocomplete="off">
+    <button type="submit" aria-label="Send"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
+  </form>
+</div>
+<script src="/assets/site.js?v=1"></script>
+<script src="/assets/lucide.1.33.0.min.js"></script>
+    <script src="/members/members.js?v=3"></script>
+
+</body>
+</html>

@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Partner & Sponsor — 42 Berlin AI Club | Mohamed Fathy</title>
-<link rel="stylesheet" href="/assets/new-design-system.css?v=16">
+<title>Partner & Sponsor — 42 Berlin AI Club</title>
+<link rel="stylesheet" href="/assets/new-design-system.css?v=18">
 <meta name="description" content="Partner with 42 Berlin AI Club, managed by Mohamed Fathy at 42 Berlin. Sponsor compute, APIs, hackathons, and connect with peer-learning autonomous systems engineers.">
 <meta name="author" content="Mohamed Fathy">
 <meta name="keywords" content="42 Berlin AI Club, Mohamed Fathy, Partner, Sponsor, AI Compute, Claude Ambassador, Anthropic, Berlin AI">
@@ -47,8 +47,15 @@
   .form-status { margin-top: 16px; font-size: 14px; text-align: center; }
 </style>
 </head>
-<body>
+<body class="news-on">
 <a href="#main" class="skip-link">Skip to main content</a>
+
+<div id="news-strip" role="region" aria-label="Latest AI and tech news">
+  <span class="ns-badge"><i class="ns-dot" aria-hidden="true"></i>LIVE</span>
+  <div class="ns-viewport"><div class="ns-track" id="ns-track"></div></div>
+  <button class="ns-close" id="ns-close" type="button" aria-label="Dismiss news strip">&times;</button>
+</div>
+
 
 <div id="loader">
   <img class="l-mark" src="/assets/logo-gate.png" alt="42 Berlin AI Club emblem">
@@ -76,6 +83,8 @@
   <div class="nav-links">
     <a href="/#events" data-hover>Events</a>
     <a href="/#projects" data-hover>Projects</a>
+    <a href="/#leadership" data-hover>Leadership</a>
+    <a href="/#faq" data-hover>FAQ</a>
     <a href="/login.html#signup" data-hover>Membership</a>
     <a href="/become-partner.html" data-hover style="color:var(--text);font-weight:600;">Partners</a>
   </div>
@@ -87,7 +96,9 @@
 
 <div class="m-nav" role="navigation" aria-label="Mobile navigation">
   <a href="/#events"><i></i>Events</a>
-  <a href="/#projects"><i></i>Builds</a>
+  <a href="/#projects"><i></i>Projects</a>
+  <a href="/#leadership"><i></i>Leadership</a>
+  <a href="/#faq"><i></i>FAQ</a>
   <a href="/login.html#signup"><i></i>Membership</a>
   <a href="/become-partner.html"><i></i>Partners</a>
 </div>
@@ -183,6 +194,8 @@
     <a href="mailto:contact@42berlinaiclub.de" class="f-node" data-hover><span class="fn-dot"></span>Email</a>
     <a href="/#events" class="f-node" data-hover><span class="fn-dot" style="background:var(--mint);box-shadow:0 0 14px var(--mint)"></span>Events</a>
     <a href="/#projects" class="f-node" data-hover><span class="fn-dot" style="background:var(--pink);box-shadow:0 0 14px var(--pink)"></span>Projects</a>
+    <a href="/#leadership" class="f-node" data-hover><span class="fn-dot" style="background:var(--cyan);box-shadow:0 0 14px var(--cyan)"></span>Leadership</a>
+    <a href="/#faq" class="f-node" data-hover><span class="fn-dot" style="background:var(--mint);box-shadow:0 0 14px var(--mint)"></span>FAQ</a>
     <a href="/login.html#signup" class="f-node" data-hover><span class="fn-dot" style="background:#5a8bff;box-shadow:0 0 14px #5a8bff"></span>Join</a>
     <a href="/login.html" class="f-node" data-hover><span class="fn-dot" style="background:var(--violet);box-shadow:0 0 14px var(--violet)"></span>Login</a>
     <a href="/admin.html" class="f-node" data-hover><span class="fn-dot" style="background:#ff5a8b;box-shadow:0 0 14px #ff5a8b"></span>Admin</a>
@@ -255,6 +268,41 @@
       }
     });
   }
+</script>
+
+<script>
+(function () {
+  var strip = document.getElementById('news-strip');
+  if (!strip) return;
+  var body = document.body;
+  try { if (sessionStorage.getItem('ns-closed') === '1') { strip.remove(); body.classList.remove('news-on'); return; } } catch (e) {}
+  function closeStrip() { strip.remove(); body.classList.remove('news-on'); try { sessionStorage.setItem('ns-closed','1'); } catch (e) {} }
+  document.getElementById('ns-close').addEventListener('click', closeStrip);
+  fetch('/news.json', { cache: 'no-store' })
+    .then(function (r) { if (!r.ok) throw new Error('bad'); return r.json(); })
+    .then(function (d) {
+      var items = (d && d.items) || [];
+      if (!items.length) throw new Error('empty');
+      var track = document.getElementById('ns-track');
+      function build() {
+        var frag = document.createDocumentFragment();
+        items.forEach(function (n) {
+          var a = document.createElement('a');
+          a.className = 'ns-item'; a.href = n.link; a.target = '_blank'; a.rel = 'noopener noreferrer';
+          var s = document.createElement('span'); s.className = 'ns-src'; s.textContent = n.source;
+          var t = document.createElement('span'); t.className = 'ns-title'; t.textContent = n.title;
+          a.appendChild(s); a.appendChild(t); frag.appendChild(a);
+          var sep = document.createElement('span'); sep.className = 'ns-sep'; sep.setAttribute('aria-hidden','true'); sep.textContent = '\u25C6';
+          frag.appendChild(sep);
+        });
+        return frag;
+      }
+      track.appendChild(build()); track.appendChild(build());
+      var dur = Math.max(35, Math.round((track.scrollWidth / 2) / 45));
+      track.style.setProperty('--ns-dur', dur + 's');
+    })
+    .catch(function () { closeStrip(); });
+})();
 </script>
 </body>
 </html>

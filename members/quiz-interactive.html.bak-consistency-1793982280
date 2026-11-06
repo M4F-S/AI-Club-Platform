@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Workshop Quiz — 42 Berlin AI Club</title>
+<link rel="stylesheet" href="/assets/new-design-system.css?v=15">
+<link rel="icon" href="/assets/favicon-64.png" type="image/png">
+</head>
+<body>
+<!-- AUTH GATE -->
+<script>(function () {
+  fetch('/api/member/me', { credentials: 'include' })
+    .then(r => { if (!r.ok) window.location.href = '/login.html'; })
+    .catch(() => { window.location.href = '/login.html'; });
+})();
+</script>
+
+<nav>
+  <a class="logo" href="/members/index.html" data-hover>
+    <span class="logo-mark"><img src="/assets/logo-gate.png" alt="42 Berlin AI Club"></span>
+    <span class="logo-text">42 BERLIN<small>AI Club</small></span>
+  </a>
+  <div class="nav-links">
+    <a href="/members/index.html" data-hover>Dashboard</a>
+    <a href="/members/events.html" data-hover>Workshops</a>
+  </div>
+</nav>
+
+<main id="main" style="padding-top: 120px; min-height: 100vh; display: flex; flex-direction: column; align-items: center;">
+  <div class="shell" style="max-width: 760px; width: 100%;">
+    <div class="s-label" data-reveal>
+      <span class="glyph"><svg viewBox="0 0 26 26" fill="none"><circle cx="13" cy="13" r="5" stroke="#4DE3C1" stroke-width="1.4"/><path d="M13 2v5M13 19v5M2 13h5M19 13h5M5.2 5.2l3.4 3.4M17.4 17.4l3.4 3.4M20.8 5.2l-3.4 3.4M8.6 17.4l-3.4 3.4" stroke="#7C6CFF" stroke-width="1.3" stroke-linecap="round"/></svg></span>
+      Knowledge Check
+      <span class="l-line"></span>
+    </div>
+    
+    <div id="quiz-root">
+      <div class="m-loading" style="padding: 60px 0; text-align: center; color: var(--muted);">Loading quiz...</div>
+    </div>
+  </div>
+</main>
+
+<script>
+(async function() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const eventId = urlParams.get('event');
+  const box = document.getElementById('quiz-root');
+  
+  if (!eventId) {
+    box.innerHTML = '<div class="m-loading">No workshop selected.</div>';
+    return;
+  }
+
+  let quizState = null;
+  
+  try {
+    const res = await fetch(`/api/events/${eventId}/quiz`, { credentials: 'include' }).then(r => r.json());
+    const qs = Array.isArray(res) ? res : (res.questions || []);
+    if (!qs.length) { 
+      box.innerHTML = '<div class="m-loading">No quiz available for this workshop.</div>'; 
+      return; 
+    }
+    quizState = { qs, idx: 0, answers: {}, done: false, eventTitle: res.event?.title || 'Workshop Quiz' };
+    renderQ();
+  } catch (e) {
+    box.innerHTML = '<div class="m-loading">Could not load quiz. Please make sure you are logged in.</div>';
+  }
+
+  function esc(s) {
+    if (!s) return '';
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  window.selectOpt = function(optIdx) {
+    if (quizState.done) return;
+    quizState.answers[quizState.qs[quizState.idx].id] = optIdx;
+    renderQ();
+  };
+
+  window.nextQ = function() {
+    if (quizState.idx < quizState.qs.length - 1) {
+      quizState.idx++;
+      renderQ();
+    }
+  };
+
+  window.prevQ = function() {
+    if (quizState.idx > 0) {
+      quizState.idx--;
+      renderQ();
+    }
+  };
+
+  window.submitQ = async function() {
+    if (quizState.done) return;
+    quizState.done = true;
+    const payload = {};
+    quizState.qs.forEach(q => { if (quizState.answers[q.id] !== undefined) payload[q.id] = quizState.answers[q.id]; });
+    
+    box.innerHTML = '<div class="m-loading" style="text-align:center;padding:60px 0;">Submitting answers...</div>';
+    try {
+      const res = await fetch(`/api/events/${eventId}/quiz/submit`, { 
+        method: 'POST', 
+        headers: { 'Content-Type': 'application/json' }, 
+        body: JSON.stringify({ answers: payload }),
+        credentials: 'include'
+      }).then(r => r.json());
+      
+      const score = res.score ?? Math.round(Object.values(res.results || {}).filter(r => r.is_correct).length / quizState.qs.length * 100);
+      
+      box.innerHTML = `
+        <h2 class="s-title" style="margin-bottom: 24px;">${esc(quizState.eventTitle)}</h2>
+        <div class="q-result show" style="background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:40px 30px;text-align:center;">
+          <div class="qr-score" style="font-size:48px;font-family:var(--font-d);font-weight:600;background:linear-gradient(120deg,var(--violet),var(--mint));-webkit-background-clip:text;color:transparent;margin-bottom:16px;">${score}%</div>
+          <p style="color:var(--muted);font-size:16px;max-width:40ch;margin:0 auto 30px;">
+            You scored ${score}% on this knowledge check.
+            ${score >= 80 ? ' Excellent work.' : score >= 50 ? ' Solid — review the slides and try again.' : ' Review the materials and retake.'}
+          </p>
+          <button class="btn btn-primary" onclick="window.location.reload()">Retake quiz</button>
+          <a href="/members/event.html?id=${eventId}" class="btn btn-secondary" style="margin-left:12px">Back to workshop</a>
+        </div>`;
+    } catch (e) {
+      box.innerHTML = '<div class="m-loading">Could not submit — please try again.</div>';
+    }
+  };
+
+  function renderQ() {
+    const { qs, idx, eventTitle } = quizState;
+    const q = qs[idx];
+    const answered = quizState.answers[q.id] !== undefined;
+    
+    box.innerHTML = `
+      <h2 class="s-title" style="margin-bottom: 30px; font-size: clamp(24px, 3.5vw, 42px);">${esc(eventTitle)}</h2>
+      <div class="q-card">
+        <div class="q-num" style="font-size:12px;letter-spacing:0.2em;color:var(--mint);margin-bottom:16px;text-transform:uppercase;">Question ${idx + 1} / ${qs.length}</div>
+        <h4 style="font-family:var(--font-d);font-weight:600;font-size:20px;line-height:1.5;margin-bottom:24px;">${esc(q.question)}</h4>
+        
+        <div class="q-opts" style="display:flex;flex-direction:column;gap:12px;margin-bottom:30px;">
+          ${q.options.map((opt, i) => {
+            const isSel = quizState.answers[q.id] === i;
+            return `
+              <div class="option ${isSel ? 'sel' : ''}" onclick="selectOpt(${i})" style="padding:16px 20px;background:var(--ink1);border:1px solid ${isSel ? 'var(--mint)' : 'var(--line)'};border-radius:12px;cursor:pointer;transition:border-color 0.2s;display:flex;gap:16px;align-items:center;">
+                <div class="opt-mark" style="width:24px;height:24px;border-radius:50%;border:1px solid ${isSel ? 'var(--mint)' : 'var(--muted)'};display:flex;align-items:center;justify-content:center;flex:none;">
+                  ${isSel ? '<div style="width:12px;height:12px;border-radius:50%;background:var(--mint)"></div>' : ''}
+                </div>
+                <div class="opt-text" style="font-size:15px;line-height:1.4;">${esc(opt)}</div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+        
+        <div class="q-nav" style="display:flex;justify-content:space-between;align-items:center;padding-top:24px;border-top:1px solid var(--line);">
+          <button class="btn btn-secondary" onclick="prevQ()" ${idx === 0 ? 'disabled style="opacity:0.5"' : ''}>← Previous</button>
+          
+          ${idx === qs.length - 1 
+            ? `<button class="btn btn-primary" onclick="submitQ()" ${!answered ? 'disabled style="opacity:0.5"' : ''}>Submit <span class="arr">→</span></button>`
+            : `<button class="btn btn-primary" onclick="nextQ()" ${!answered ? 'disabled style="opacity:0.5"' : ''}>Next <span class="arr">→</span></button>`
+          }
+        </div>
+      </div>
+    `;
+  }
+})();
+</script>
+</body>
+</html>
