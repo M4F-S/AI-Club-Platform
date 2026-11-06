@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Security Quiz</title>
+<title>AI Security Quiz — 42 Berlin AI Club</title>
+<link rel="stylesheet" href="/assets/new-design-system.css?v=23">
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body {
@@ -148,9 +149,69 @@ body {
 sup, sub { font-size: 0.75em; }
 sup { vertical-align: super; }
 sub { vertical-align: sub; }
+
+/* ===== Site design alignment (2026-11-06) ===== */
+body{
+  font-family: var(--font-b, -apple-system, "Segoe UI", sans-serif);
+  background:
+    radial-gradient(900px 600px at 12% -10%, rgba(124,108,255,.20), transparent 60%),
+    radial-gradient(700px 520px at 92% 6%, rgba(77,227,193,.10), transparent 55%),
+    var(--ink0, #060612);
+  color: var(--text, #F2F0FF);
+  padding: 0 20px 56px;
+}
+.q-top{max-width:820px;margin:0 auto;padding:22px 0 8px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.q-back{color:var(--muted);text-decoration:none;font-size:13px;border:1px solid var(--line);padding:9px 15px;border-radius:999px;transition:border-color .2s,color .2s}
+.q-back:hover{color:var(--text);border-color:var(--mint)}
+.q-brand{font-family:var(--font-d);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint)}
+.container{max-width:820px}
+.header{text-align:left;color:var(--text);padding:16px 0 18px}
+.header h1{
+  font-family:var(--font-d);font-size:clamp(30px,4.4vw,44px);font-weight:600;
+  letter-spacing:-.03em;line-height:1.05;margin-bottom:10px;
+  background:none;-webkit-background-clip:border-box;background-clip:border-box;
+  -webkit-text-fill-color:currentColor;color:var(--text);text-shadow:none;
+}
+.header .meta{color:var(--muted);font-size:13px;letter-spacing:.02em}
+.progress-bar{height:6px;background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:999px;margin:16px 0 22px}
+.progress-fill{background:linear-gradient(90deg,var(--violet),var(--mint));border-radius:999px}
+.question{
+  background:var(--panel);border:1px solid var(--line);border-radius:20px;
+  padding:clamp(20px,3.4vw,32px);box-shadow:0 20px 60px rgba(0,0,0,.45);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+}
+.q-header{color:var(--muted);font-size:13px}
+.q-number{color:var(--mint);font-weight:600}
+.q-text{font-size:17px;line-height:1.55;color:var(--text);font-weight:600}
+.option{
+  border:1px solid var(--line);background:rgba(255,255,255,.02);border-radius:14px;
+  color:var(--text);font-size:15px;line-height:1.5;padding:16px 18px;
+}
+.option:hover:not(.disabled){border-color:var(--mint);background:rgba(77,227,193,.07)}
+.option.selected{border-color:var(--violet);background:rgba(124,108,255,.14)}
+.option.correct,.option.show-correct{border-color:var(--mint);background:rgba(77,227,193,.12)}
+.option.incorrect{border-color:#ff5a6e;background:rgba(255,90,110,.10)}
+.opt-label{background:rgba(255,255,255,.06);color:var(--text);border:1px solid var(--line)}
+.hint-box{border:1px solid var(--line);background:rgba(255,255,255,.02);border-radius:14px}
+.hint-toggle{color:var(--mint)}
+.hint-content,.feedback-rationale{color:var(--muted)}
+.feedback-status{font-weight:600}
+@media (max-width:640px){
+  body{padding:0 14px 44px}
+  .q-top{padding:16px 0 6px}
+  .header h1{font-size:30px}
+  .question{padding:20px;border-radius:16px}
+  .option{padding:15px 16px;font-size:15px}
+  .q-text{font-size:16px}
+}
+
 </style>
 </head>
 <body>
+<header class="q-top">
+  <a class="q-back" href="/members/events.html">&larr; Back to events</a>
+  <span class="q-brand">42 Berlin AI Club</span>
+</header>
 <div class="container">
   <div class="header">
     <h1>Security Quiz</h1>
