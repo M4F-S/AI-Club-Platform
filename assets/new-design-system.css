@@ -782,4 +782,28 @@ body.v4-hot #v4-cring{width:56px;height:56px;border-color:var(--mint)}
   margin-bottom: 0;
 }
 
-
+/* ===== Live news strip (2026-11-06) ===== */
+body.news-on{--news-h:36px;padding-top:var(--news-h)}
+body.news-on nav{top:0}
+#news-strip{position:fixed;top:0;left:0;right:0;height:var(--news-h,36px);z-index:110;display:flex;align-items:center;gap:14px;
+  padding:0 12px 0 16px;background:rgba(7,6,20,.95);border-bottom:1px solid rgba(124,108,255,.22);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);font-size:12px}
+.ns-badge{display:flex;align-items:center;gap:7px;font-size:9px;letter-spacing:.22em;color:#4DE3C1;white-space:nowrap;font-weight:600}
+.ns-dot{width:6px;height:6px;border-radius:50%;background:#4DE3C1;box-shadow:0 0 10px #4DE3C1;animation:nsPulse 2s infinite}
+@keyframes nsPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(.85)}}
+.ns-viewport{flex:1;overflow:hidden;position:relative;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 24px,#000 calc(100% - 24px),transparent);
+  mask-image:linear-gradient(90deg,transparent,#000 24px,#000 calc(100% - 24px),transparent)}
+.ns-track{display:flex;align-items:center;width:max-content;will-change:transform;animation:nsScroll var(--ns-dur,70s) linear infinite}
+.ns-viewport:hover .ns-track,.ns-viewport:focus-within .ns-track{animation-play-state:paused}
+@keyframes nsScroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.ns-item{display:inline-flex;align-items:center;gap:9px;color:#E8E4FF;text-decoration:none;white-space:nowrap;padding:2px 0}
+.ns-item:focus-visible{outline:1px solid #4DE3C1;outline-offset:3px;border-radius:3px}
+.ns-item:hover .ns-title{color:#fff;text-decoration:underline;text-decoration-color:rgba(77,227,193,.6);text-underline-offset:3px}
+.ns-src{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#4DE3C1;opacity:.85;font-weight:600}
+.ns-title{font-size:12px;color:#CFC9F5;font-weight:300}
+.ns-sep{color:rgba(124,108,255,.45);margin:0 16px;font-size:8px}
+.ns-close{background:none;border:0;color:#7f79b3;font-size:17px;line-height:1;cursor:pointer;padding:4px 6px}
+.ns-close:hover{color:#fff}
+@media(max-width:640px){body.news-on{--news-h:32px}#news-strip{gap:10px;padding:0 6px 0 12px}.ns-title{font-size:11px}.ns-sep{margin:0 10px}}
+@media(prefers-reduced-motion:reduce){.ns-track{animation:none}.ns-viewport{overflow-x:auto;scrollbar-width:none}}
