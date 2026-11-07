@@ -4,34 +4,26 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Blog Post — 42 Berlin AI Club</title>
+    <link rel="stylesheet" href="/members/members.css?v=6">
+    <link rel="stylesheet" href="/assets/new-design-system.css?v=23">
   <meta name="robots" content="noindex, nofollow">
-  <script src="/assets/lucide.1.33.0.min.js"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/members/members.css">
-  <link rel="stylesheet" href="/assets/v4-design.css?v=2">
-  <link rel="stylesheet" href="/assets/v4-features.css?v=1">
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23120a0d'/%3E%3Cpath d='M16 2 C13 6, 12 11, 14 15 C11 13, 7 14, 5 17 C4 19, 5 22, 8 23 C7 25, 8 27, 10 28 C12 29, 14 28, 15 26 C15 28, 16 30, 17 30 C18 30, 18 28, 18 26 C19 28, 21 29, 23 28 C25 27, 26 25, 25 23 C28 22, 29 19, 27 17 C25 14, 21 13, 18 15 C20 11, 19 6, 16 2 Z' fill='%23ff6b8a'/%3E%3C/svg%3E">
+  <meta name="theme-color" content="#060612">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <style>
+    .post-content { color: var(--muted); font-size: 16px; line-height: 1.7; white-space: pre-wrap; }
+    .post-meta { font-size: 13px; color: var(--muted); margin: 0 0 18px; }
+    .back-link { display: inline-block; margin-bottom: 18px; color: var(--muted);
+      text-decoration: none; font-size: 14px; }
+    .back-link:hover { color: var(--mint, #4DE3C1); }
+  </style>
 </head>
 <body>
+<a href="#main" class="skip-link">Skip to main content</a>
   <header class="member-header">
     <div class="container member-header-inner">
       <a href="/members/index.html" class="logo" aria-label="Dashboard">
-        <div class="logo-icon">
-          <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <linearGradient id="phoenixGrad" x1="0%" y1="100%" x2="0%" y2="0%">
-                <stop offset="0%" style="stop-color:#e07a5f"/>
-                <stop offset="50%" style="stop-color:#ff6b8a"/>
-                <stop offset="100%" style="stop-color:#f2cc8f"/>
-              </linearGradient>
-            </defs>
-            <path d="M16 2 C13 6, 12 11, 14 15 C11 13, 7 14, 5 17 C4 19, 5 22, 8 23 C7 25, 8 27, 10 28 C12 29, 14 28, 15 26 C15 28, 16 30, 17 30 C18 30, 18 28, 18 26 C19 28, 21 29, 23 28 C25 27, 26 25, 25 23 C28 22, 29 19, 27 17 C25 14, 21 13, 18 15 C20 11, 19 6, 16 2 Z" fill="url(#phoenixGrad)"/>
-            <path d="M16 6 C14 9, 13 13, 14 16 C12 15, 10 15, 9 17 C8 18, 9 20, 11 21 C10 22, 11 23, 12 24 C13 24, 14 23, 15 22 C15 24, 16 25, 17 25 C18 25, 18 24, 18 22 C19 23, 20 24, 21 24 C22 23, 23 22, 22 21 C24 20, 25 18, 24 17 C23 15, 21 15, 19 16 C20 13, 19 9, 16 6 Z" fill="#faf3f0" opacity="0.4"/>
-          </svg>
-        </div>
-        42 Berlin AI Club
+        <img src="/assets/logo-gate.png" alt="42 Berlin AI Club" style="height:32px;width:auto;border-radius:8px;">
+        <span style="margin-left:10px;font-family:var(--font-d);font-size:18px;letter-spacing:-.02em;color:var(--text)">42 Berlin AI Club</span>
       </a>
       <div class="user-menu">
         <span class="user-name" id="user-name">Loading...</span>
@@ -40,35 +32,43 @@
     </div>
   </header>
 
-  <div class="container member-layout">
-    <nav class="member-nav"></nav>
-    <main class="member-main">
-      <a href="index.html" style="color:var(--text-muted);text-decoration:none;">&larr; Back to blog</a>
-      <article class="card" style="margin-top:16px;">
+<div class="container member-layout">
+    <aside class="member-nav"></aside>
+    <main id="main" class="member-main">
+
+      <a class="back-link" href="index.html">&larr; Back to blog</a>
+      <article class="card">
         <h1 id="post-title" class="page-title">Loading...</h1>
-        <p class="meta" id="post-meta"></p>
+        <p class="post-meta" id="post-meta"></p>
         <div id="post-content" class="post-content"></div>
       </article>
-    </main>
-  </div>
 
-  <script src="/members/members.js?v=3"></script>
-  <script>
-    (async () => {
+    </main>
+</div>
+
+<script src="/assets/lucide.1.33.0.min.js"></script>
+<script src="/members/members.js?v=4"></script>
+<script>
+  (function () {
+    function escapeHtml(t) { const d = document.createElement('div'); d.textContent = t == null ? '' : t; return d.innerHTML; }
+    async function loadPost() {
       const { api } = window.MemberAPI;
-      const params = new URLSearchParams(location.search);
-      const slug = params.get('slug');
-      if (!slug) { document.getElementById('post-title').textContent = 'Post not found'; return; }
+      const title = document.getElementById('post-title');
+      const slug = new URLSearchParams(location.search).get('slug');
+      if (!slug) { title.textContent = 'Post not found'; return; }
       const res = await api('/posts/' + encodeURIComponent(slug));
-      if (!res.ok) { document.getElementById('post-title').textContent = 'Post not found'; return; }
+      if (!res.ok) { title.textContent = 'Post not found'; return; }
       const p = res.data;
-      document.getElementById('post-title').textContent = p.title;
-      document.getElementById('post-meta').textContent = `${new Date(p.created_at).toLocaleDateString()} · ${p.author || 'Unknown'}`;
-      document.getElementById('post-content').innerHTML = p.content.replace(/\n/g, '<br>');
-    })();
-  </script>
-  <script src="/assets/v4-bg.js?v=1"></script>
-  <script src="/assets/v4-features.js?v=1"></script>
-  <script src="/assets/v4-agent.js?v=1"></script>
+      title.textContent = p.title;
+      document.getElementById('post-meta').textContent =
+        new Date(p.created_at).toLocaleDateString() + ' · ' + (p.author || '42 Berlin AI Club');
+      document.getElementById('post-content').textContent = p.content || '';
+      document.title = p.title + ' — 42 Berlin AI Club';
+    }
+    if (window.MemberAPI) loadPost();
+    else window.addEventListener('memberapi-ready', loadPost, { once: true });
+  })();
+</script>
+
 </body>
 </html>
