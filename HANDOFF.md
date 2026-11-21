@@ -513,6 +513,26 @@ git push origin main
      - Both services (`belya.service` and `almaz.service`) deployed via `make deploy` with immutable flags and running cleanly.
      - Commits: Belya `02adedbb`, Almaz `156bd9e`. Mirrors synced to `/root/.hermes/Belya` and `/root/.hermes/Almaz`.
 
+  - **Strict Test Suite & Sanitizer Certification (2026-11-21)**:
+    - *Belya Strict Battery (`/opt/charness`)*:
+      - `make test`: **82/82 modules PASSED (100%)** + `test_mcp_http` (4/4 passed).
+      - `make test_asan` (AddressSanitizer + UBSan): **82/82 modules PASSED (100%)** with ZERO leaks, zero overflows.
+      - `make test-crucible-asan` (Crucible adversarial stress battery): **100% invariants intact**. Fuzzing (MiniJSON depth 100/200, byte truncation, malformed syntax), path jailing/symlinks, ripgrep safe fork/injection (7/7 exploits neutralized), circuit breaker.
+      - `make test-company-adv-asan` (Multi-Agent SDLC + ASan/UBSan): **100% passed** across 50 continuous high-frequency SDLC lifecycles.
+      - `make test-perms`: **PASSED (0 failures)**.
+      - `make test-loop`: **PASSED (0 failures)**.
+      - `make test-tools`: **6/6 tools PASSED (0 failures)**.
+      - Fixed GCC preprocessor compatibility for `__has_feature` in `tests/test_company_adversarial.c`. Commit: `2258a142`.
+    - *Almaz Strict Battery (`/opt/almaz`)*:
+      - `./almaz --selfest`: **8/8 checks PASSED (100%)**.
+      - `make test`: **66/66 modules PASSED (100%)** + `test_mcp_http` (4/4 passed).
+      - `make test_asan` (AddressSanitizer + UBSan): **66/66 modules PASSED (100%)** with ZERO leaks, zero buffer overflows. Fixed `-Wrestrict` overlap in `belya_harness.c`, `-Wformat-truncation` in `research_inbox.c`, `$(PROVENANCE)` build date flag in `Makefile`, and freed missing agent/gateway/cycle objects.
+      - `make test-crucible-asan` (Crucible adversarial stress battery + ASan/UBSan): **100% invariants intact (0 crashes, 0 leaks)**.
+      - `make holdout`: **65/65 (100%) holdout tests PASSED**.
+      - Commits: `413c70f`. Mirrors synced to `/root/.hermes/Almaz`.
+    - *Live Daemon Verification*:
+      - `belya.service` (PID 2173668, RSS 17.5 MB) & `almaz.service` (PID 2174266, RSS 17.9 MB) active and running continuously with persistent MCP integrations intact.
+
 ---
 
 ## 📞 Contact
