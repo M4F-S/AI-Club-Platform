@@ -531,7 +531,21 @@ git push origin main
       - `make holdout`: **65/65 (100%) holdout tests PASSED**.
       - Commits: `413c70f`. Mirrors synced to `/root/.hermes/Almaz`.
     - *Live Daemon Verification*:
-      - `belya.service` (PID 2173668, RSS 17.5 MB) & `almaz.service` (PID 2174266, RSS 17.9 MB) active and running continuously with persistent MCP integrations intact.
+      - `belya.service` (PID 2283771, RSS 17.0 MB) & `almaz.service` (PID 2283940, RSS 17.7 MB, supervised by `almaz-watchdog`) active and running continuously with persistent MCP integrations intact.
+
+  - **Production Readiness, README Overhaul & Leak Sanitization (2026-11-21)**:
+    - *Belya PR #52 Triage*:
+      - Checked open PR #52 on `M4F-S/Belya` (`docs(security): shell surface inventory (audit Phase 3.1)`).
+      - Verified changes, added confirmation comment, and safely closed PR #52.
+    - *Industry-Standard README Overhaul*:
+      - Rewrote both `M4F-S/Belya` and `M4F-S/Almaz` `README.md` files to the latest engineering and architecture standards.
+      - Detailed C99/POSIX standards, Landlock LSM sandbox, ASan/UBSan certification, persistent MCP subsystem (`mcp_servers.json`) with stdio POSIX pipes and HTTP/SSE transports, dynamic `${VAR}` expansion, 64-tool cap, 21-role SDLC company mesh, dual VTable, speculative shadow git worktrees, FadeMem, CORAL, VIGIL, and `almaz-watchdog`.
+    - *Personal Data & Infrastructure Leak Sanitization*:
+      - Comprehensive audit across both repositories sanitized all occurrences of developer paths (`/Users/mohamedfathy/...`), VPS public IP (`187.124.2.26` -> replaced with RFC 5737 `192.0.2.1` in test assertions and `<production-vps-ip>` in docs/scripts), and VPS hostname (`srv1412364` -> `production-node`).
+      - Fixed `Makefile` benchmark source list (`BENCHMARK_SRCS`) in Belya; all 6 arenas passed 100%.
+      - Added `.gitignore` rules for `skills/auto_*`, `.deploy_meta`, `.turbo`, and `almaz.candidate`.
+      - Pushed commits to GitHub: `M4F-S/Belya` (`03e33725`) and `M4F-S/Almaz` (`63c93b5`). Fast-forwarded mirrors in `/root/.hermes/Belya` and `/root/.hermes/Almaz`.
+      - Verified `belya.service`, `almaz.service`, and `almaz-watchdog` are active, running, and polling with lean memory RSS (<18 MB).
 
 ---
 
