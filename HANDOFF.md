@@ -468,6 +468,30 @@ git push origin main
 
 ---
 
+## 🛠 Hermes Fleet: 4-Server MCP Stack Deployment (2026-11-21)
+
+The **Recommended 4-Server MCP Stack** has been configured and deployed across all 5 Hermes agent containers on the VPS:
+- **`hermes-agent`** (Toy — Operator)
+- **`hermes-assistant`** (Old — Assistant)
+- **`hermes-trader`** (Coin — Trading)
+- **`hermes-marketing`** (Candy — Marketing)
+- **`hermes-pentest`** (Pencil — Pentest)
+
+### Deployed MCP Servers
+1. **Ref** (`ref-tools-mcp`): Documentation & SDK search without web scraping noise.
+2. **Serena** (`oraios/serena`): LSP code intelligence & AST refactoring in `/opt/data/mcp-servers/venv/bin/serena`.
+3. **Playwright** (`@playwright/mcp`): Headless a11y DOM inspection & dev-server validation (replaced legacy puppeteer).
+4. **GitHub** (`@modelcontextprotocol/server-github`): Pull requests, code review, issues, and CI logs.
+
+### Verification Status
+- All 5 agent `config.yaml` files updated defensively with `ruamel.yaml` and validated with `yaml.safe_load`.
+- Backups preserved in `/root/backups-mcp-4server-stack-20261121/`.
+- All 5 `SOUL.md` prompt files updated with the Developer & Research MCP Toolkit guidance.
+- Live 1-shot inference test (`hermes -z "Respond with the single word VERIFIED"`): All 5 agents returned `VERIFIED`.
+- AI Club health check (`https://mysophia.tech/ai-club/api/health`): `{"status":"ok"}`.
+
+---
+
 ## 📞 Contact
 
 - **Mohamed Fathy:** `mohamedfathy7@hotmail.com` (admin, superadmin)
