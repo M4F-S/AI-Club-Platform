@@ -591,6 +591,41 @@ git push origin main
       - Unit test suite: **83/83 PASSED (100%)** + `test_mcp_http` (4/4 passed).
       - Commits: `57693939` (`feat(security): implement zero-disk secret buffering with mlock, token scrubbing, and persistent MCP stacks`). Synced to `/root/.hermes/Belya`.
 
+  - **Autonomous Audit Security Hardening & Production API Key Memory Scrubbing (2026-11-21)**:
+    - *Linker GC & Symbol Stripping Remediation*:
+      - Discovered `-Wl,--gc-sections` stripped `secrets_alloc_secure()`, `secrets_strdup_secure()`, and `secrets_free()` when only referenced inside test suites.
+      - Integrated `secrets_strdup_secure()` and `secrets_free()` directly into production paths: `model_adapter.c` (`api_key`, `fallback_api_key`, `local_api_key`), `jev_client.c` (`client->api_key`), and `belya_harness.c` (`/openrouter`, `/key`, `/model`).
+      - Verified global symbol retention via `readelf -sW /opt/belya/belya | grep secrets_` (all 4 functions live in `.text`).
+    - *Expanded Token Scrubbing Coverage*:
+      - Added regex pattern matchers in `secrets_keystore.c` for OpenAI Project keys (`sk-proj-[A-Za-z0-9_-]{48,}`) and AWS Access Keys (`(AKIA|ASIA)[0-9A-Z]{16}`).
+      - Updated `test_suite.c` to test Anthropic, GitHub, Telegram, OpenAI Project, and AWS access tokens.
+    - *Harness Dynamic Tool Bounds Guard*:
+      - Added bounds check in `tool_define_tool()` (`belya_harness.c:3036`) verifying `h->tool_count >= BELYA_HARNESS_MAX_TOOLS` to protect against buffer overflow on dynamic tool creation.
+    - *Test & Deployment Verification*:
+      - Unit test suite: **83/83 PASSED (100%)** + MCP HTTP client selftests.
+      - Stood up compiled C probe `/tmp/probe_scrub`: 6/6 passed (0 failed).
+      - Commit: `924758ec` (`fix(security): wire secure mlock memory buffers into production API key storage and expand token scrubbers`). Pushed to `M4F-S/Belya` and synced to `/root/.hermes/Belya`.
+
+  - **Dedicated Dual-Socket Agent Mesh IPC Architecture & Systemd Lifecycle Fix (2026-11-21)**:
+    - *Systemd RuntimeDirectory Socket Wiping Discovery*:
+      - Discovered that declaring `RuntimeDirectory=agent-mesh` across multiple systemd units (`belya.service` and `almaz.service`) caused systemd to delete `/run/agent-mesh` whenever either service stopped or restarted, unlinking the peer's socket file.
+      - Fixed by configuring `/etc/tmpfiles.d/agent-mesh.conf` (`d /run/agent-mesh 0777 root root -`) and adding `RuntimeDirectoryPreserve=yes` to `/etc/systemd/system/belya.service.d/30-mesh.conf` and `/etc/systemd/system/almaz.service.d/30-mesh.conf`.
+    - *Dual Independent Endpoints & Non-Blocking Request-Response Server*:
+      - Replaced single-connection shared socket contention model with independent, dedicated endpoints:
+        - Belya endpoint: `/run/agent-mesh/belya.sock` (mode 0666)
+        - Almaz endpoint: `/run/agent-mesh/almaz.sock` (mode 0666)
+        - Backward-compatible symlink: `/run/agent-mesh/mesh.sock -> /run/agent-mesh/belya.sock`
+      - Rewrote `agent_mesh.c` with safe string copying (`safe_copy_str`), format-truncation safety under `-O2`, and non-blocking server polling (`poll` + timeout) allowing concurrent queries from peer agents and external monitoring tools.
+      - Implemented `almaz_mesh_incoming_handler` in `/opt/almaz/belya_harness.c` for `ping`, `status`, and `consult`.
+    - *Live Cross-Agent Verification*:
+      - Belya pinging Almaz: 0.23 ms RTT, status query and consultation response verified.
+      - Almaz pinging Belya: 0.13 ms RTT, status query and consultation response verified.
+      - External client and symlink backward compatibility 100% verified.
+    - *Test Suites & Commits*:
+      - Belya: **83/83 PASSED (100%)** + MCP HTTP selftest. Commit: `f9c8bb4f` (`feat(mesh): dedicated dual-socket IPC architecture with non-blocking pair consultation`). Pushed to `M4F-S/Belya` and synced to `/root/.hermes/Belya`.
+      - Almaz: **66/66 PASSED (100%)** + MCP HTTP selftest. Commit: `257454e` (`feat(mesh): dedicated dual-socket IPC architecture with non-blocking incoming handler`). Pushed to `M4F-S/Almaz` and synced to `/root/.hermes/Almaz`.
+      - Both services active under systemd with live listening sockets in `/run/agent-mesh`.
+
 ---
 
 ## 📞 Contact
