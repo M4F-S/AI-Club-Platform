@@ -495,6 +495,23 @@ git push origin main
      - Structural verification: If `VACUUM INTO` succeeds and the clone checks OK, treat as transient discrepancy and do NOT panic the operator. Real alerts are only sent if `VACUUM INTO` or the clone fails.
      - Flapping hysteresis: Require 3 consecutive clean checks (30 min) before clearing alert state.
      - `belya_agent.c`: Added FTS sync triggers (`agent_memory_ai`, `agent_memory_au`, `agent_memory_ad`) and purged ghost FTS entries in `almaz_memory.sqlite` (reduced from 1,620 desynchronized rows to 1:1 match).
+4. **Persistent MCP Server Stacks Auto-Loaded on Startup (Nov 2026)**:
+   - *Problem*: `belya_harness_connect_mcp()` was previously only reachable interactively via the `/mcp` user CLI command in `belya_harness.c`. In `--telegram`, `--headless`, or `--cycle` daemon modes, no MCP servers were loaded on boot.
+   - *Architecture & Stacks*:
+     - **Belya** (`/opt/charness/mcp_servers.json`): GitHub MCP (`@modelcontextprotocol/server-github`), Ref MCP (`ref-tools-mcp`), Serena LSP MCP (`oraios/serena`), Semgrep SAST MCP (`semgrep-mcp`).
+     - **Almaz** (`/opt/almaz/mcp_servers.json`): Remote Knowledge HTTP MCP (`http://127.0.0.1:8760/mcp`), Playwright MCP (`@playwright/mcp`), Context7 MCP (`@upstash/context7-mcp`), GitHub MCP (`@modelcontextprotocol/server-github`).
+   - *Implementation*:
+     - Added `bool belya_harness_load_mcp_config(BelyaHarness *h, const char *config_path)` in `belya_harness.c` & `belya_harness.h`. Reconstructs stdio command lines with shell escaping, expands `${VAR}` environment variables via `getenv()`/`setenv()`, and connects both HTTP/SSE and stdio transports.
+     - Automatic boot integration in `main.c` immediately after harness initialization, ensuring `--telegram`, `--headless`, `--prompt`, and REPL auto-load all persistent servers.
+     - Strict bounds enforcement: max 8 MCP servers (`h->mcp_server_count < 8`), max 64 tools (`h->tool_count < 64`).
+     - Non-fatal fault tolerance: failures or timeouts log warnings to `stderr` and continue booting native tools without crashing; invalid tool lists roll back slots.
+     - Sandboxing compatibility: `mcp_client.c` injects default `/tmp` cache paths (`XDG_CACHE_HOME=/tmp/.cache`, `npm_config_cache=/tmp/.npm`, `UV_CACHE_DIR=/tmp/.uv_cache`) before `execl`, ensuring `npx`/`uvx` work even with systemd `ProtectHome=true`.
+     - Frame absorption: `read_line_timeout` framing loops until valid JSON-RPC lines are received, ignoring npm update notices and banner lines.
+   - *Verification*:
+     - Belya: 82/82 tests passed, 0 warnings under `-Wall -Wextra -Werror -Wpedantic`. Headless evaluation verified tool discovery (GitHub MCP, 26 tools, capped at 64 tools), and executed autonomous `search_repositories` tool call (HTTP 200).
+     - Almaz: 66/66 tests passed, `./almaz --selfest` 100% PASS, 0 warnings. Headless evaluation verified Playwright MCP loaded (48 native + 16 Playwright = 64 total tools).
+     - Both services (`belya.service` and `almaz.service`) deployed via `make deploy` with immutable flags and running cleanly.
+     - Commits: Belya `02adedbb`, Almaz `156bd9e`. Mirrors synced to `/root/.hermes/Belya` and `/root/.hermes/Almaz`.
 
 ---
 
