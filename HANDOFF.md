@@ -547,6 +547,22 @@ git push origin main
       - Pushed commits to GitHub: `M4F-S/Belya` (`03e33725`) and `M4F-S/Almaz` (`63c93b5`). Fast-forwarded mirrors in `/root/.hermes/Belya` and `/root/.hermes/Almaz`.
       - Verified `belya.service`, `almaz.service`, and `almaz-watchdog` are active, running, and polling with lean memory RSS (<18 MB).
 
+  - **Belya Turbo Mode & Permission Gate Remediation (2026-11-21)**:
+    - *Git History & Drift Root Cause Analysis*:
+      1. Commits `5ac31d6f` & `9c4ec242` introduced `/turbo on` saving `/opt/belya/.turbo`.
+      2. Caching bug in `telegram_adapter.c`: `turbo_state_load()` set a one-way latch `g_turbo_loaded = 1;` at boot. If `.turbo` did not exist at boot, creating it afterwards on disk was never detected because `turbo_active()` only checked the file if `g_turbo_forever` was already true.
+      3. File deletion in commit `03e33725`: `.turbo` was treated as an untracked build cache and removed during cleanup.
+      4. Missing environment variable: `BELYA_TURBO=1` was absent from `/opt/belya/.env` and systemd drop-in.
+      5. Tool name drift in `permissions.c`: Checked `memory_save`/`memory_recall` instead of actual tools `save_memory`/`recall_memory`, omitted `vps_telemetry`, `cron_list`, `recall_skill`, `query_ast_graph`, `web_fetch`, etc., forcing innocent inspection tools to fall through to `PERM_TIER_ASK`.
+      6. Stalling in Telegram: Without Turbo (`turbo=0`), calls prompted inline buttons `[Approve] [Deny]` and timed out after 60s, failing with "User denied permission".
+    - *Engineering Remediation*:
+      - Re-architected `turbo_active()` in `telegram_adapter.c` to directly test `access(turbo_state_path(), F_OK) == 0` dynamically, `BELYA_TURBO` environment variable, or bounded window without stale caching latches.
+      - Updated `permissions.c`: Added `ps`, `uptime`, `free` to `k_safe_argv0`; added inspection and read tools (`save_memory`, `recall_memory`, `vps_telemetry`, `cron_list`, `query_ast_graph`, `web_fetch`, `ask_user`, `save_skill`, `recall_skill`, `task_*`, `cron_*`) to `is_read_tool` and `is_inert_tool` (`PERM_TIER_ALLOW`).
+      - Created `/opt/belya/.turbo` (`belya:belya`) and set `BELYA_TURBO=1` in `/opt/belya/.env`.
+      - Added test coverage in `tests/test_permissions.c`; `make test-perms` and `make test` pass 100% (82/82 modules).
+      - Deployed binary via `make deploy` (re-locking with `chattr +i`).
+      - Pushed commit `4ffc499c` to `M4F-S/Belya` and fast-forwarded `/root/.hermes/Belya`. Service restarted cleanly under systemd.
+
 ---
 
 ## 📞 Contact
