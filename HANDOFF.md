@@ -626,6 +626,33 @@ git push origin main
       - Almaz: **66/66 PASSED (100%)** + MCP HTTP selftest. Commit: `257454e` (`feat(mesh): dedicated dual-socket IPC architecture with non-blocking incoming handler`). Pushed to `M4F-S/Almaz` and synced to `/root/.hermes/Almaz`.
       - Both services active under systemd with live listening sockets in `/run/agent-mesh`.
 
+  - **Almaz False Failure Alarms Remediation, FTS5 Auto-Healing & Parity Web Fetch Buffers (2026-11-21)**:
+    - *Incident Overview & False Alarms Debunked*:
+      - Almaz sent high-priority alert reports over Telegram claiming:
+        1. "Database corrupted! Search index inverted index malformed! Quietly throwing away memory!"
+        2. "The whole disk is read-only, firewall tool broken!"
+        3. "One tool running 16 copies of itself (ref-tools-mcp) consuming 1.5GB RAM!"
+        4. "web_search tool doesn't work (no API key)!"
+        5. "Web page fetches cut off at 100 KB!"
+      - Forensic investigation proved:
+        - **B-tree integrity was 100% fine**: The error was purely SQLite virtual table `agent_manifests_fts` inverted index drift (caused when updating manifest rows without full FTS index sync). `PRAGMA quick_check` checks virtual tables and reported `malformed inverted index for FTS5 table main.agent_manifests_fts`. `health_watcher.c` misidentified this as database corruption and panicking.
+        - **"Quietly throwing away memory" was a hallucination**: `VACUUM INTO` created a defragmented backup copy (11.5 MB vs 15 MB) which is normal SQLite page compaction, not lost data.
+        - **"Whole disk read-only" was normal sandboxing**: Almaz's systemd unit uses `ProtectSystem=strict` and `ProtectHome=true`, so the agent root `/` is read-only by design. Almaz's workspace `/opt/almaz` is read-write.
+        - **"16 copies of ref-tools-mcp" belonged to Hermes Docker container (UID 10000)**: Linux processes share the PID table. Almaz saw external Hermes MCP runner containers and assumed they were its own leaks.
+    - *Technical Root Cause & Fixes in Almaz (`/opt/almaz`)*:
+      - `health_watcher.c`: Added `rebuild_fts_indexes(sqlite3 *db)` invoking `INSERT INTO <fts_table>(<fts_table>) VALUES('rebuild')` for `agent_manifests_fts`, `agent_memory_fts`, and `atomic_facts_fts`. When `quick_check` detects virtual/FTS index desync, it automatically runs rebuild and checkpoints WAL without alarming the user. Also enabled read-write check and rebuild during vacuum recovery check.
+      - `belya_agent.c`: Added FTS rebuild execution at the end of `belya_agent_load_manifests()` so disk manifests are synced cleanly into FTS5.
+      - `belya_harness.c`: Fixed `belya_harness_web_search()` provider fallback to auto-detect configured keys (`tavily` vs `brave`). Raised URL fetch truncation buffer from 100 KB to 500 KB and `belya_html_to_markdown` conversion buffer from 50 KB to 250 KB.
+      - `.env`: Added `TAVILY_API_KEY` to `/opt/almaz/.env`.
+      - Test suite: **66/66 PASSED (100%)**. Deployed and running cleanly.
+      - Commit: `1f252e6` (`fix(health): auto-rebuild FTS indexes, expand fetch buffers, and fix web_search fallback`). Pushed to `M4F-S/Almaz` and synced to `/root/.hermes/Almaz`.
+    - *Parity Porting & Cleanup in Belya (`/opt/charness`)*:
+      - Applied 500 KB URL fetch buffer limit and 250 KB HTML-to-markdown conversion buffer in `belya_harness.c`.
+      - Added FTS rebuild in `belya_agent_load_manifests()` in `belya_agent.c`.
+      - Cleaned up orphaned MCP processes from old test runs.
+      - Test suite: **83/83 PASSED (100%)** + MCP HTTP client selftest. Deployed and verified.
+      - Commit: `40e86600` (`fix(harness): expand fetch buffer to 500KB and auto-rebuild manifests FTS`). Pushed to `M4F-S/Belya` and synced to `/root/.hermes/Belya`.
+
 ---
 
 ## 📞 Contact
