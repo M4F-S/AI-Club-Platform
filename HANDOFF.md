@@ -563,6 +563,34 @@ git push origin main
       - Deployed binary via `make deploy` (re-locking with `chattr +i`).
       - Pushed commit `4ffc499c` to `M4F-S/Belya` and fast-forwarded `/root/.hermes/Belya`. Service restarted cleanly under systemd.
 
+  - **SOTA Sovereign Dominance & Parity Architecture Implementation (2026-11-21)**:
+    - *Phase 1: Tool Capacity Scale to 96*:
+      - Raised `BELYA_HARNESS_MAX_TOOLS` from 64 to 96 across `belya_common.h`, `belya_harness.h`, `belya_harness.c`, and `belya_agent.c`.
+      - Unblocked full MCP discovery without dropping native C tools or MCP tools.
+      - Commit: `20c3e2d7` (`feat(harness): raise tool capacity to 96 and unblock MCP server discovery`).
+    - *Phase 2: Resilient Provider Fallback Ladder & Circuit Breaker*:
+      - Implemented 3-tier model fallback ladder: Primary (Zen/DeepSeek V4.1) -> Tier 2 (OpenRouter `deepseek/deepseek-v4.1-flash`) -> Tier 3 (Airgapped Local Ollama / Falcon3).
+      - Added 60-second circuit breaker preventing 28-second stall loops on HTTP 429 (Rate Limit) or HTTP 5xx. If primary fails with 429, the gateway immediately fails over to OpenRouter without sleeping or retrying.
+      - Added boot gateway pre-flight health & authentication probe verifying connectivity and balance/quota.
+      - Fixed `Makefile` pattern rule header dependency (`%.o: %.c $(wildcard *.h)`) preventing stale object linking.
+      - Commit: `55d797ba` (`feat(gateway): implement 3-tier resilient fallback ladder with circuit breaker`).
+    - *Phase 3: Sovereign Agent Mesh IPC Activation*:
+      - Discovered systemd `PrivateTmp=true` isolated cross-agent IPC sockets in private namespaces.
+      - Configured systemd drop-in `30-mesh.conf` with `RuntimeDirectory=agent-mesh`, `RuntimeDirectoryMode=0777`, and `ReadWritePaths=/run/agent-mesh`.
+      - Implemented dynamic socket path resolution in `agent_mesh.c` (`AGENT_MESH_SOCK_PATH` env -> `/run/agent-mesh/mesh.sock` -> `/tmp/belya_almaz_mesh.sock`). Added `chmod(0666)` on bind.
+      - Implemented `belya_mesh_incoming_handler()` in `belya_harness.c` to handle peer `ping`, `status`, and `consult` requests.
+      - Verified sub-millisecond roundtrip and live agent status queries over Unix domain socket.
+      - Commit: `c948819e` (`feat(mesh): activate sovereign agent mesh IPC with dynamic socket resolution and peer handler`).
+    - *Phase 4: Zero-Disk Secret Buffering, Token Scrubbing & Persistent MCP Stacks*:
+      - Implemented `secrets_keystore.h` and `secrets_keystore.c` with RAM pinning (`mlock`), core dump exclusion (`MADV_DONTDUMP`), and `secure_bzero` volatile memory barrier wiping.
+      - Integrated automatic token scrubbing (`secrets_scrub_string()`) in `belya_agent.c` before SQLite persistence and timeline logging to prevent disk leaks of Anthropic, OpenRouter, GitHub, and Telegram bot secrets.
+      - Configured persistent MCP stacks in `mcp_servers.json`: GitHub MCP (`@modelcontextprotocol/server-github`), Ref MCP (`ref-tools-mcp`), and Serena LSP MCP (`oraios/serena`).
+      - Updated `20-user.conf` with `ProtectHome=false` and `MCP_INIT_TIMEOUT_SEC=45` to allow unprivileged user `belya` access to its own virtualenv and cache.
+      - Tested Serena auto-detection: initialized Clangd LSP for `/opt/charness` (69.5% C/C++ project composition).
+      - Total active tools reached **83 tools** (all verified live via mesh socket query).
+      - Unit test suite: **83/83 PASSED (100%)** + `test_mcp_http` (4/4 passed).
+      - Commits: `57693939` (`feat(security): implement zero-disk secret buffering with mlock, token scrubbing, and persistent MCP stacks`). Synced to `/root/.hermes/Belya`.
+
 ---
 
 ## 📞 Contact
