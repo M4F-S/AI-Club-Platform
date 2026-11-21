@@ -468,6 +468,36 @@ git push origin main
 
 ---
 
+## 🤖 Sovereign AI Agents (Belya & Almaz) Operational Status
+
+### Quick Overview
+| Item | Belya | Almaz |
+|------|-------|-------|
+| **Service** | `belya.service` | `almaz.service` |
+| **Path** | `/opt/charness` (symlink `/opt/belya`) | `/opt/almaz` |
+| **Git Remote** | `github.com-qiyyas:M4F-S/Belya.git` | `github.com-qiyyas:M4F-S/Almaz.git` |
+| **Telegram Bot** | `@AgentCthe_bot` | `@AlmaztheBot` |
+| **Language** | Pure C99 (`-Wall -Wextra -Werror -Wpedantic`) | Pure C99 (`-Wall -Wextra -Werror -Wpedantic`) |
+| **Database** | `/opt/charness/belya_memory.sqlite` | `/opt/almaz/almaz_memory.sqlite` |
+
+### Key Issues Diagnosed & Resolved (Nov 2026)
+1. **Surrogate Pair Mojibake (RFC 8259)**:
+   - *Problem*: Multi-byte emojis in Telegram alerts displayed as `` replacement characters.
+   - *Fix*: Replaced buggy 16-bit codepoint conversions in `minijson.c` with proper UTF-16 surrogate pair decoder for both agents.
+2. **Database Integrity & Monotonic Turns**:
+   - *Problem*: Compaction routines in `belya_agent.c` lacked `ROLLBACK` handling, orphaned `'active'`/`'emergency'` entries without parents in `sessions`, and reset `turn_idx` to 2 on each compaction cycle.
+   - *Fix*: Enforced monotonic `turn_idx = MAX(turn_idx) + 1`, added `sessions` parent rows, and added transaction rollbacks on failure.
+3. **Almaz Recurring False SQLite Corruption Alert**:
+   - *Problem*: Almaz kept alerting with `[CRITICAL] [Almaz Self-Heal] SQLite integrity check failed. Backup attempted to /opt/almaz/recovery/almaz_db_recovery.db`.
+   - *Root Cause*: External timer jobs (`almaz-cycle`, `almaz-research`, `almaz-digest`) running every few hours concurrently wrote to SQLite WAL. In `health_watcher.c`, transient lock/busy errors were classified as corruption (`0`) rather than transient (`-1`). Even though `VACUUM INTO` succeeded 100% of the time (`vrc=0`), `health_watcher` raised a critical alert and immediately cleared its alert flag 10 minutes later when the check returned OK, causing an alert-clear-rearm loop every 2-4 hours.
+   - *Fix*:
+     - `health_watcher.c`: Safe `SQLITE_CHECKPOINT_PASSIVE` checkpoint before retry; treat locked/busy text as `-1` (transient).
+     - Structural verification: If `VACUUM INTO` succeeds and the clone checks OK, treat as transient discrepancy and do NOT panic the operator. Real alerts are only sent if `VACUUM INTO` or the clone fails.
+     - Flapping hysteresis: Require 3 consecutive clean checks (30 min) before clearing alert state.
+     - `belya_agent.c`: Added FTS sync triggers (`agent_memory_ai`, `agent_memory_au`, `agent_memory_ad`) and purged ghost FTS entries in `almaz_memory.sqlite` (reduced from 1,620 desynchronized rows to 1:1 match).
+
+---
+
 ## 📞 Contact
 
 - **Mohamed Fathy:** `mohamedfathy7@hotmail.com` (admin, superadmin)
